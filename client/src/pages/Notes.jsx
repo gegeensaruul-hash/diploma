@@ -163,9 +163,9 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         }
       `}</style>
       
-      <div className="bg-slate-900 w-full max-w-6xl h-[92vh] rounded-[40px] shadow-2xl border border-black/10 dark:border-white/10 relative flex flex-col overflow-visible" onClick={e => e.stopPropagation()}>
+      <div className="bg-slate-900 w-full max-w-5xl h-[85vh] max-h-[800px] rounded-[40px] shadow-2xl border border-black/10 dark:border-white/10 relative flex flex-col overflow-visible" onClick={e => e.stopPropagation()}>
         {/* Editor Header */}
-        <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-[110] rounded-t-[40px]">
+        <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-[110] rounded-t-[40px] shrink-0">
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Journal Title..." className="bg-transparent border-none text-2xl font-black text-stone-900 dark:text-white outline-none w-2/3 placeholder:text-stone-900 dark:text-white/20" />
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl text-stone-900 dark:text-white/50 hover:text-stone-900 dark:text-white transition-all"><MdClose size={24}/></button>
@@ -214,11 +214,11 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           </div>
 
           {/* Paper Area */}
-          <div className="flex-1 relative paper-background overflow-hidden" ref={boardRef}>
+          <div className="flex-1 min-w-0 w-full relative paper-background overflow-hidden" ref={boardRef}>
             <div 
               ref={editorRef}
               contentEditable
-              className="absolute inset-0 pl-24 pr-12 py-12 outline-none text-slate-800 text-xl leading-[1.4em] overflow-y-auto z-0 selection:bg-indigo-500/20"
+              className="absolute inset-0 pl-24 pr-12 py-12 outline-none text-slate-800 text-xl leading-[1.4em] overflow-y-auto overflow-x-hidden z-0 selection:bg-indigo-500/20"
               style={{ fontFamily: '"Inter", sans-serif' }}
               data-placeholder="Once upon a time..."
             />
