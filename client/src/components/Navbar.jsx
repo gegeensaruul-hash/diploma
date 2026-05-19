@@ -91,9 +91,9 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
 
   return (
     <header style={{
-      height: 64, background: "rgba(2, 6, 23, 0.7)", borderBottom: "1px solid rgba(255,255,255,0.08)",
+      height: 64, background: "transparent", borderBottom: "1px solid rgba(255,255,255,0.05)",
       display: "flex", alignItems: "center", padding: "0 24px", gap: 16,
-      flexShrink: 0, zIndex: 10, backdropFilter: "blur(12px)"
+      flexShrink: 0, zIndex: 10
     }}>
       {/* Burger */}
       <button onClick={onMenuToggle} style={{

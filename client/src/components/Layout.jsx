@@ -16,31 +16,34 @@ export default function Layout() {
   const toggle = () => setSidebarOpen(v => !v);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#020617]">
-      {/* Sidebar */}
+    <div className="flex h-screen overflow-hidden bg-slate-950 relative p-4 gap-4 font-sans">
+      {/* Dynamic Glowing Background */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-fuchsia-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+      
+      {/* Sidebar Dock */}
       <div style={{
-        width: sidebarOpen ? 220 : 0,
+        width: sidebarOpen ? 80 : 0,
         flexShrink: 0,
-        overflow: "hidden",
+        overflow: "visible",
         transition: "width 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-        zIndex: 30,
+        zIndex: 50,
         position: "relative",
-        borderRight: sidebarOpen ? "1px solid var(--border)" : "none",
       }}>
-        <div style={{ width: 220, height: "100%" }}>
+        <div style={{ width: 80, height: "100%" }}>
           <Sidebar onClose={toggle} onMenuToggle={toggle} />
         </div>
       </div>
 
-      {/* Main area */}
-      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+      {/* Main Bento Box */}
+      <div className="flex flex-col flex-1 min-w-0 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-white/5 overflow-hidden relative shadow-2xl z-40">
         <Navbar
           onChatToggle={() => setChatOpen(v => !v)}
           chatOpen={chatOpen}
           onMenuToggle={toggle}
           sidebarOpen={sidebarOpen}
         />
-        <main className={`flex-1 overflow-y-auto bg-[#020617] ${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "p-0" : "px-6 pb-6"}`}>
+        <main className={`flex-1 overflow-y-auto ${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "p-0" : "px-6 pb-6"}`}>
           <div className={`${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "h-full w-full" : "max-w-7xl mx-auto py-6"}`}>
             <Outlet />
           </div>

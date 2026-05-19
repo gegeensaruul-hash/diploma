@@ -5,14 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
   MdDashboard, MdOutlineChecklist, MdNote, MdCalendarMonth,
-  MdPeople, MdLogout, MdSettings, MdClose, MdExpandMore, MdExpandLess,
-  MdDashboardCustomize, MdAdd, MdMailOutline, MdAccountBalanceWallet,
+  MdLogout, MdDashboardCustomize, MdAdd, MdMailOutline, MdAccountBalanceWallet,
 } from "react-icons/md";
 import { clearCredentials } from "../redux/slices/authSlice";
 import { useLogoutMutation } from "../redux/slices/api/authApiSlice";
-
 import { useSettings } from "../context/SettingsContext";
-import { WidgetPanel, AddWidgetModal } from "./Widgets";
 import { getUserStore, setUserStore } from "../utils/userStorage";
 
 function resetSessionCache() {
@@ -24,25 +21,38 @@ const AVATAR_COLORS = [
   ["#10b981","#059669"],["#3b82f6","#2563eb"],["#8b5cf6","#7c3aed"],
 ];
 
+function Tooltip({ children, text }) {
+  return (
+    <div className="group relative flex items-center justify-center">
+      {children}
+      <div className="absolute left-[calc(100%+16px)] px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
+        {text}
+        {/* Triangle arrow */}
+        <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45 border-l border-b border-white/10" />
+      </div>
+    </div>
+  );
+}
+
 function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setShowVBPopup, setShowFinance, navigate }) {
   const [pos, setPos] = useState({ top:0, left:0 });
 
   useEffect(() => {
     if (anchorRef.current) {
       const r = anchorRef.current.getBoundingClientRect();
-      setPos({ top: r.bottom + 8, left: r.left });
+      setPos({ top: r.top, left: r.right + 16 });
     }
   }, []);
 
   return (
     <div style={{
       position:"fixed", top: pos.top, left: pos.left, zIndex:200,
-      background:"rgba(15, 23, 42, 0.98)", borderRadius:20, padding:20, width:280,
+      background:"rgba(15, 23, 42, 0.98)", borderRadius:24, padding:20, width:280,
       boxShadow:"0 32px 64px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)",
       backdropFilter: "blur(20px)"
     }}>
       <p style={{fontSize:11, color:"#94a3b8", fontWeight: 700, letterSpacing:"0.08em", marginBottom:16, textTransform: "uppercase"}}>
-        CREATE NEW
+        CREATE NEW MODULE
       </p>
 
       <div
@@ -62,23 +72,14 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
           setShowVBPopup(false);
           navigate(`/visionboard/${targetId}`);
         }}
-        style={{
-          display:"flex", alignItems:"center", gap:14,
-          padding:"12px", background:"rgba(255,255,255,0.03)",
-          borderRadius:14, cursor:"pointer", transition:"all .2s",
-          border: "1px solid rgba(255,255,255,0.05)"
-        }}
-        onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}
-        onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.05)"}}>
-        <div style={{
-          width:40, height:40, borderRadius:12, background:"rgba(129, 140, 248, 0.15)",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color: "#818cf8"
-        }}>
+        className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/10"
+      >
+        <div className="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-400">
           <MdDashboardCustomize size={22} />
         </div>
         <div>
-          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>Vision Board</div>
-          <div style={{fontSize:12,color:"#94a3b8"}}>Visual your dreams</div>
+          <div className="text-sm font-bold text-white">Vision Board</div>
+          <div className="text-xs text-slate-400">Visual your dreams</div>
         </div>
       </div>
 
@@ -97,45 +98,27 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
           setShowVBPopup(false);
           navigate("/futurecapsule");
         }}
-        style={{
-          display:"flex", alignItems:"center", gap:14,
-          padding:"12px", background:"rgba(255,255,255,0.03)",
-          borderRadius:14, cursor:"pointer", transition:"all .2s",
-          marginTop:10, border: "1px solid rgba(255,255,255,0.05)"
-        }}
-        onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}
-        onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.05)"}}>
-        <div style={{
-          width:40, height:40, borderRadius:12, background:"rgba(192, 132, 252, 0.15)",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color: "#c084fc"
-        }}>
+        className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/10 mt-2"
+      >
+        <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center text-purple-400">
           <MdMailOutline size={22} />
         </div>
         <div>
-          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>Future Capsule</div>
-          <div style={{fontSize:12,color:"#94a3b8"}}>Write to future you</div>
+          <div className="text-sm font-bold text-white">Future Capsule</div>
+          <div className="text-xs text-slate-400">Write to future you</div>
         </div>
       </div>
 
       <div
         onClick={()=>{ setShowFinance&&setShowFinance(true); setShowVBPopup(false); navigate("/finance"); }}
-        style={{
-          display:"flex", alignItems:"center", gap:14,
-          padding:"12px", background:"rgba(255,255,255,0.03)",
-          borderRadius:14, cursor:"pointer", transition:"all .2s",
-          marginTop:10, border: "1px solid rgba(255,255,255,0.05)"
-        }}
-        onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}
-        onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.05)"}}>
-        <div style={{
-          width:40, height:40, borderRadius:12, background:"rgba(74, 222, 128, 0.15)",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color: "#4ade80"
-        }}>
+        className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/10 mt-2"
+      >
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
           <MdAccountBalanceWallet size={22} />
         </div>
         <div>
-          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>Finance</div>
-          <div style={{fontSize:12,color:"#94a3b8"}}>Track your wealth</div>
+          <div className="text-sm font-bold text-white">Finance</div>
+          <div className="text-xs text-slate-400">Track your wealth</div>
         </div>
       </div>
     </div>
@@ -156,20 +139,11 @@ export default function Sidebar({ onClose, onMenuToggle }) {
   const [fcBoards, setFcBoards] = useState(() => getUserStore("sidebar_fc_boards", []));
   const [showFinance, setShowFinance] = useState(() => getUserStore("sidebar_show_finance", false));
 
-  const isTodosActive = location.pathname.startsWith("/todos");
-  const [todosOpen, setTodosOpen] = useState(isTodosActive);
-
   const topLinks = [
-    { to: "/dashboard", label: t.dashboard, icon: <MdDashboard size={20} /> },
-  ];
-  const todosSubLinks = [
-    { to: "/todos/todo",        label: t.todo,       color: "#94a3b8" },
-    { to: "/todos/in_progress", label: t.inProgress, color: "#6366f1" },
-    { to: "/todos/completed",   label: t.completed,  color: "#10b981" },
-  ];
-  const bottomLinks = [
-    { to: "/notes",    label: t.notes,    icon: <MdNote size={20} /> },
-    { to: "/calendar", label: t.calendar, icon: <MdCalendarMonth size={20} /> },
+    { to: "/dashboard", label: t.dashboard, icon: <MdDashboard size={24} /> },
+    { to: "/todos/todo", label: t.allTodos, icon: <MdOutlineChecklist size={24} /> },
+    { to: "/notes", label: t.notes, icon: <MdNote size={24} /> },
+    { to: "/calendar", label: t.calendar, icon: <MdCalendarMonth size={24} /> },
   ];
 
   const handleLogout = async () => {
@@ -185,142 +159,90 @@ export default function Sidebar({ onClose, onMenuToggle }) {
   const [c1, c2] = AVATAR_COLORS[colorIdx];
 
   const linkClass = (isActive) =>
-    `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+    `w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 ${
       isActive 
-        ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/20" 
-        : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-110" 
+        : "text-slate-400 hover:text-white hover:bg-white/10 hover:scale-105"
     }`;
 
   return (
-    <aside className="w-[220px] flex flex-col h-full overflow-hidden bg-[#020617]">
-      <style>{`.group:hover .vb-del { display:flex!important; }`}</style>
-
-      {/* Profile Section */}
-      <div className="flex-shrink-0 pt-8 px-4 pb-4">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-             <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black text-white"
-                style={{
-                  background: user?.avatarImage ? "transparent" : `linear-gradient(135deg, ${c1}, ${c2})`,
-                  border: `2px solid rgba(255,255,255,0.08)`,
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-                }}>
-                {user?.avatarImage
-                  ? <img src={user.avatarImage} alt="avatar" className="w-full h-full object-cover" />
-                  : user?.name?.[0]?.toUpperCase()}
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-[#020617] rounded-full"></div>
+    <aside className="w-20 h-full flex flex-col items-center py-6 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl relative">
+      
+      {/* Profile Avatar */}
+      <Tooltip text={user?.name || "Profile"}>
+        <div className="relative mb-8 cursor-pointer hover:scale-105 transition-transform">
+          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center text-xl font-black text-white"
+            style={{
+              background: user?.avatarImage ? "transparent" : `linear-gradient(135deg, ${c1}, ${c2})`,
+              border: `2px solid rgba(255,255,255,0.08)`,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+            }}>
+            {user?.avatarImage
+              ? <img src={user.avatarImage} alt="avatar" className="w-full h-full object-cover" />
+              : user?.name?.[0]?.toUpperCase()}
           </div>
-          
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-base font-bold text-white truncate max-w-[120px]">{user?.name}</span>
-              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-black tracking-widest bg-indigo-500 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]">PRO</span>
-            </div>
-            <p className="text-[11px] font-medium text-slate-500 uppercase tracking-widest">Active User</p>
-          </div>
+          <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-[3px] border-[#0f172a] rounded-full"></div>
         </div>
-      </div>
+      </Tooltip>
 
-      <div className="mx-6 h-px bg-white/5 my-4"></div>
+      <div className="w-8 h-px bg-white/10 mb-6"></div>
 
-      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+      {/* Main Navigation */}
+      <nav className="flex flex-col gap-4 flex-1">
         {topLinks.map(({ to, label, icon }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => linkClass(isActive)}>
-            {icon}{label}
-          </NavLink>
+          <Tooltip key={to} text={label}>
+            <NavLink to={to} className={({ isActive }) => linkClass(isActive)}>
+              {icon}
+            </NavLink>
+          </Tooltip>
         ))}
 
-        <div className="py-1">
+        <div className="w-8 h-px bg-white/10 mx-auto my-2"></div>
+
+        {/* Dynamic Modules */}
+        {fcBoards.filter(b => !b.hidden).map((board) => (
+          <Tooltip key={board.id} text={board.label}>
+            <NavLink to="/futurecapsule" className={({ isActive }) => linkClass(isActive)}>
+              <MdMailOutline size={24}/>
+            </NavLink>
+          </Tooltip>
+        ))}
+        {vbBoards.filter(b => !b.hidden).map((board) => (
+          <Tooltip key={board.id} text={board.label}>
+            <NavLink to={`/visionboard/${board.id}`} className={({ isActive }) => linkClass(isActive)}>
+              <MdDashboardCustomize size={24} />
+            </NavLink>
+          </Tooltip>
+        ))}
+        {showFinance && (
+          <Tooltip text="Finance">
+            <NavLink to="/finance" className={({ isActive }) => linkClass(isActive)}>
+              <MdAccountBalanceWallet size={24}/>
+            </NavLink>
+          </Tooltip>
+        )}
+
+        {/* Add Module Button */}
+        <Tooltip text="Add Module">
           <button
-            onClick={() => setTodosOpen((v) => !v)}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              isTodosActive ? "text-indigo-400" : "text-slate-400 hover:text-white"
-            }`}
+            ref={plusBtnRef}
+            onClick={() => setShowVBPopup(v => !v)}
+            className="w-12 h-12 flex items-center justify-center rounded-2xl text-slate-500 hover:text-white hover:bg-white/10 transition-all hover:scale-105 border border-dashed border-white/20 mt-2"
           >
-            <MdOutlineChecklist size={20} />
-            <span className="flex-1 text-left">{t.allTodos}</span>
-            {todosOpen ? <MdExpandLess size={18} /> : <MdExpandMore size={18} />}
+            <MdAdd size={24} />
           </button>
-
-          <div style={{
-            maxHeight: todosOpen ? 160 : 0,
-            overflow: "hidden",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}>
-            <div className="pl-6 pt-1 space-y-1 border-l border-white/5 ml-6">
-              {todosSubLinks.map(({ to, label, color }) => (
-                <NavLink key={to} to={to} className={({ isActive }) => 
-                  `flex items-center gap-3 py-2 px-2 text-[13px] font-medium transition-all ${
-                    isActive ? "text-white" : "text-slate-500 hover:text-slate-300"
-                  }`
-                }>
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />
-                  {label}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {bottomLinks.map(({ to, label, icon }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => linkClass(isActive)}>
-            {icon}{label}
-          </NavLink>
-        ))}
-
-        {/* Dynamic Items */}
-        <div className="pt-4 pb-2 px-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em]">Modules</span>
-            <button
-              ref={plusBtnRef}
-              onClick={() => setShowVBPopup(v => !v)}
-              className="p-1 rounded-md bg-white/5 hover:bg-indigo-500/20 text-slate-500 hover:text-indigo-400 transition-all border border-white/5"
-            >
-              <MdAdd size={14} />
-            </button>
-          </div>
-          
-          <div className="space-y-1">
-            {fcBoards.filter(b => !b.hidden).map((board) => (
-              <div key={board.id} className="group relative">
-                <NavLink to="/futurecapsule" className={({ isActive }) => linkClass(isActive)}>
-                  <MdMailOutline size={20}/>{board.label}
-                </NavLink>
-              </div>
-            ))}
-            {vbBoards.filter(b => !b.hidden).map((board) => (
-              <div key={board.id} className="group relative">
-                <NavLink to={`/visionboard/${board.id}`} className={({ isActive }) => linkClass(isActive)}>
-                  <MdDashboardCustomize size={20} />{board.label}
-                </NavLink>
-              </div>
-            ))}
-            {showFinance && (
-              <div className="group relative">
-                <NavLink to="/finance" className={({ isActive }) => linkClass(isActive)}>
-                  <MdAccountBalanceWallet size={20}/>Finance
-                </NavLink>
-              </div>
-            )}
-          </div>
-        </div>
+        </Tooltip>
       </nav>
 
-      {/* Widget Panel */}
-      <div className="flex-shrink-0 px-2 py-4">
-         <WidgetPanel />
-      </div>
+      <div className="w-8 h-px bg-white/10 mt-6 mb-6"></div>
 
-      <div className="mx-6 h-px bg-white/5"></div>
-
-      <div className="flex-shrink-0 p-4">
+      {/* Logout */}
+      <Tooltip text={t.logout}>
         <button type="button" onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-red-400 hover:bg-red-400/5 transition-all">
-          <MdLogout size={20} />{t.logout}
+          className="w-12 h-12 flex items-center justify-center rounded-2xl text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all hover:scale-105">
+          <MdLogout size={24} />
         </button>
-      </div>
+      </Tooltip>
 
       {showVBPopup && createPortal(
         <>
