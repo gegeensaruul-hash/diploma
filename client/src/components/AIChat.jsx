@@ -50,10 +50,14 @@ export default function AIChat({ onClose }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
+  const scrollRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Scroll the container to bottom when messages change or AI is typing
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [messages, loading]);
 
   const sendMessage = async (text) => {
@@ -148,10 +152,14 @@ export default function AIChat({ onClose }) {
       </div>
 
       {/* Messages */}
-      <div style={{
-        flex: 1, overflowY: "auto", padding: "24px 20px",
-        display: "flex", flexDirection: "column", gap: 20,
-      }}>
+      <div
+        ref={scrollRef}
+        style={{
+          flex: 1, overflowY: "auto", padding: "24px 20px",
+          display: "flex", flexDirection: "column", gap: 20,
+          scrollBehavior: "smooth",
+        }}
+      >
         {messages.map((msg, i) => (
           <div key={i} style={{
             display: "flex", gap: 12,
