@@ -259,6 +259,19 @@ export default function Landing() {
           .bento-card.large, .bento-card.medium, .bento-card.small { grid-column: span 2; min-height: 240px; }
           .nav-links { display: none; }
         }
+
+        @media (max-width: 640px) {
+          .hero { padding: 120px 6% 60px; }
+          .hero-title { letter-spacing: -1px; }
+          .hero-ctas { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
+          .hero-ctas button { width: 100%; justify-content: center; }
+          .bento-grid { grid-template-columns: 1fr; }
+          .bento-card.large, .bento-card.medium, .bento-card.small { grid-column: span 1; min-height: 200px; }
+          .section { padding: 60px 5%; }
+          .section-title { font-size: 28px; }
+          .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+          .nav { padding: 14px 5%; }
+        }
       `}</style>
 
       {/* ── NAVBAR ── */}

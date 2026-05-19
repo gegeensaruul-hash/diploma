@@ -95,13 +95,13 @@ export default function Billing() {
 
   return (
     <div className="h-full w-full flex items-center justify-center animate-in fade-in p-6">
-      <div className="bg-slate-900/60 backdrop-blur-2xl p-10 md:p-14 rounded-[40px] border border-white/5 shadow-2xl max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="bg-slate-900/60 backdrop-blur-2xl p-6 md:p-10 lg:p-14 rounded-[40px] border border-white/5 shadow-2xl max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* Info Side */}
         <div className="flex flex-col justify-center">
           <div className="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 px-4 py-2 rounded-full font-bold text-sm mb-6 w-max">
             <MdDiamond /> Үүрд Pro (Lifetime)
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
             Бүтээмжээ дараагийн <br /> түвшинд гаргаарай
           </h1>
           <ul className="space-y-4 mb-10">

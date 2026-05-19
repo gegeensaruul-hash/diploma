@@ -307,14 +307,14 @@ export default function Notes() {
   }
 
   return (
-    <div className="h-full flex bg-transparent text-stone-900 dark:text-white overflow-hidden animate-in">
+    <div className="h-full flex flex-col md:flex-row bg-transparent text-stone-900 dark:text-white overflow-hidden animate-in">
       <style>{`
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         [contenteditable]:empty:before { content: attr(data-placeholder); color: #94a3b8; cursor: text; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
 
-      <div className="w-80 border-r border-black/5 dark:border-white/5 flex flex-col bg-slate-900/30 backdrop-blur-3xl">
+      <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5 flex flex-col bg-slate-900/30 backdrop-blur-3xl flex-shrink-0 max-h-[40vh] md:max-h-none overflow-y-auto">
         <div className="p-8">
           <div className="flex items-center justify-between mb-10">
             <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
@@ -368,7 +368,7 @@ export default function Notes() {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden bg-slate-950">
-        <header className="h-24 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-10">
+        <header className="h-auto min-h-[96px] py-4 md:py-0 md:h-24 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between px-6 md:px-10 gap-4 bg-slate-950/50 backdrop-blur-md sticky top-0 z-10">
           <div className="flex flex-col">
             <h2 className="text-xl font-black text-stone-900 dark:text-white flex items-center gap-3">
               {activeSubj === "all" ? "Master Library" : subjects.find(s => s.id === activeSubj)?.name || "Collection"}
@@ -389,7 +389,7 @@ export default function Notes() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-10 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto p-4 md:p-10 scrollbar-hide">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
             {filtered.map((note, i) => (
               <NoteCard key={note.id} note={note} idx={i} onClick={() => setEditing(note)} onDelete={handleDelete} />

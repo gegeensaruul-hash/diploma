@@ -132,7 +132,7 @@ export default function Finance() {
         <button className="fin-btn fin-btn-green" onClick={addIncome}><MdTrendingUp size={18}/> Income</button>
       </Card>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: 24 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Budgeting */}
         <Card>
           <SectionHeader title={t.finBudget} icon={<MdPayments size={18}/>}/>

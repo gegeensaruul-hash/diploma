@@ -231,18 +231,10 @@ export default function Login() {
         .top-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
       `}</style>
 
-      <div style={{
-        width: "100vw", height: "100vh",
-        display: "grid", gridTemplateColumns: "1fr 1.1fr",
-        background: "#020617", overflow: "hidden",
-      }}>
+      <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-[1fr_1.1fr] bg-[#020617] overflow-hidden">
 
         {/* ── LEFT PANEL ── */}
-        <div style={{
-          display: "flex", flexDirection: "column", justifyContent: "center",
-          padding: "0 8%", height: "100vh", overflowY: "auto", position: "relative",
-          borderRight: "1px solid rgba(255, 255, 255, 0.05)",
-        }}>
+        <div className="flex flex-col justify-center px-8 md:px-[8%] h-screen overflow-y-auto relative border-r border-white/5">
           {/* TOP BAR */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6vh"}}>
             <button className="top-btn" onClick={() => navigate("/")}>
@@ -338,8 +330,10 @@ export default function Login() {
           </p>
         </div>
 
-        {/* ── RIGHT PANEL ── */}
-        <IllustrationPanel mn={mn}/>
+        {/* ── RIGHT PANEL ── - Hidden on mobile */}
+        <div className="hidden md:block">
+          <IllustrationPanel mn={mn}/>
+        </div>
       </div>
     </>
   );

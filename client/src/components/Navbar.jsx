@@ -90,11 +90,7 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
   }, []);
 
   return (
-    <header style={{
-      height: 64, background: "transparent", borderBottom: "1px solid rgba(255,255,255,0.05)",
-      display: "flex", alignItems: "center", padding: "0 24px", gap: 16,
-      flexShrink: 0, zIndex: 10
-    }}>
+    <header className="h-16 flex items-center px-4 md:px-6 gap-2 md:gap-4 flex-shrink-0 z-10 border-b border-white/5 bg-transparent">
       {/* Burger */}
       <button onClick={onMenuToggle} style={{
         width: 38, height: 38, borderRadius: 10, flexShrink: 0,
@@ -108,14 +104,14 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
         <MdMenu size={20} />
       </button>
 
-      {/* Greeting */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        <span style={{ fontSize: 13, fontWeight: 500, color: "#94a3b8" }}>{t.hello},</span>
-        <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{user?.name} 👋</span>
+      {/* Greeting - Hidden on mobile */}
+      <div className="hidden md:flex flex-col gap-px">
+        <span className="text-[13px] font-medium text-slate-400">{t.hello},</span>
+        <span className="text-[15px] font-bold text-white">{user?.name} 👋</span>
       </div>
 
       {/* Search */}
-      <div ref={wrapRef} style={{ position: "relative", flex: 1, maxWidth: 420, marginLeft: 20 }}>
+      <div ref={wrapRef} className="relative flex-1 max-w-[420px] md:ml-5">
         <div style={{
           display: "flex", alignItems: "center", gap: 10,
           background: focused ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
@@ -169,17 +165,18 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
       {/* Chat */}
       <button onClick={onChatToggle} style={{
         display: "flex", alignItems: "center", gap: 8,
-        padding: "8px 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)",
+        padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)",
         background: chatOpen ? "rgba(99, 102, 241, 0.15)" : "rgba(255,255,255,0.03)",
         color: chatOpen ? "#818cf8" : "#94a3b8",
         cursor: "pointer", fontSize: 13, fontWeight: 700,
         flexShrink: 0, transition: "all .2s",
       }}
+        className="md:px-4"
         onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
         onMouseLeave={e => e.currentTarget.style.background = chatOpen ? "rgba(99, 102, 241, 0.15)" : "rgba(255,255,255,0.03)"}
       >
         <MdChat size={18} />
-        <span>Chat</span>
+        <span className="hidden md:inline">Chat</span>
       </button>
     </header>
   );

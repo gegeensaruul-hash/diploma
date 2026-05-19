@@ -122,7 +122,7 @@ export default function Todos() {
       `}</style>
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px" }}>
             {status ? (titleMap[status] || status) : t.allTodos}
@@ -133,7 +133,7 @@ export default function Todos() {
         </div>
         <button
           onClick={openCreate}
-          className="btn-primary"
+          className="btn-primary flex-shrink-0"
           style={{ padding: "12px 24px", fontSize: 14, borderRadius: 12 }}
         >
           <MdAdd size={20} /> {lang === "mn" ? "Шинэ ажил" : "Create Task"}
