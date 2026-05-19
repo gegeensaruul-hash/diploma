@@ -30,6 +30,10 @@ const FONTS = [
 const HIGHLIGHTS  = ["#fde68a","#bbf7d0","#bfdbfe","#fecaca","#e9d5ff","#fed7aa"];
 const TEXT_COLORS = ["#1e293b","#dc2626","#2563eb","#16a34a","#7c3aed","#ea580c","#0891b2","#be185d"];
 const DRAW_COLORS = ["#1e293b","#dc2626","#2563eb","#16a34a","#7c3aed","#f59e0b","#ec4899","#06b6d4","#ffffff"];
+const FLOAT_MIN_SIZE = 42;
+const FLOAT_MAX_SIZE = 520;
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 /* Subject загвар өнгөнүүд — зурагт байгаа шиг зөөлөн өнгөтэй */
 const SUBJECT_THEMES = [
@@ -404,7 +408,9 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const [showStickerPicker, setShowStickerPicker] = useState(false);
   const [stickerPickerPos, setStickerPickerPos] = useState({ top: 0, right: 0 });
   const [floatStickers, setFloatStickers] = useState(note.floatStickers || []);
+  const [selectedFloatId, setSelectedFloatId] = useState(null);
   const draggingRef = useRef(null);
+  const frameRef = useRef(null);
   const noteAreaRef = useRef(null);
   const stickerBtnRef = useRef(null);
   const editorRef = useRef(null);
@@ -427,9 +433,10 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const handleSave = () => {
     const html=editorRef.current?.innerHTML||"", plain=editorRef.current?.innerText||"";
     if (!title.trim()&&!plain.trim()) return toast.error("Гарчиг эсвэл агуулга оруулна уу");
+    const hasFloatingImage = floatStickers.some(item => item.imgSrc);
     onSave({ ...note, title, html, plainText:plain.slice(0,120), coverIdx, pageColor, font,
       subjectId, drawing, images, imgPos, coverImg, pagePattern, floatStickers,
-      hasDrawing:!!drawing, hasImage:images.length>0,
+      hasDrawing:!!drawing, hasImage:images.length>0 || hasFloatingImage,
       createdAt:note.createdAt||new Date().toISOString() });
     toast.success("Хадгалагдлаа ✓");
   };
@@ -458,32 +465,127 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     const ah = area ? area.offsetHeight : 400;
     const x = aw / 2 - 32 + (Math.random() - 0.5) * 120;
     const y = ah / 2 - 32 + (Math.random() - 0.5) * 80;
-    setFloatStickers(prev => [...prev, { id: Date.now(), svg: svgStr, x, y, size: 72, rot: (Math.random()-0.5)*16 }]);
+    const id = Date.now();
+    setFloatStickers(prev => [...prev, { id, svg: svgStr, x, y, size: 72, rot: (Math.random()-0.5)*16 }]);
+    setSelectedFloatId(id);
   };
 
-  const onStickerMouseDown = (e, id) => {
+  useEffect(() => () => {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+  }, []);
+
+  const patchFloatingSticker = (id, patch) => {
+    setFloatStickers(prev => prev.map(s => s.id === id ? { ...s, ...patch } : s));
+  };
+
+  const constrainFloatPatch = (item, patch) => {
+    const area = noteAreaRef.current;
+    const size = clamp(patch.size ?? item.size ?? 72, FLOAT_MIN_SIZE, FLOAT_MAX_SIZE);
+    const maxX = Math.max(0, (area?.scrollWidth || area?.offsetWidth || 900) - size);
+    const maxY = Math.max(0, (area?.scrollHeight || area?.offsetHeight || 600) - size);
+    return {
+      ...patch,
+      ...(patch.size != null ? { size } : null),
+      ...(patch.x != null ? { x: clamp(patch.x, -size * 0.55, maxX + size * 0.35) } : null),
+      ...(patch.y != null ? { y: clamp(patch.y, -size * 0.55, maxY + size * 0.35) } : null),
+    };
+  };
+
+  const scheduleFloatingPatch = (id, patch) => {
+    const item = floatStickers.find(s => s.id === id);
+    const nextPatch = item ? constrainFloatPatch(item, patch) : patch;
+    draggingRef.current = { ...(draggingRef.current || {}), nextPatch };
+    if (frameRef.current) return;
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      const d = draggingRef.current;
+      if (!d?.nextPatch) return;
+      patchFloatingSticker(id, d.nextPatch);
+    });
+  };
+
+  const startStickerDrag = (e, id) => {
     e.preventDefault();
     e.stopPropagation();
+    setSelectedFloatId(id);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
     const sticker = floatStickers.find(s => s.id === id);
     if (!sticker) return;
-    draggingRef.current = { id, startX: e.clientX, startY: e.clientY, origX: sticker.x, origY: sticker.y };
+    draggingRef.current = {
+      mode: "drag",
+      id,
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: sticker.x,
+      origY: sticker.y,
+    };
+  };
 
-    const onMove = (me) => {
-      const d = draggingRef.current;
-      if (!d) return;
-      const dx = me.clientX - d.startX;
-      const dy = me.clientY - d.startY;
-      setFloatStickers(prev => prev.map(s =>
-        s.id === id ? { ...s, x: d.origX + dx, y: d.origY + dy } : s
-      ));
+  const startStickerResize = (e, s) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedFloatId(s.id);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const host = e.currentTarget.closest(".float-sticker");
+    const rect = host?.getBoundingClientRect();
+    const cx = rect ? rect.left + rect.width / 2 : e.clientX;
+    const cy = rect ? rect.top + rect.height / 2 : e.clientY;
+    const startDistance = Math.hypot(e.clientX - cx, e.clientY - cy) || 1;
+    draggingRef.current = {
+      mode: "resize",
+      id: s.id,
+      cx,
+      cy,
+      startDistance,
+      startSize: s.size,
     };
-    const onUp = () => {
-      draggingRef.current = null;
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
+  };
+
+  const startStickerRotate = (e, s) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedFloatId(s.id);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const el = e.currentTarget.closest(".float-sticker");
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    draggingRef.current = {
+      mode: "rotate",
+      id: s.id,
+      cx,
+      cy,
+      startAngle: Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI,
+      startRot: s.rot || 0,
     };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
+  };
+
+  const onStickerPointerMove = (e) => {
+    const d = draggingRef.current;
+    if (!d) return;
+    e.preventDefault();
+    if (d.mode === "drag") {
+      scheduleFloatingPatch(d.id, {
+        x: d.origX + e.clientX - d.startX,
+        y: d.origY + e.clientY - d.startY,
+      });
+      return;
+    }
+    if (d.mode === "resize") {
+      const distance = Math.hypot(e.clientX - d.cx, e.clientY - d.cy) || 1;
+      scheduleFloatingPatch(d.id, { size: d.startSize * (distance / d.startDistance) });
+      return;
+    }
+    if (d.mode === "rotate") {
+      const angle = Math.atan2(e.clientY - d.cy, e.clientX - d.cx) * 180 / Math.PI;
+      scheduleFloatingPatch(d.id, { rot: d.startRot + (angle - d.startAngle) });
+    }
+  };
+
+  const endStickerPointer = (e) => {
+    if (!draggingRef.current) return;
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    draggingRef.current = null;
   };
 
   const onStickerWheel = (e, id) => {
@@ -491,11 +593,23 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -8 : 8;
     setFloatStickers(prev => prev.map(s =>
-      s.id === id ? { ...s, size: Math.max(40, Math.min(480, s.size + delta)) } : s
+      s.id === id ? { ...s, size: clamp(s.size + delta, FLOAT_MIN_SIZE, FLOAT_MAX_SIZE) } : s
     ));
   };
 
-  const deleteFloatSticker = (id) => setFloatStickers(prev => prev.filter(s => s.id !== id));
+  const nudgeSelectedFloat = (patch) => {
+    if (!selectedFloatId) return;
+    setFloatStickers(prev => prev.map(s => {
+      if (s.id !== selectedFloatId) return s;
+      const nextPatch = typeof patch === "function" ? patch(s) : patch;
+      return { ...s, ...constrainFloatPatch(s, nextPatch) };
+    }));
+  };
+
+  const deleteFloatSticker = (id) => {
+    setFloatStickers(prev => prev.filter(s => s.id !== id));
+    if (selectedFloatId === id) setSelectedFloatId(null);
+  };
 
   const applyHL = (c) => {
     restoreSelection();
@@ -533,10 +647,12 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     const w = 200;
     const x = aw / 2 - w / 2 + (Math.random() - 0.5) * 80;
     const y = ah / 2 - 80  + (Math.random() - 0.5) * 60;
+    const id = Date.now();
     setFloatStickers(prev => [...prev, {
-      id: Date.now(), imgSrc: src,
+      id, imgSrc: src,
       x, y, size: w, rot: (Math.random() - 0.5) * 6,
     }]);
+    setSelectedFloatId(id);
   };
   const [fmtState, setFmtState] = useState({ bold:false, italic:false, underline:false, strikeThrough:false });
 
@@ -599,8 +715,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         .ne-body ol{list-style:decimal;padding-left:22px}
         .ne-body span[data-imgid]{transition:opacity .15s}
         .ne-body span[data-imgid]:hover img{box-shadow:0 0 0 2.5px #7c3aed,0 4px 16px rgba(0,0,0,0.18)!important}
-        .float-sticker:hover{transform:scale(1.08) rotate(var(--rot,0deg))!important;z-index:99!important}
+        .float-sticker{will-change:transform}
+        .float-sticker:hover{z-index:99!important}
         .float-sticker:hover .float-sticker-del{display:flex!important}
+        .float-sticker.is-selected{z-index:100!important}
+        .float-sticker.is-selected .float-sticker-del{display:flex!important}
         .float-sticker:active{cursor:grabbing!important}
       `}</style>
 
@@ -810,7 +929,13 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         </div>
       )}
 
-      <div ref={noteAreaRef} style={{ flex:1,overflowY:"auto",position:"relative",
+      <div ref={noteAreaRef}
+        onMouseDown={e => {
+          if (!e.target.closest(".float-sticker") && !e.target.closest(".ne-body") && e.target.tagName !== "INPUT") {
+            setSelectedFloatId(null);
+          }
+        }}
+        style={{ flex:1,overflowY:"auto",position:"relative",
           backgroundImage:
             pagePattern==="lines" ? "repeating-linear-gradient(transparent,transparent 31px,#ddd6c0 31px,#ddd6c0 32px)" :
             pagePattern==="grid"  ? "repeating-linear-gradient(transparent,transparent 27px,#ddd6c0 27px,#ddd6c0 28px),repeating-linear-gradient(90deg,transparent,transparent 27px,#ddd6c0 27px,#ddd6c0 28px)" :
@@ -855,19 +980,25 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         {/* ── Floating draggable stickers + images layer ── */}
         {floatStickers.map(s => (
           <div key={s.id}
-            className="float-sticker"
+            className={`float-sticker ${selectedFloatId === s.id ? "is-selected" : ""}`}
             style={{
               position:"absolute", left:s.x, top:s.y,
               width:s.size, height:s.imgSrc ? "auto" : s.size,
-              cursor:"grab", userSelect:"none",
-              transform:`rotate(${s.rot||0}deg)`,
-              transition:"box-shadow 0.15s",
+              cursor:"grab", userSelect:"none", touchAction:"none",
+              transform:`translate3d(0,0,0) rotate(${s.rot||0}deg)`,
+              transformOrigin:"center center",
+              transition:"box-shadow 0.15s, filter 0.15s",
               zIndex:50,
               borderRadius: s.imgSrc ? 10 : 0,
               paddingTop:26, marginTop:-26, // hover area дээш өргөтгөх
               boxSizing:"content-box",
+              outline: selectedFloatId === s.id ? "2px dashed rgba(124,58,237,0.65)" : "none",
+              outlineOffset:3,
             }}
-            onMouseDown={e => onStickerMouseDown(e, s.id)}
+            onPointerDown={e => startStickerDrag(e, s.id)}
+            onPointerMove={onStickerPointerMove}
+            onPointerUp={endStickerPointer}
+            onPointerCancel={endStickerPointer}
             onWheel={e => onStickerWheel(e, s.id)}>
             {s.imgSrc ? (
               <img
@@ -885,6 +1016,30 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                 draggable={false} alt=""
               />
             )}
+            {selectedFloatId === s.id && (
+              <div
+                className="float-sticker-del"
+                onMouseDown={e => e.stopPropagation()}
+                style={{ position:"absolute",top:-34,left:"50%",transform:"translateX(-50%)",
+                  display:"flex",alignItems:"center",gap:4,padding:"3px 5px",borderRadius:9,
+                  background:"rgba(15,23,42,0.92)",boxShadow:"0 4px 14px rgba(0,0,0,0.25)",
+                  zIndex:12 }}>
+                {[
+                  { label:"-", title:"Smaller", action:()=>nudgeSelectedFloat(item=>({ size:item.size-12 })) },
+                  { label:"+", title:"Bigger", action:()=>nudgeSelectedFloat(item=>({ size:item.size+12 })) },
+                  { label:"↺", title:"Rotate left", action:()=>nudgeSelectedFloat(item=>({ rot:(item.rot||0)-10 })) },
+                  { label:"↻", title:"Rotate right", action:()=>nudgeSelectedFloat(item=>({ rot:(item.rot||0)+10 })) },
+                ].map(btn => (
+                  <button key={btn.title} title={btn.title}
+                    onClick={e => { e.stopPropagation(); btn.action(); }}
+                    style={{ width:22,height:22,borderRadius:6,border:"none",background:"white",
+                      color:"#334155",fontSize:13,fontWeight:800,cursor:"pointer",
+                      display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1 }}>
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
+            )}
             {/* delete */}
             <button
               className="float-sticker-del"
@@ -901,19 +1056,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
               className="float-sticker-del"
               style={{ position:"absolute",bottom:-6,right:-6,width:16,height:16,borderRadius:4,
                 background:"white",border:"2px solid #94a3b8",cursor:"se-resize",
-                display:"none",zIndex:10 }}
-              onMouseDown={e => {
-                e.stopPropagation(); e.preventDefault();
-                const startX = e.clientX, startSize = s.size;
-                const onMove = (me) => {
-                  const d = me.clientX - startX;
-                  setFloatStickers(prev => prev.map(x =>
-                    x.id === s.id ? { ...x, size: Math.max(40, Math.min(480, startSize + d)) } : x
-                  ));
-                };
-                const onUp = () => { window.removeEventListener("mousemove",onMove); window.removeEventListener("mouseup",onUp); };
-                window.addEventListener("mousemove",onMove); window.addEventListener("mouseup",onUp);
-              }}
+                display:"none",zIndex:10,touchAction:"none" }}
+              onPointerDown={e => startStickerResize(e, s)}
+              onPointerMove={onStickerPointerMove}
+              onPointerUp={endStickerPointer}
+              onPointerCancel={endStickerPointer}
             />
             {/* rotate handle — top-center */}
             <div
@@ -923,23 +1070,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                 width:22,height:22,borderRadius:"50%",
                 background:"white",border:"2px solid #7c3aed",cursor:"grab",
                 display:"none",zIndex:10,
-                alignItems:"center",justifyContent:"center",fontSize:13 }}
-              onMouseDown={e => {
-                e.stopPropagation(); e.preventDefault();
-                const el = e.currentTarget.parentElement;
-                const rect = el.getBoundingClientRect();
-                const cx = rect.left + rect.width / 2;
-                const cy = rect.top + rect.height / 2;
-                const startAngle = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
-                const startRot = s.rot || 0;
-                const onMove = (me) => {
-                  const angle = Math.atan2(me.clientY - cy, me.clientX - cx) * 180 / Math.PI;
-                  const rot = startRot + (angle - startAngle);
-                  setFloatStickers(prev => prev.map(x => x.id === s.id ? { ...x, rot } : x));
-                };
-                const onUp = () => { window.removeEventListener("mousemove",onMove); window.removeEventListener("mouseup",onUp); };
-                window.addEventListener("mousemove",onMove); window.addEventListener("mouseup",onUp);
-              }}>
+                alignItems:"center",justifyContent:"center",fontSize:13,touchAction:"none" }}
+              onPointerDown={e => startStickerRotate(e, s)}
+              onPointerMove={onStickerPointerMove}
+              onPointerUp={endStickerPointer}
+              onPointerCancel={endStickerPointer}>
               ↻
             </div>
           </div>
@@ -967,6 +1102,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
 /* ════════════ NOTE CARD ════════════ */
 function NoteCard({ note, idx, onClick }) {
   const cv = COVERS[note.coverIdx ?? (idx % COVERS.length)];
+  const floatingPreview = note.floatStickers?.find(item => item.imgSrc)?.imgSrc;
   return (
     <div onClick={onClick}
       style={{
@@ -995,6 +1131,8 @@ function NoteCard({ note, idx, onClick }) {
           <img src={note.coverImg} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
         ) : note.drawing ? (
           <img src={note.drawing} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
+        ) : floatingPreview ? (
+          <img src={floatingPreview} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
         ) : note.images && note.images[0] ? (
           <img src={note.images[0]} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
         ) : (
