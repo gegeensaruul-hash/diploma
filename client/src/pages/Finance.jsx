@@ -57,55 +57,26 @@ function ProgressBar({ pct, color = C.accent }) {
 export default function Finance() {
   const t = { finDesc:"Description", finBudget:"Budgeting", finAccounts:"Accounts", finSubs:"Subscriptions", finGoals:"Financial Goals", finNotes:"Notes", finSummary:"Monthly Summary", finEdit:"Edit", finExpense:"Expense", finIncome:"Income", finNew:"+ New", finActive:"Active", finPaused:"Paused", finThisYear:"This Year" };
   
-  const [budgets, setBudgets] = useState(() => store("fin_budgets", [
-    { id:1, name:"Groceries",     icon:"G", limit:300, spent:250 },
-    { id:2, name:"Rent",          icon:"R", limit:700, spent:650 },
-    { id:3, name:"Restaurant",    icon:"F", limit:100, spent:25  },
-    { id:4, name:"Activities",    icon:"A", limit:200, spent:50  },
-    { id:5, name:"Transport",     icon:"T", limit:200, spent:50  },
-  ]));
-
-  const [expenses, setExpenses] = useState(() => store("fin_expenses", [
-    { id:1, name:"Rent",        date:"2026-05-01", amount:650, category:"Rent",      account:"Checking" },
-    { id:2, name:"Wi-Fi",       date:"2026-05-02", amount:30,  category:"Essentials",account:"Credit"   },
-    { id:3, name:"Electricity", date:"2026-05-02", amount:45,  category:"Essentials",account:"Checking" },
-  ]));
-
-  const [incomes, setIncomes] = useState(() => store("fin_incomes", [
-    { id:1, type:"Salary", amount:1500, date:"2026-05-01" },
-  ]));
-
+  // Starting with empty states to avoid "different data" issues for new users
+  const [budgets, setBudgets] = useState(() => store("fin_budgets", []));
+  const [expenses, setExpenses] = useState(() => store("fin_expenses", []));
+  const [incomes, setIncomes] = useState(() => store("fin_incomes", []));
   const [accounts, setAccounts] = useState(() => store("fin_accounts", [
-    { id:1, name:"Checking Account", balance:8670,   icon:"C" },
-    { id:2, name:"Savings",          balance:10000,  icon:"S" },
-    { id:3, name:"Credit Card",      balance:-733,   icon:"D" },
+    { id:1, name:"Main Account", balance:0, icon:"M" }
   ]));
-
-  const [subs, setSubs] = useState(() => store("fin_subs", [
-    { id:1, name:"Amazon Prime", amount:9,  active:true  },
-    { id:2, name:"Netflix",      amount:20, active:true  },
-  ]));
-
-  const [goals, setGoals] = useState(() => store("fin_goals", [
-    { id:1, name:"New PC", target:550, saved:200 },
-  ]));
+  const [subs, setSubs] = useState(() => store("fin_subs", []));
+  const [goals, setGoals] = useState(() => store("fin_goals", []));
 
   const [notes, setNotes] = useState(() => store("fin_notes", ""));
   const [editModal, setEditModal] = useState(null);
   const [eForm, setEForm] = useState({});
-  const [qForm, setQForm] = useState({ name:"", amount:"", date:new Date().toISOString().slice(0,10), category:"Groceries", account:"Checking", type:"expense" });
+  const [qForm, setQForm] = useState({ name:"", amount:"", date:new Date().toISOString().slice(0,10), category:"General", account:"Main", type:"expense" });
 
   const persist = (key, setter, val) => { setter(val); save(key, val); };
 
   const totalIncome  = incomes.reduce((a,i) => a + Number(i.amount), 0);
   const totalExpense = expenses.reduce((a,e) => a + Number(e.amount), 0);
   const net = totalIncome - totalExpense;
-
-  const summaryData = MONTHS.map((m, mi) => {
-    const inc = incomes.filter(i => new Date(i.date).getMonth() === mi && new Date(i.date).getFullYear() === thisYear).reduce((a,i)=>a+Number(i.amount),0);
-    const exp = expenses.filter(e => new Date(e.date).getMonth() === mi && new Date(e.date).getFullYear() === thisYear).reduce((a,e)=>a+Number(e.amount),0);
-    return { month: m.slice(0,3), inc, exp, net: inc - exp };
-  });
 
   const addExpense = () => {
     if (!qForm.name || !qForm.amount) return;
@@ -155,11 +126,8 @@ export default function Finance() {
 
       {/* Quick Actions */}
       <Card style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-        <input className="fin-input" style={{ flex: 2 }} placeholder="Description" value={qForm.name} onChange={e=>setQForm(f=>({...f,name:e.target.value}))}/>
-        <input className="fin-input" style={{ width: 120 }} type="number" placeholder="$0.00" value={qForm.amount} onChange={e=>setQForm(f=>({...f,amount:e.target.value}))}/>
-        <select className="fin-input" style={{ width: 140 }} value={qForm.category} onChange={e=>setQForm(f=>({...f,category:e.target.value}))}>
-          {budgets.map(b=><option key={b.id} value={b.name}>{b.name}</option>)}
-        </select>
+        <input className="fin-input" style={{ flex: 2 }} placeholder="Description (e.g. Salary, Rent)" value={qForm.name} onChange={e=>setQForm(f=>({...f,name:e.target.value}))}/>
+        <input className="fin-input" style={{ width: 120 }} type="number" placeholder="0.00" value={qForm.amount} onChange={e=>setQForm(f=>({...f,amount:e.target.value}))}/>
         <button className="fin-btn fin-btn-red" onClick={addExpense}><MdTrendingDown size={18}/> Expense</button>
         <button className="fin-btn fin-btn-green" onClick={addIncome}><MdTrendingUp size={18}/> Income</button>
       </Card>
@@ -168,24 +136,26 @@ export default function Finance() {
         {/* Budgeting */}
         <Card>
           <SectionHeader title={t.finBudget} icon={<MdPayments size={18}/>}/>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            {budgets.map(b => {
-              const pct = b.limit > 0 ? Math.round(b.spent / b.limit * 100) : 0;
-              return (
-                <div key={b.id} style={{ background: "rgba(255,255,255,0.02)", borderRadius: 16, padding: 16, border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:10 }}>
-                    <span style={{ fontSize:13, fontWeight:700, color:"#fff" }}>{b.name}</span>
-                    <span style={{ fontSize:12, fontWeight:700, color: pct > 90 ? C.red : C.muted }}>{fmt(b.spent)}</span>
+          {budgets.length === 0 ? (
+            <div style={{ padding: 40, textAlign: "center", color: C.muted, fontSize: 13, border: "1px dashed rgba(255,255,255,0.05)", borderRadius: 16 }}>
+              No active budgets. Start tracking expenses to see your progress.
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {budgets.map(b => {
+                const pct = b.limit > 0 ? Math.round(b.spent / b.limit * 100) : 0;
+                return (
+                  <div key={b.id} style={{ background: "rgba(255,255,255,0.02)", borderRadius: 16, padding: 16, border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:10 }}>
+                      <span style={{ fontSize:13, fontWeight:700, color:"#fff" }}>{b.name}</span>
+                      <span style={{ fontSize:12, fontWeight:700, color: pct > 90 ? C.red : C.muted }}>{fmt(b.spent)}</span>
+                    </div>
+                    <ProgressBar pct={pct} color={pct > 90 ? C.red : C.accent}/>
                   </div>
-                  <ProgressBar pct={pct} color={pct > 90 ? C.red : C.accent}/>
-                  <div style={{ fontSize:10, color: "#64748b", marginTop: 8, display: "flex", justifyContent: "space-between" }}>
-                    <span>{pct}% utilized</span>
-                    <span>Limit: {fmt(b.limit)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </Card>
 
         {/* Accounts & Goals */}
@@ -207,7 +177,9 @@ export default function Finance() {
 
           <Card>
             <SectionHeader title={t.finGoals} icon={<MdEmojiEvents size={18}/>}/>
-            {goals.map(g => {
+            {goals.length === 0 ? (
+              <div style={{ fontSize: 13, color: C.muted, textAlign: "center", padding: 20 }}>No active financial goals yet.</div>
+            ) : goals.map(g => {
               const pct = Math.round(g.saved / g.target * 100);
               return (
                 <div key={g.id}>
@@ -216,7 +188,6 @@ export default function Finance() {
                     <span style={{ fontSize:13, color:C.muted }}>{fmt(g.saved)} / {fmt(g.target)}</span>
                   </div>
                   <ProgressBar pct={pct} color={C.green}/>
-                  <div style={{ fontSize: 11, color: "#64748b", marginTop: 8 }}>{pct}% completed towards your goal</div>
                 </div>
               );
             })}
@@ -228,28 +199,35 @@ export default function Finance() {
       <Card>
         <SectionHeader title="Recent Transactions" icon={<MdHistory size={18}/>}/>
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Transaction</th>
-                <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Category</th>
-                <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Date</th>
-                <th style={{ textAlign: "right", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map(e => (
-                <tr key={e.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
-                  <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "#fff" }}>{e.name}</td>
-                  <td style={{ padding: "16px 12px" }}>
-                    <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8, background: "rgba(255,255,255,0.05)", color: "#94a3b8" }}>{e.category}</span>
-                  </td>
-                  <td style={{ padding: "16px 12px", fontSize: 13, color: "#64748b" }}>{e.date}</td>
-                  <td style={{ padding: "16px 12px", textAlign: "right", fontSize: 15, fontWeight: 800, color: C.red }}>-{fmt(e.amount)}</td>
+          {expenses.length === 0 && incomes.length === 0 ? (
+            <div style={{ padding: 40, textAlign: "center", color: C.muted }}>No recent activity to show.</div>
+          ) : (
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Transaction</th>
+                  <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Date</th>
+                  <th style={{ textAlign: "right", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {expenses.map(e => (
+                  <tr key={e.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
+                    <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "#fff" }}>{e.name}</td>
+                    <td style={{ padding: "16px 12px", fontSize: 13, color: "#64748b" }}>{e.date}</td>
+                    <td style={{ padding: "16px 12px", textAlign: "right", fontSize: 15, fontWeight: 800, color: C.red }}>-{fmt(e.amount)}</td>
+                  </tr>
+                ))}
+                {incomes.map(i => (
+                  <tr key={i.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
+                    <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "#fff" }}>{i.type}</td>
+                    <td style={{ padding: "16px 12px", fontSize: 13, color: "#64748b" }}>{i.date}</td>
+                    <td style={{ padding: "16px 12px", textAlign: "right", fontSize: 15, fontWeight: 800, color: C.green }}>+{fmt(i.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </Card>
     </div>
