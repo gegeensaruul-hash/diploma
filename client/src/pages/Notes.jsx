@@ -487,10 +487,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   };
 
   const onStickerWheel = (e, id) => {
+    if (!e.ctrlKey) return; // энгийн scroll дамжуулна
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -6 : 6;
+    const delta = e.deltaY > 0 ? -8 : 8;
     setFloatStickers(prev => prev.map(s =>
-      s.id === id ? { ...s, size: Math.max(32, Math.min(180, s.size + delta)) } : s
+      s.id === id ? { ...s, size: Math.max(40, Math.min(480, s.size + delta)) } : s
     ));
   };
 
@@ -882,6 +883,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                 draggable={false} alt=""
               />
             )}
+            {/* delete */}
             <button
               className="float-sticker-del"
               onMouseDown={e => e.stopPropagation()}
@@ -892,6 +894,31 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                 boxShadow:"0 2px 6px rgba(0,0,0,0.3)",fontWeight:900,lineHeight:1,zIndex:10 }}>
               ×
             </button>
+            {/* resize handle */}
+            <div
+              className="float-sticker-del"
+              style={{ position:"absolute",bottom:-6,right:-6,width:16,height:16,borderRadius:4,
+                background:"white",border:"2px solid #94a3b8",cursor:"se-resize",
+                display:"none",zIndex:10 }}
+              onMouseDown={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                const startX = e.clientX;
+                const startSize = s.size;
+                const onMove = (me) => {
+                  const delta = me.clientX - startX;
+                  setFloatStickers(prev => prev.map(x =>
+                    x.id === s.id ? { ...x, size: Math.max(40, Math.min(480, startSize + delta)) } : x
+                  ));
+                };
+                const onUp = () => {
+                  window.removeEventListener("mousemove", onMove);
+                  window.removeEventListener("mouseup", onUp);
+                };
+                window.addEventListener("mousemove", onMove);
+                window.addEventListener("mouseup", onUp);
+              }}
+            />
           </div>
         ))}
       </div>
