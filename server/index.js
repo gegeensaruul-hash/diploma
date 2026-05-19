@@ -36,23 +36,23 @@ const startServer = async () => {
     const allowed = [
       "http://localhost:5173",
       "http://localhost:3000",
+      "https://diploma-beta-brown.vercel.app",
       process.env.CLIENT_URL,
-    ].filter(Boolean);
-    return allowed.includes(origin);
+    ].filter(Boolean).map((u) => u.replace(/\/$/, "")); // strip trailing slash
+    return allowed.includes(origin.replace(/\/$/, ""));
   };
 
   const corsOptions = {
     origin: (origin, callback) => {
-      if (isAllowedOrigin(origin)) callback(null, true);
-      else callback(new Error(`CORS: ${origin} not allowed`));
+      callback(null, isAllowedOrigin(origin));
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   };
 
+  app.options("*", cors(corsOptions)); // preflight FIRST
   app.use(cors(corsOptions));
-  app.options("*", cors(corsOptions)); // preflight
 
   const io = new Server(httpServer, {
     cors: {
