@@ -220,7 +220,7 @@ export default function Habits() {
                 )}
                 
                 {/* Tooltip with details */}
-                <div className="absolute left-1/2 bottom-full mb-2 transform -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                <div className="absolute left-1/2 bottom-full mb-2 transform -translate-x-1/2 bg-black text-stone-900 dark:text-white text-xs rounded px-2 py-1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                   <div>{currentMonth}/{day}</div>
                   {dayData.habits.length > 0 && (
                     <div className="text-green-300">
@@ -268,7 +268,7 @@ export default function Habits() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold" 
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-900 dark:text-white font-bold" 
                style={{ background: theme.accent }}>
             H
           </div>
@@ -281,7 +281,7 @@ export default function Habits() {
         </div>
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-90"
+          className="flex items-center gap-2 text-stone-900 dark:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-90"
           style={{ background: theme.accent }}
         >
           <MdAdd size={18} /> {lang === "mn" ? "Нэмэх" : "Add Habit"}
@@ -332,7 +332,7 @@ export default function Habits() {
                       : 'bg-gray-100 border-gray-300 hover:border-gray-400'
                   }`}>
                     {habit.completed && (
-                      <svg width="14" height="14" viewBox="0 0 14 14" className="text-white">
+                      <svg width="14" height="14" viewBox="0 0 14 14" className="text-stone-900 dark:text-white">
                         <polyline 
                           points="3,7 6,10 11,4" 
                           stroke="currentColor" 
@@ -414,7 +414,7 @@ export default function Habits() {
                       : 'bg-gray-100 border-gray-300 hover:border-gray-400'
                   }`}>
                     {todo.completed && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" className="text-white">
+                      <svg width="12" height="12" viewBox="0 0 12 12" className="text-stone-900 dark:text-white">
                         <polyline 
                           points="2,6 5,9 10,3" 
                           stroke="currentColor" 
@@ -523,7 +523,7 @@ export default function Habits() {
               </button>
               <button
                 onClick={saveHabit}
-                className="flex-1 px-4 py-2 text-white rounded-lg transition-colors hover:opacity-90"
+                className="flex-1 px-4 py-2 text-stone-900 dark:text-white rounded-lg transition-colors hover:opacity-90"
                 style={{ background: theme.accent }}
               >
                 {lang === "mn" ? "Хадгалах" : "Save"}
@@ -568,7 +568,7 @@ export default function Habits() {
               </button>
               <button
                 onClick={addTodo}
-                className="flex-1 px-4 py-2 text-white rounded-lg transition-colors hover:opacity-90"
+                className="flex-1 px-4 py-2 text-stone-900 dark:text-white rounded-lg transition-colors hover:opacity-90"
                 style={{ background: theme.accent }}
               >
                 {editingTodo ? (lang === "mn" ? "Засах" : "Update") : (lang === "mn" ? "Нэмэх" : "Add")}

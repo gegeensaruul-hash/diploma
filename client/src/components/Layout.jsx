@@ -18,8 +18,8 @@ export default function Layout() {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-950 relative p-4 gap-4 font-sans">
       {/* Dynamic Glowing Background */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-fuchsia-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-fuchsia-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen" />
       
       {/* Sidebar Dock */}
       <div style={{
@@ -36,7 +36,7 @@ export default function Layout() {
       </div>
 
       {/* Main Bento Box */}
-      <div className="flex flex-col flex-1 min-w-0 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-white/5 overflow-hidden relative shadow-2xl z-40">
+      <div className="flex flex-col flex-1 min-w-0 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl z-40">
         <Navbar
           onChatToggle={() => setChatOpen(v => !v)}
           chatOpen={chatOpen}

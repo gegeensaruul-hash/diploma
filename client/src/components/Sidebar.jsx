@@ -25,10 +25,10 @@ function Tooltip({ children, text }) {
   return (
     <div className="group relative flex items-center justify-center">
       {children}
-      <div className="absolute left-[calc(100%+16px)] px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-white/10 z-50">
+      <div className="absolute left-[calc(100%+16px)] px-3 py-1.5 bg-slate-800 text-stone-900 dark:text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-black/10 dark:border-white/10 z-50">
         {text}
         {/* Triangle arrow */}
-        <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45 border-l border-b border-white/10" />
+        <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45 border-l border-b border-black/10 dark:border-white/10" />
       </div>
     </div>
   );
@@ -72,13 +72,13 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
           setShowVBPopup(false);
           navigate(`/visionboard/${targetId}`);
         }}
-        className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/10"
+        className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-black/10 dark:border-white/10"
       >
         <div className="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-400">
           <MdDashboardCustomize size={22} />
         </div>
         <div>
-          <div className="text-sm font-bold text-white">Vision Board</div>
+          <div className="text-sm font-bold text-stone-900 dark:text-white">Vision Board</div>
           <div className="text-xs text-slate-400">Visual your dreams</div>
         </div>
       </div>
@@ -98,26 +98,26 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
           setShowVBPopup(false);
           navigate("/futurecapsule");
         }}
-        className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/10 mt-2"
+        className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-black/10 dark:border-white/10 mt-2"
       >
         <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center text-purple-400">
           <MdMailOutline size={22} />
         </div>
         <div>
-          <div className="text-sm font-bold text-white">Future Capsule</div>
+          <div className="text-sm font-bold text-stone-900 dark:text-white">Future Capsule</div>
           <div className="text-xs text-slate-400">Write to future you</div>
         </div>
       </div>
 
       <div
         onClick={()=>{ setShowFinance&&setShowFinance(true); setShowVBPopup(false); navigate("/finance"); }}
-        className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/10 mt-2"
+        className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-black/10 dark:border-white/10 mt-2"
       >
         <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
           <MdAccountBalanceWallet size={22} />
         </div>
         <div>
-          <div className="text-sm font-bold text-white">Finance</div>
+          <div className="text-sm font-bold text-stone-900 dark:text-white">Finance</div>
           <div className="text-xs text-slate-400">Track your wealth</div>
         </div>
       </div>
@@ -161,17 +161,17 @@ export default function Sidebar({ onClose, onMenuToggle }) {
   const linkClass = (isActive) =>
     `w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 ${
       isActive 
-        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-110" 
-        : "text-slate-400 hover:text-white hover:bg-white/10 hover:scale-105"
+        ? "bg-indigo-500 text-stone-900 dark:text-white shadow-lg shadow-indigo-500/30 scale-110" 
+        : "text-slate-400 hover:text-stone-900 dark:text-white hover:bg-black/10 dark:bg-white/10 hover:scale-105"
     }`;
 
   return (
-    <aside className="w-20 h-full flex flex-col items-center py-6 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl relative">
+    <aside className="w-20 h-full flex flex-col items-center py-6 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-black/5 dark:border-white/5 shadow-2xl relative">
       
       {/* Profile Avatar */}
       <Tooltip text={user?.name || "Profile"}>
         <div onClick={() => navigate('/profile')} className="relative mb-8 cursor-pointer hover:scale-105 transition-transform">
-          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center text-xl font-black text-white"
+          <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center text-xl font-black text-stone-900 dark:text-white"
             style={{
               background: user?.avatarImage ? "transparent" : `linear-gradient(135deg, ${c1}, ${c2})`,
               border: `2px solid rgba(255,255,255,0.08)`,
@@ -185,7 +185,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
         </div>
       </Tooltip>
 
-      <div className="w-8 h-px bg-white/10 mb-6"></div>
+      <div className="w-8 h-px bg-black/10 dark:bg-white/10 mb-6"></div>
 
       {/* Main Navigation */}
       <nav className="flex flex-col gap-4 flex-1">
@@ -197,7 +197,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
           </Tooltip>
         ))}
 
-        <div className="w-8 h-px bg-white/10 mx-auto my-2"></div>
+        <div className="w-8 h-px bg-black/10 dark:bg-white/10 mx-auto my-2"></div>
 
         {/* Dynamic Modules */}
         {fcBoards.filter(b => !b.hidden).map((board) => (
@@ -227,14 +227,14 @@ export default function Sidebar({ onClose, onMenuToggle }) {
           <button
             ref={plusBtnRef}
             onClick={() => setShowVBPopup(v => !v)}
-            className="w-12 h-12 flex items-center justify-center rounded-2xl text-slate-500 hover:text-white hover:bg-white/10 transition-all hover:scale-105 border border-dashed border-white/20 mt-2"
+            className="w-12 h-12 flex items-center justify-center rounded-2xl text-slate-500 hover:text-stone-900 dark:text-white hover:bg-black/10 dark:bg-white/10 transition-all hover:scale-105 border border-dashed border-black/20 dark:border-white/20 mt-2"
           >
             <MdAdd size={24} />
           </button>
         </Tooltip>
       </nav>
 
-      <div className="w-8 h-px bg-white/10 mt-6 mb-6"></div>
+      <div className="w-8 h-px bg-black/10 dark:bg-white/10 mt-6 mb-6"></div>
 
       {/* Logout */}
       <Tooltip text={t.logout}>

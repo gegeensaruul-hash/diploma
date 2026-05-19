@@ -110,20 +110,20 @@ export default function Calendar() {
       `}</style>
 
       {/* Header Area */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-slate-900/40 backdrop-blur-xl shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-black/5 dark:border-white/5 bg-slate-900/40 backdrop-blur-xl shrink-0">
         <div className="flex items-center gap-6">
           <div className="flex flex-col">
-            <h2 className="text-2xl font-black tracking-tight text-white">{MO[month]} {year}</h2>
+            <h2 className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">{MO[month]} {year}</h2>
             <div className="flex gap-2 mt-1">
-              <button onClick={prevMonth} className="p-1 hover:bg-white/10 rounded-lg transition-colors"><MdChevronLeft size={20}/></button>
-              <button onClick={nextMonth} className="p-1 hover:bg-white/10 rounded-lg transition-colors"><MdChevronRight size={20}/></button>
+              <button onClick={prevMonth} className="p-1 hover:bg-black/10 dark:bg-white/10 rounded-lg transition-colors"><MdChevronLeft size={20}/></button>
+              <button onClick={nextMonth} className="p-1 hover:bg-black/10 dark:bg-white/10 rounded-lg transition-colors"><MdChevronRight size={20}/></button>
               <button onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth()); }} className="text-[10px] font-black uppercase tracking-widest text-indigo-400 ml-2 hover:text-indigo-300">Today</button>
             </div>
           </div>
 
-          <div className="h-8 w-px bg-white/5 mx-2" />
+          <div className="h-8 w-px bg-black/5 dark:bg-white/5 mx-2" />
 
-          <div className="flex gap-1 p-1 bg-white/5 rounded-xl">
+          <div className="flex gap-1 p-1 bg-black/5 dark:bg-white/5 rounded-xl">
             <button onClick={() => setView("monthly")} className={`tab-btn ${view === "monthly" ? "active" : ""}`}>
               <MdCalendarToday size={18}/> {lang === "mn" ? "Сараар" : "Monthly"}
             </button>
@@ -134,7 +134,7 @@ export default function Calendar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button onClick={() => setModal({ day: today.getDate(), idx: undefined })} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+          <button onClick={() => setModal({ day: today.getDate(), idx: undefined })} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
             <MdAdd size={20}/> {lang === "mn" ? "Тэмдэглэл" : "Add Event"}
           </button>
         </div>
@@ -145,7 +145,7 @@ export default function Calendar() {
         {view === "monthly" ? (
           <div className="h-full flex flex-col">
             {/* Weekday headers */}
-            <div className="grid grid-cols-7 border-b border-white/5 bg-slate-900/20 shrink-0">
+            <div className="grid grid-cols-7 border-b border-black/5 dark:border-white/5 bg-slate-900/20 shrink-0">
               {lang === "mn" ? DOW_FULL_MN.map(d => (
                 <div key={d} className="py-3 text-center text-[10px] font-black uppercase tracking-widest text-slate-500">{d}</div>
               )) : DOW_FULL_EN.map(d => (
@@ -161,7 +161,7 @@ export default function Calendar() {
                 const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                 return (
                   <div key={d} onClick={() => setModal({ day: d, idx: undefined })} className={`cal-cell ${isToday ? "today" : ""}`}>
-                    <span className={`text-sm font-black w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/30" : "text-slate-400"}`}>
+                    <span className={`text-sm font-black w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? "bg-indigo-500 text-stone-900 dark:text-white shadow-lg shadow-indigo-500/30" : "text-slate-400"}`}>
                       {d}
                     </span>
                     <div className="flex flex-col gap-1 overflow-hidden mt-1">
@@ -193,11 +193,11 @@ export default function Calendar() {
       {/* Event Modal */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in" onClick={() => setModal(null)}>
-          <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-in zoom-in slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white">{modal.idx !== undefined ? "Edit Event" : "New Event"}</h3>
-                <button onClick={() => setModal(null)} className="p-2 hover:bg-white/5 rounded-full text-slate-400"><MdClose size={24}/></button>
+                <h3 className="text-xl font-bold text-stone-900 dark:text-white">{modal.idx !== undefined ? "Edit Event" : "New Event"}</h3>
+                <button onClick={() => setModal(null)} className="p-2 hover:bg-black/5 dark:bg-white/5 rounded-full text-slate-400"><MdClose size={24}/></button>
               </div>
               
               <div className="space-y-4">
@@ -207,7 +207,7 @@ export default function Calendar() {
                     autoFocus
                     value={form.text}
                     onChange={e => setForm({ ...form, text: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all min-h-[120px] resize-none"
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-4 text-stone-900 dark:text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all min-h-[120px] resize-none"
                     placeholder="What's happening?"
                   />
                 </div>
@@ -233,7 +233,7 @@ export default function Calendar() {
                     <MdDelete size={20}/> {lang === "mn" ? "Устгах" : "Delete"}
                   </button>
                 )}
-                <button onClick={saveEvent} className="flex-[2] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
+                <button onClick={saveEvent} className="flex-[2] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
                   <MdSave size={20}/> {lang === "mn" ? "Хадгалах" : "Save Changes"}
                 </button>
               </div>
@@ -274,18 +274,18 @@ function Timetable({ lang }) {
   return (
     <div className="h-full flex flex-col p-6 animate-in fade-in slide-in-from-bottom-4">
       <div className="flex gap-4 mb-6">
-        <button onClick={() => { setEditing("new"); setQForm({ subject: "", start: "09:00", end: "10:00", color: 0, day: 0 }); }} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 transition-all">
+        <button onClick={() => { setEditing("new"); setQForm({ subject: "", start: "09:00", end: "10:00", color: 0, day: 0 }); }} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 transition-all">
           + Add Class
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto bg-slate-900/20 rounded-3xl border border-white/5 relative">
+      <div className="flex-1 overflow-auto bg-slate-900/20 rounded-3xl border border-black/5 dark:border-white/5 relative">
         <div className="flex min-w-[800px] h-full">
           {/* Time axis */}
-          <div className="w-20 shrink-0 border-right border-white/5 bg-slate-900/40">
-            <div className="h-12 border-b border-white/5" />
+          <div className="w-20 shrink-0 border-right border-black/5 dark:border-white/5 bg-slate-900/40">
+            <div className="h-12 border-b border-black/5 dark:border-white/5" />
             {hours.map(h => (
-              <div key={h} className="h-20 border-b border-white/5 flex items-center justify-center text-[10px] font-black text-slate-500">
+              <div key={h} className="h-20 border-b border-black/5 dark:border-white/5 flex items-center justify-center text-[10px] font-black text-slate-500">
                 {String(h).padStart(2, "0")}:00
               </div>
             ))}
@@ -293,13 +293,13 @@ function Timetable({ lang }) {
 
           {/* Columns */}
           {DAYS.map((day, di) => (
-            <div key={day} className="flex-1 border-r border-white/5 relative last:border-0">
-              <div className="h-12 border-b border-white/5 flex items-center justify-center bg-slate-900/20 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <div key={day} className="flex-1 border-r border-black/5 dark:border-white/5 relative last:border-0">
+              <div className="h-12 border-b border-black/5 dark:border-white/5 flex items-center justify-center bg-slate-900/20 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {day}
               </div>
               <div className="relative h-[880px]">
                 {/* Grid lines */}
-                {hours.map(h => <div key={h} className="h-20 border-b border-white/5" />)}
+                {hours.map(h => <div key={h} className="h-20 border-b border-black/5 dark:border-white/5" />)}
                 
                 {/* Slots */}
                 {slots.filter(s => s.day === di).map(s => {
@@ -332,15 +332,15 @@ function Timetable({ lang }) {
       {/* Timetable Edit Modal */}
       {editing !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4" onClick={() => setEditing(null)}>
-          <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-white/10 shadow-2xl p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-xl font-bold text-white mb-6">Class Details</h3>
+          <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-black/10 dark:border-white/10 shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-stone-900 dark:text-white mb-6">Class Details</h3>
             <div className="space-y-4">
-              <input value={qForm.subject} onChange={e => setQForm({...qForm, subject: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-indigo-500" placeholder="Subject Name" />
+              <input value={qForm.subject} onChange={e => setQForm({...qForm, subject: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none focus:border-indigo-500" placeholder="Subject Name" />
               <div className="grid grid-cols-2 gap-4">
-                <input type="time" value={qForm.start} onChange={e => setQForm({...qForm, start: e.target.value})} className="bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none" />
-                <input type="time" value={qForm.end} onChange={e => setQForm({...qForm, end: e.target.value})} className="bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none" />
+                <input type="time" value={qForm.start} onChange={e => setQForm({...qForm, start: e.target.value})} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none" />
+                <input type="time" value={qForm.end} onChange={e => setQForm({...qForm, end: e.target.value})} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none" />
               </div>
-              <select value={qForm.day} onChange={e => setQForm({...qForm, day: Number(e.target.value)})} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none">
+              <select value={qForm.day} onChange={e => setQForm({...qForm, day: Number(e.target.value)})} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none">
                 {DAYS.map((d, i) => <option key={i} value={i} className="bg-slate-900">{d}</option>)}
               </select>
               <div className="flex gap-2">
@@ -351,7 +351,7 @@ function Timetable({ lang }) {
             </div>
             <div className="flex gap-3 mt-8">
               {editing !== "new" && <button onClick={() => deleteSlot(editing)} className="flex-1 py-3 bg-red-500/10 text-red-500 rounded-xl font-bold">Delete</button>}
-              <button onClick={saveSlot} className="flex-[2] py-3 bg-indigo-600 text-white rounded-xl font-bold">Save</button>
+              <button onClick={saveSlot} className="flex-[2] py-3 bg-indigo-600 text-stone-900 dark:text-white rounded-xl font-bold">Save</button>
             </div>
           </div>
         </div>

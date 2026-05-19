@@ -140,7 +140,7 @@ export default function AIChat({ onClose }) {
           <button onClick={onClose} style={{
             width: 32, height: 32, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "white"
-          }} className="hover:bg-white/5 transition-colors">
+          }} className="hover:bg-black/5 dark:bg-white/5 transition-colors">
             <MdClose size={18} />
           </button>
         </div>

@@ -183,7 +183,7 @@ export default function VisionBoardPage() {
               border:"1px solid rgba(255,255,255,0.1)",padding:12,width:240,display:"flex",flexWrap:"wrap",gap:6}}>
               {VB_STICKERS.map(s=>(
                 <button key={s} onClick={()=>addSticker(s)}
-                  className="px-3 py-2 rounded-lg bg-slate-800 text-[10px] font-black text-slate-300 hover:text-white hover:bg-slate-700 border border-white/5 transition-all">
+                  className="px-3 py-2 rounded-lg bg-slate-800 text-[10px] font-black text-slate-300 hover:text-stone-900 dark:text-white hover:bg-slate-700 border border-black/5 dark:border-white/5 transition-all">
                   {s}
                 </button>
               ))}
@@ -194,17 +194,17 @@ export default function VisionBoardPage() {
           <MdImage size={18}/> {lang==="mn"?"Зураг":"Image"}
           <input type="file" accept="image/*" style={{display:"none"}} onChange={addImage}/>
         </label>
-        <div className="w-px h-6 bg-white/10 mx-1" />
+        <div className="w-px h-6 bg-black/10 dark:bg-white/10 mx-1" />
         {selItem?.type==="note" && (
           <select value={selItem.font} onChange={e=>upd(selected,{font:e.target.value})}
-            className="bg-slate-800 border-none rounded-lg px-2 py-1.5 text-xs text-white outline-none cursor-pointer hover:bg-slate-700">
+            className="bg-slate-800 border-none rounded-lg px-2 py-1.5 text-xs text-stone-900 dark:text-white outline-none cursor-pointer hover:bg-slate-700">
             {VB_FONTS.map(f=><option key={f.id} value={f.id}>{f.label}</option>)}
           </select>
         )}
         {selected && (
           <button className="tool-btn hover:text-red-400" onClick={()=>del(selected)}><MdDelete size={18}/></button>
         )}
-        <button className="tool-btn text-slate-500 hover:text-white" onClick={clearAll}><MdCleaningServices size={18}/></button>
+        <button className="tool-btn text-slate-500 hover:text-stone-900 dark:text-white" onClick={clearAll}><MdCleaningServices size={18}/></button>
       </div>
 
       <div
@@ -260,7 +260,7 @@ export default function VisionBoardPage() {
 
               {!isEdit && (
                 <button onClick={(e)=>{e.stopPropagation(); del(item.id);}}
-                  className="action-btn absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center z-40 shadow-lg hover:bg-red-600 transition-colors">
+                  className="action-btn absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-stone-900 dark:text-white flex items-center justify-center z-40 shadow-lg hover:bg-red-600 transition-colors">
                   <MdClose size={14}/>
                 </button>
               )}
@@ -307,8 +307,8 @@ export default function VisionBoardPage() {
 
         {items.length===0 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-20">
-            <MdAdd size={80} className="text-white mb-4" />
-            <p className="text-xl font-bold text-white uppercase tracking-widest">Start your vision</p>
+            <MdAdd size={80} className="text-stone-900 dark:text-white mb-4" />
+            <p className="text-xl font-bold text-stone-900 dark:text-white uppercase tracking-widest">Start your vision</p>
           </div>
         )}
       </div>

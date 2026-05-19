@@ -134,26 +134,26 @@ export default function GroupChat({ onClose }) {
       `}</style>
 
       {/* Header */}
-      <div className="h-16 px-5 border-b border-white/5 flex items-center justify-between flex-shrink-0 bg-slate-900/40 backdrop-blur-md">
+      <div className="h-16 px-5 border-b border-black/5 dark:border-white/5 flex items-center justify-between flex-shrink-0 bg-slate-900/40 backdrop-blur-md">
         <div className="flex items-center gap-3">
           {activeRoom ? (
-            <button onClick={() => setActiveRoom(null)} className="text-slate-400 hover:text-white transition-colors">
+            <button onClick={() => setActiveRoom(null)} className="text-slate-400 hover:text-stone-900 dark:text-white transition-colors">
               <MdArrowBack size={20} />
             </button>
           ) : (
             <MdExplore size={20} className="text-indigo-400" />
           )}
-          <span className="font-bold text-white text-sm tracking-tight">
+          <span className="font-bold text-stone-900 dark:text-white text-sm tracking-tight">
             {activeRoom ? `# ${activeRoom.name}` : "Global Communities"}
           </span>
         </div>
         <div className="flex items-center gap-2">
           {activeRoom && (
             <>
-              <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-white"}`} title="Invite Person">
+              <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`} title="Invite Person">
                 <MdPersonAdd size={20} />
               </button>
-              <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-white"}`}>
+              <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`}>
                 <MdPeople size={20} />
               </button>
             </>
@@ -163,7 +163,7 @@ export default function GroupChat({ onClose }) {
               <MdAdd size={22} />
             </button>
           )}
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-500 hover:text-white transition-all">
+          <button onClick={onClose} className="p-2 rounded-xl text-slate-500 hover:text-stone-900 dark:text-white transition-all">
             <MdClose size={20} />
           </button>
         </div>
@@ -172,18 +172,18 @@ export default function GroupChat({ onClose }) {
       {/* Content Area */}
       <div className="flex-1 overflow-hidden relative flex flex-col">
         {activeRoom && showAddMember && (
-          <div className="px-5 py-3 bg-indigo-500/5 border-b border-white/5 flex gap-2 animate-in">
+          <div className="px-5 py-3 bg-indigo-500/5 border-b border-black/5 dark:border-white/5 flex gap-2 animate-in">
             <input 
               type="email" 
               placeholder="Friend's email..." 
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddMember()}
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-indigo-500"
+              className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs text-stone-900 dark:text-white outline-none focus:border-indigo-500"
             />
             <button 
               onClick={handleAddMember}
-              className="px-3 py-1.5 bg-indigo-500 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-indigo-500/20"
+              className="px-3 py-1.5 bg-indigo-500 text-stone-900 dark:text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-indigo-500/20"
             >
               ADD
             </button>
@@ -194,7 +194,7 @@ export default function GroupChat({ onClose }) {
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {rooms.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
-                <div className="w-16 h-16 rounded-2xl bg-white/3 flex items-center justify-center text-slate-700">
+                <div className="w-16 h-16 rounded-2xl bg-black/3 dark:bg-white/3 flex items-center justify-center text-slate-700">
                   <MdChat size={32} />
                 </div>
                 <p className="text-sm font-medium text-center">No active communities found.<br/>Start a new conversation.</p>
@@ -206,13 +206,13 @@ export default function GroupChat({ onClose }) {
                 <div key={room.id} onClick={() => isMember && setActiveRoom(room)}
                   className={`chat-room-card rounded-2xl px-4 py-3 flex items-center justify-between gap-3 ${isMember ? "cursor-pointer" : "opacity-40"}`}>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-bold text-white truncate mb-0.5"># {room.name}</p>
+                    <p className="text-[14px] font-bold text-stone-900 dark:text-white truncate mb-0.5"># {room.name}</p>
                     <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{room.members?.length || 0} Members</p>
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
                     {!isMember ? (
                       <button onClick={(e) => { e.stopPropagation(); handleJoin(room.id); }}
-                        className="text-xs font-black bg-indigo-500 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
+                        className="text-xs font-black bg-indigo-500 text-stone-900 dark:text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
                         JOIN
                       </button>
                     ) : (
@@ -235,9 +235,9 @@ export default function GroupChat({ onClose }) {
         ) : (
           <>
             {showMembers && (
-              <div className="px-5 py-3 bg-white/2 border-b border-white/5 flex flex-wrap gap-2 animate-in">
+              <div className="px-5 py-3 bg-black/2 dark:bg-white/2 border-b border-black/5 dark:border-white/5 flex flex-wrap gap-2 animate-in">
                 {activeRoom.members?.map((m) => (
-                  <span key={m.id} className="text-[11px] font-bold bg-white/5 border border-white/5 rounded-lg px-2.5 py-1 text-slate-400">
+                  <span key={m.id} className="text-[11px] font-bold bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-lg px-2.5 py-1 text-slate-400">
                     @{m.name}
                   </span>
                 ))}
@@ -256,7 +256,7 @@ export default function GroupChat({ onClose }) {
                     )}
                     <div className={`max-w-[80%] ${isMe ? "items-end" : "items-start"} flex flex-col`}>
                       {!isMe && <p className="text-[11px] font-bold text-slate-500 mb-1 ml-1">{msg.sender?.name}</p>}
-                      <div className={`msg-bubble rounded-2xl ${isMe ? "bg-indigo-500 text-white rounded-tr-none" : "bg-white/5 text-slate-200 border border-white/5 rounded-tl-none"}`}>
+                      <div className={`msg-bubble rounded-2xl ${isMe ? "bg-indigo-500 text-stone-900 dark:text-white rounded-tr-none" : "bg-black/5 dark:bg-white/5 text-slate-200 border border-black/5 dark:border-white/5 rounded-tl-none"}`}>
                         {msg.message}
                       </div>
                       <p className="text-[10px] font-bold text-slate-600 mt-1 mx-1 uppercase">{fmt(msg.createdAt)}</p>
@@ -267,13 +267,13 @@ export default function GroupChat({ onClose }) {
               <div ref={bottomRef} />
             </div>
 
-            <div className="p-4 border-t border-white/5 bg-slate-900/20">
-              <div className="flex gap-2 bg-white/3 border border-white/5 rounded-2xl p-1.5 focus-within:border-indigo-500/50 transition-all">
+            <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-900/20">
+              <div className="flex gap-2 bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 rounded-2xl p-1.5 focus-within:border-indigo-500/50 transition-all">
                 <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
-                  className="flex-1 bg-transparent text-sm text-white px-3 py-2 outline-none" />
+                  className="flex-1 bg-transparent text-sm text-stone-900 dark:text-white px-3 py-2 outline-none" />
                 <button onClick={handleSend} disabled={!input.trim()}
-                  className="w-10 h-10 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-20 text-white flex items-center justify-center transition-all">
+                  className="w-10 h-10 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-20 text-stone-900 dark:text-white flex items-center justify-center transition-all">
                   <MdSend size={18} />
                 </button>
               </div>
@@ -285,18 +285,18 @@ export default function GroupChat({ onClose }) {
       {/* Create Room Modal */}
       {showCreate && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
-          <div className="bg-slate-900 border border-white/10 rounded-3xl shadow-2xl w-full max-w-xs p-6 animate-in">
+          <div className="bg-slate-900 border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl w-full max-w-xs p-6 animate-in">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-white tracking-tight">Create Community</h3>
-              <button onClick={() => setShowCreate(false)} className="text-slate-500 hover:text-white transition-colors">
+              <h3 className="font-bold text-stone-900 dark:text-white tracking-tight">Create Community</h3>
+              <button onClick={() => setShowCreate(false)} className="text-slate-500 hover:text-stone-900 dark:text-white transition-colors">
                 <MdClose size={20} />
               </button>
             </div>
             <div className="space-y-4">
               <input type="text" placeholder="Room Name" value={newRoom.name} onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-indigo-500" autoFocus />
+                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-stone-900 dark:text-white outline-none focus:border-indigo-500" autoFocus />
               <button onClick={handleCreateRoom}
-                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                className="w-full bg-indigo-500 hover:bg-indigo-600 text-stone-900 dark:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20">
                 Lauch Room
               </button>
             </div>

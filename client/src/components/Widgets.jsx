@@ -42,7 +42,7 @@ function FinanceWidget({ widget, onUpdate }) {
     <div className="space-y-3">
       <div className="flex gap-2">
         {[{l:"In",v:income,c:"#22c55e"},{l:"Out",v:expense,c:"#ef4444"},{l:"Net",v:balance,c:balance>=0?"#6366f1":"#f59e0b"}].map(x=>(
-          <div key={x.l} className="flex-1 bg-white/3 rounded-lg p-2 border border-white/5 text-center">
+          <div key={x.l} className="flex-1 bg-black/3 dark:bg-white/3 rounded-lg p-2 border border-black/5 dark:border-white/5 text-center">
             <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{x.l}</div>
             <div className="font-bold text-[11px]" style={{color:x.c}}>${x.v.toLocaleString()}</div>
           </div>
@@ -50,7 +50,7 @@ function FinanceWidget({ widget, onUpdate }) {
       </div>
       <div className="max-h-[120px] overflow-y-auto space-y-1 pr-1 custom-scrollbar">
         {entries.slice(-5).reverse().map(e=>(
-          <div key={e.id} className={`flex items-center justify-between p-2 rounded-lg border border-white/5 ${e.type==="income"?"bg-green-500/5":"bg-red-500/5"}`}>
+          <div key={e.id} className={`flex items-center justify-between p-2 rounded-lg border border-black/5 dark:border-white/5 ${e.type==="income"?"bg-green-500/5":"bg-red-500/5"}`}>
             <span className="text-[11px] text-slate-300 truncate flex-1">{e.label}</span>
             <span className={`text-[11px] font-bold ${e.type==="income"?"text-green-400":"text-red-400"}`}>
               {e.type==="income"?"+":"-"}${Number(e.amount).toLocaleString()}
@@ -59,21 +59,21 @@ function FinanceWidget({ widget, onUpdate }) {
         ))}
       </div>
       {show ? (
-        <div className="space-y-2 p-2 bg-white/2 rounded-xl border border-white/5">
-          <input value={form.label} onChange={e=>setForm(f=>({...f,label:e.target.value}))} placeholder="Entry name..." className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500"/>
+        <div className="space-y-2 p-2 bg-black/2 dark:bg-white/2 rounded-xl border border-black/5 dark:border-white/5">
+          <input value={form.label} onChange={e=>setForm(f=>({...f,label:e.target.value}))} placeholder="Entry name..." className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none focus:border-indigo-500"/>
           <div className="flex gap-2">
-            <input type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="Amount" className="flex-1 bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500"/>
-            <select value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} className="bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
+            <input type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="Amount" className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none focus:border-indigo-500"/>
+            <select value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none">
               <option value="income">+ In</option><option value="expense">- Out</option>
             </select>
           </div>
           <div className="flex gap-2">
-            <button onClick={()=>setShow(false)} className="flex-1 p-2 rounded-lg text-[10px] font-bold text-slate-500 hover:text-white transition-colors">Cancel</button>
-            <button onClick={addEntry} className="flex-1 p-2 rounded-lg bg-indigo-500 text-white text-[10px] font-bold shadow-lg shadow-indigo-500/20">Add</button>
+            <button onClick={()=>setShow(false)} className="flex-1 p-2 rounded-lg text-[10px] font-bold text-slate-500 hover:text-stone-900 dark:text-white transition-colors">Cancel</button>
+            <button onClick={addEntry} className="flex-1 p-2 rounded-lg bg-indigo-500 text-stone-900 dark:text-white text-[10px] font-bold shadow-lg shadow-indigo-500/20">Add</button>
           </div>
         </div>
       ) : (
-        <button onClick={()=>setShow(true)} className="w-full p-2 rounded-xl border-2 border-dashed border-white/10 text-slate-500 hover:text-indigo-400 hover:border-indigo-500/30 text-[11px] font-bold transition-all">+ Add Entry</button>
+        <button onClick={()=>setShow(true)} className="w-full p-2 rounded-xl border-2 border-dashed border-black/10 dark:border-white/10 text-slate-500 hover:text-indigo-400 hover:border-indigo-500/30 text-[11px] font-bold transition-all">+ Add Entry</button>
       )}
     </div>
   );
@@ -107,20 +107,20 @@ function TimerWidget({ widget, onUpdate }) {
 
   return (
     <div className="text-center">
-      <div className="flex bg-white/5 rounded-xl p-1 mb-4 gap-1">
+      <div className="flex bg-black/5 dark:bg-white/5 rounded-xl p-1 mb-4 gap-1">
         {["stopwatch","countdown"].map(m=>(
           <button key={m} onClick={()=>{pause();setMode(m);setSecs(m==="countdown"?cdTotal.current:0);}}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${mode===m?"bg-white/10 text-white shadow-lg":"text-slate-500"}`}>{m}</button>
+            className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${mode===m?"bg-black/10 dark:bg-white/10 text-stone-900 dark:text-white shadow-lg":"text-slate-500"}`}>{m}</button>
         ))}
       </div>
-      <div className="font-mono text-3xl font-black text-white tracking-widest mb-4 tabular-nums">
+      <div className="font-mono text-3xl font-black text-stone-900 dark:text-white tracking-widest mb-4 tabular-nums">
         {fmt(secs)}
       </div>
       <div className="flex gap-2 justify-center">
         {!running
-          ? <button onClick={start} className="px-6 py-2 rounded-xl bg-indigo-500 text-white text-[11px] font-black shadow-lg shadow-indigo-500/30">START</button>
-          : <button onClick={pause} className="px-6 py-2 rounded-xl bg-red-500 text-white text-[11px] font-black shadow-lg shadow-red-500/30">STOP</button>}
-        <button onClick={reset} className="p-2 rounded-xl bg-white/5 text-slate-400 hover:text-white border border-white/5">↺</button>
+          ? <button onClick={start} className="px-6 py-2 rounded-xl bg-indigo-500 text-stone-900 dark:text-white text-[11px] font-black shadow-lg shadow-indigo-500/30">START</button>
+          : <button onClick={pause} className="px-6 py-2 rounded-xl bg-red-500 text-stone-900 dark:text-white text-[11px] font-black shadow-lg shadow-red-500/30">STOP</button>}
+        <button onClick={reset} className="p-2 rounded-xl bg-black/5 dark:bg-white/5 text-slate-400 hover:text-stone-900 dark:text-white border border-black/5 dark:border-white/5">↺</button>
       </div>
     </div>
   );
@@ -139,8 +139,8 @@ function HabitWidget({ widget, onUpdate }) {
   return (
     <div className="space-y-2">
       {habits.map(h=>(
-        <div key={h.id} className="flex items-center gap-3 p-2 rounded-xl bg-white/3 border border-white/5 group">
-          <button onClick={()=>toggle(h.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${h.lastDone===today?"bg-indigo-500 border-indigo-500":"border-white/10 hover:border-indigo-500/50"}`}>
+        <div key={h.id} className="flex items-center gap-3 p-2 rounded-xl bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 group">
+          <button onClick={()=>toggle(h.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${h.lastDone===today?"bg-indigo-500 border-indigo-500":"border-black/10 dark:border-white/10 hover:border-indigo-500/50"}`}>
             {h.lastDone===today && <MdCheck size={12} color="white" />}
           </button>
           <span className={`flex-1 text-[12px] font-medium transition-all ${h.lastDone===today?"text-slate-500 line-through":"text-slate-200"}`}>{h.name}</span>
@@ -150,9 +150,9 @@ function HabitWidget({ widget, onUpdate }) {
           </button>
         </div>
       ))}
-      <div className="flex gap-2 mt-4 bg-white/3 p-1.5 rounded-xl border border-white/5">
-        <input value={newH} onChange={e=>setNewH(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="Add habit..." className="flex-1 bg-transparent text-[12px] text-white px-2 outline-none"/>
-        <button onClick={add} className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20"><MdAdd size={20}/></button>
+      <div className="flex gap-2 mt-4 bg-black/3 dark:bg-white/3 p-1.5 rounded-xl border border-black/5 dark:border-white/5">
+        <input value={newH} onChange={e=>setNewH(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="Add habit..." className="flex-1 bg-transparent text-[12px] text-stone-900 dark:text-white px-2 outline-none"/>
+        <button onClick={add} className="w-8 h-8 rounded-lg bg-indigo-500 text-stone-900 dark:text-white flex items-center justify-center shadow-lg shadow-indigo-500/20"><MdAdd size={20}/></button>
       </div>
     </div>
   );
@@ -164,8 +164,8 @@ function QuickNoteWidget({ widget, onUpdate }) {
   return (
     <div className="space-y-3">
       <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="Type something..." 
-        className="w-full min-h-[100px] bg-white/3 border border-white/5 rounded-xl p-3 text-[13px] text-slate-200 outline-none focus:border-indigo-500/50 resize-none custom-scrollbar"/>
-      <button onClick={()=>onUpdate({...widget,data:{text}})} className="w-full py-2.5 rounded-xl bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+        className="w-full min-h-[100px] bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 rounded-xl p-3 text-[13px] text-slate-200 outline-none focus:border-indigo-500/50 resize-none custom-scrollbar"/>
+      <button onClick={()=>onUpdate({...widget,data:{text}})} className="w-full py-2.5 rounded-xl bg-indigo-500 text-stone-900 dark:text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
         <MdSave size={16} /> Save Note
       </button>
     </div>
@@ -183,8 +183,8 @@ function CustomWidget({ widget, onUpdate }) {
     <div className="space-y-2">
       <div className="space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
         {items.map(item=>(
-          <div key={item.id} className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/3 group transition-all">
-            <button onClick={()=>toggle(item.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${item.done?`bg-indigo-500 border-indigo-500`:"border-white/10"}`}>
+          <div key={item.id} className="flex items-center gap-3 p-2 rounded-xl hover:bg-black/3 dark:bg-white/3 group transition-all">
+            <button onClick={()=>toggle(item.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${item.done?`bg-indigo-500 border-indigo-500`:"border-black/10 dark:border-white/10"}`}>
               {item.done && <MdCheck size={12} color="white" />}
             </button>
             <span className={`flex-1 text-[12px] transition-all ${item.done?"text-slate-500 line-through":"text-slate-300"}`}>{item.text}</span>
@@ -194,9 +194,9 @@ function CustomWidget({ widget, onUpdate }) {
           </div>
         ))}
       </div>
-      <div className="flex gap-2 mt-2 bg-white/3 p-1.5 rounded-xl border border-white/5">
-        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="Add item..." className="flex-1 bg-transparent text-[12px] text-white px-2 outline-none"/>
-        <button onClick={add} className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20"><MdAdd size={20}/></button>
+      <div className="flex gap-2 mt-2 bg-black/3 dark:bg-white/3 p-1.5 rounded-xl border border-black/5 dark:border-white/5">
+        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="Add item..." className="flex-1 bg-transparent text-[12px] text-stone-900 dark:text-white px-2 outline-none"/>
+        <button onClick={add} className="w-8 h-8 rounded-lg bg-indigo-500 text-stone-900 dark:text-white flex items-center justify-center shadow-lg shadow-indigo-500/20"><MdAdd size={20}/></button>
       </div>
     </div>
   );
@@ -224,20 +224,20 @@ export function AddWidgetModal({ onAdd, onClose }) {
 
   const modal = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#020617]/80 backdrop-blur-md p-6 animate-in" onClick={onClose}>
-      <div className="bg-[#0f172a] rounded-[32px] border border-white/10 shadow-2xl w-full max-w-sm p-8" onClick={e=>e.stopPropagation()}>
+      <div className="bg-[#0f172a] rounded-[32px] border border-black/10 dark:border-white/10 shadow-2xl w-full max-w-sm p-8" onClick={e=>e.stopPropagation()}>
         {step === 1 ? (
           <>
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-bold text-white tracking-tight">Add Widget</h3>
-              <button onClick={onClose} className="p-2 rounded-xl text-slate-500 hover:text-white transition-all"><MdClose size={24} /></button>
+              <h3 className="text-xl font-bold text-stone-900 dark:text-white tracking-tight">Add Widget</h3>
+              <button onClick={onClose} className="p-2 rounded-xl text-slate-500 hover:text-stone-900 dark:text-white transition-all"><MdClose size={24} /></button>
             </div>
             <div className="grid grid-cols-1 gap-3">
               {WIDGET_TYPES.map(type => (
                 <button key={type.id} onClick={() => pickType(type.id)}
-                  className="flex items-center gap-4 p-4 rounded-[20px] bg-white/3 border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all text-left">
+                  className="flex items-center gap-4 p-4 rounded-[20px] bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all text-left">
                   <span className="text-3xl">{type.icon}</span>
                   <div>
-                    <p className="text-[15px] font-bold text-white mb-0.5">{type.label}</p>
+                    <p className="text-[15px] font-bold text-stone-900 dark:text-white mb-0.5">{type.label}</p>
                     <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">{type.desc}</p>
                   </div>
                 </button>
@@ -247,26 +247,26 @@ export function AddWidgetModal({ onAdd, onClose }) {
         ) : (
           <div className="space-y-6">
             <div className="flex items-center gap-4 mb-2">
-              <button onClick={()=>setStep(1)} className="p-2 rounded-xl bg-white/5 text-slate-400 hover:text-white transition-all"><MdChevronRight size={24} style={{transform:"rotate(180deg)"}}/></button>
-              <h3 className="text-xl font-bold text-white tracking-tight">Customize</h3>
+              <button onClick={()=>setStep(1)} className="p-2 rounded-xl bg-black/5 dark:bg-white/5 text-slate-400 hover:text-stone-900 dark:text-white transition-all"><MdChevronRight size={24} style={{transform:"rotate(180deg)"}}/></button>
+              <h3 className="text-xl font-bold text-stone-900 dark:text-white tracking-tight">Customize</h3>
             </div>
             <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-4 flex items-center gap-4">
               <span className="text-3xl">{icon}</span>
-              <span className="text-lg font-bold text-white">{name || "Unnamed"}</span>
+              <span className="text-lg font-bold text-stone-900 dark:text-white">{name || "Unnamed"}</span>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Widget Name</label>
-              <input value={name} onChange={e=>setName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500" placeholder="My Widget"/>
+              <input value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-stone-900 dark:text-white outline-none focus:border-indigo-500" placeholder="My Widget"/>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Select Icon</label>
               <div className="grid grid-cols-8 gap-2">
                 {CUSTOM_ICONS.map(em => (
-                  <button key={em} onClick={()=>setIcon(em)} className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg transition-all ${icon===em?"bg-indigo-500 text-white":"bg-white/5 text-slate-500 hover:bg-white/10"}`}>{em}</button>
+                  <button key={em} onClick={()=>setIcon(em)} className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg transition-all ${icon===em?"bg-indigo-500 text-stone-900 dark:text-white":"bg-black/5 dark:bg-white/5 text-slate-500 hover:bg-black/10 dark:bg-white/10"}`}>{em}</button>
                 ))}
               </div>
             </div>
-            <button onClick={confirm} className="w-full py-4 rounded-[20px] bg-indigo-500 text-white font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:bg-indigo-600 transition-all">Launch Widget</button>
+            <button onClick={confirm} className="w-full py-4 rounded-[20px] bg-indigo-500 text-stone-900 dark:text-white font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:bg-indigo-600 transition-all">Launch Widget</button>
           </div>
         )}
       </div>
@@ -302,7 +302,7 @@ export function WidgetPanel() {
   return (
     <div className="space-y-2">
       {widgets.map(w=>(
-        <div key={w.id} className="mx-2 rounded-2xl overflow-hidden border border-white/5 bg-slate-900/40 backdrop-blur-md">
+        <div key={w.id} className="mx-2 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-slate-900/40 backdrop-blur-md">
           <div className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none group" onClick={()=>toggle(w.id)}>
             <span className="text-lg">{w.icon}</span>
             <span className="flex-1 text-[12px] font-bold text-slate-200 truncate">{w.name}</span>
@@ -312,7 +312,7 @@ export function WidgetPanel() {
             <div className={`text-slate-600 transition-transform ${w.open?"rotate-180":""}`}><MdExpandMore size={18}/></div>
           </div>
           {w.open && (
-            <div className="px-4 pb-4 border-t border-white/5 pt-4 animate-in">
+            <div className="px-4 pb-4 border-t border-black/5 dark:border-white/5 pt-4 animate-in">
               {renderBody(w)}
             </div>
           )}

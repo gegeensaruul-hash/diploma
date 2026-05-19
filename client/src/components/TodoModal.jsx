@@ -39,14 +39,14 @@ export default function TodoModal({ open, onClose, todo }) {
 
   return (
     <div className="fixed inset-0 bg-[#020617]/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in">
-      <div className="bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-md border border-white/5 overflow-hidden shadow-indigo-500/10">
+      <div className="bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-md border border-black/5 dark:border-white/5 overflow-hidden shadow-indigo-500/10">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/2">
+        <div className="flex items-center justify-between p-6 border-b border-black/5 dark:border-white/5 bg-black/2 dark:bg-white/2">
           <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">{todo ? "Edit Task" : "New Task"}</h2>
+            <h2 className="text-xl font-bold text-stone-900 dark:text-white tracking-tight">{todo ? "Edit Task" : "New Task"}</h2>
             <p className="text-xs text-slate-500 font-medium mt-0.5 uppercase tracking-widest">Task Details</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white hover:bg-white/5 rounded-xl p-2 transition-all">
+          <button onClick={onClose} className="text-slate-400 hover:text-stone-900 dark:text-white hover:bg-black/5 dark:bg-white/5 rounded-xl p-2 transition-all">
             <MdClose size={24} />
           </button>
         </div>
@@ -127,14 +127,14 @@ export default function TodoModal({ open, onClose, todo }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3.5 border border-white/8 text-slate-400 rounded-xl text-sm font-bold hover:bg-white/5 transition-all"
+              className="flex-1 py-3.5 border border-black/8 dark:border-white/8 text-slate-400 rounded-xl text-sm font-bold hover:bg-black/5 dark:bg-white/5 transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={creating || updating}
-              className="flex-1 py-3.5 bg-indigo-500 text-white rounded-xl text-sm font-bold hover:bg-indigo-600 disabled:opacity-50 transition-all shadow-lg shadow-indigo-500/20"
+              className="flex-1 py-3.5 bg-indigo-500 text-stone-900 dark:text-white rounded-xl text-sm font-bold hover:bg-indigo-600 disabled:opacity-50 transition-all shadow-lg shadow-indigo-500/20"
             >
               {creating || updating ? "Saving..." : todo ? "Update Task" : "Create Task"}
             </button>
