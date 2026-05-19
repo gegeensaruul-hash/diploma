@@ -4,18 +4,18 @@
 
 /* ── NEW DARK SaaS THEME ── */
 :root {
-  --bg-app:    #020617;
-  --bg-card:   #0f172a;
-  --bg-card2:  #1e293b;
-  --bg-hover:  #1e293b;
-  --text:      #f8fafc;
-  --text2:     #94a3b8;
-  --text3:     #64748b;
-  --border:    rgba(255, 255, 255, 0.08);
-  --input-bg:  rgba(255, 255, 255, 0.03);
+  --bg-app:    #1c1917;
+  --bg-card:   #292524;
+  --bg-card2:  #44403c;
+  --bg-hover:  #44403c;
+  --text:      #fefce8;
+  --text2:     #a8a29e;
+  --text3:     #78716c;
+  --border:    rgba(254, 252, 232, 0.08);
+  --input-bg:  rgba(254, 252, 232, 0.03);
   --shadow:    rgba(0, 0, 0, 0.5);
-  --accent:    #6366f1;
-  --accent-glow: rgba(99, 102, 241, 0.15);
+  --accent:    #84cc16;
+  --accent-glow: rgba(132, 204, 22, 0.15);
 }
 
 /* Light mode support (minimal) */
@@ -56,7 +56,7 @@ body {
 }
 
 .glass {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(41, 37, 36, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
