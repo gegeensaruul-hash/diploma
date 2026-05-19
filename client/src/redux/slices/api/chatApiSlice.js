@@ -26,6 +26,10 @@ export const chatApiSlice = apiSlice.injectEndpoints({
       query: (roomId) => `/chat/rooms/${roomId}/messages`,
       providesTags: (r, e, roomId) => [{ type: "ChatMessage", id: roomId }],
     }),
+    addMember: builder.mutation({
+      query: ({ id, email }) => ({ url: `/chat/rooms/${id}/add`, method: "POST", body: { email } }),
+      invalidatesTags: ["ChatRoom"],
+    }),
   }),
 });
 
@@ -36,4 +40,5 @@ export const {
   useLeaveRoomMutation,
   useDeleteRoomMutation,
   useGetMessagesQuery,
+  useAddMemberMutation,
 } = chatApiSlice;

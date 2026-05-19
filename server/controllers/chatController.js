@@ -92,3 +92,21 @@ export const getMessages = asyncHandler(async (req, res) => {
 
   res.json({ status: true, messages: rows, total: count, page });
 });
+
+// POST /api/chat/rooms/:id/add — хэрэглэгч нэмэх
+export const addMember = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ status: false, message: "Имэйл оруулна уу" });
+
+  const room = await ChatRoom.findByPk(req.params.id);
+  if (!room) return res.status(404).json({ status: false, message: "Room олдсонгүй" });
+
+  const targetUser = await User.findOne({ where: { email: email.toLowerCase() } });
+  if (!targetUser) return res.status(404).json({ status: false, message: "Хэрэглэгч олдсонгүй" });
+
+  const exists = await RoomMember.findOne({ where: { roomId: room.id, userId: targetUser.id } });
+  if (exists) return res.status(400).json({ status: false, message: "Аль хэдийн member байна" });
+
+  await RoomMember.create({ roomId: room.id, userId: targetUser.id });
+  res.json({ status: true, message: `${targetUser.name} нэмэгдлээ` });
+});

@@ -8,8 +8,9 @@ import {
   useLeaveRoomMutation,
   useDeleteRoomMutation,
   useGetMessagesQuery,
+  useAddMemberMutation,
 } from "../redux/slices/api/chatApiSlice";
-import { MdAdd, MdSend, MdClose, MdExitToApp, MdDelete, MdPeople, MdArrowBack, MdChat, MdExplore } from "react-icons/md";
+import { MdAdd, MdSend, MdClose, MdExitToApp, MdDelete, MdPeople, MdArrowBack, MdChat, MdExplore, MdPersonAdd } from "react-icons/md";
 import { toast } from "sonner";
 import { useSettings } from "../context/SettingsContext";
 
@@ -22,8 +23,10 @@ export default function GroupChat({ onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [showAddMember, setShowAddMember] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [newRoom, setNewRoom] = useState({ name: "", description: "" });
+  const [inviteEmail, setInviteEmail] = useState("");
   const socketRef = useRef(null);
   const bottomRef = useRef(null);
 
@@ -33,6 +36,7 @@ export default function GroupChat({ onClose }) {
   const [joinRoom] = useJoinRoomMutation();
   const [leaveRoom] = useLeaveRoomMutation();
   const [deleteRoom] = useDeleteRoomMutation();
+  const [addMember] = useAddMemberMutation();
 
   const rooms = roomsData?.rooms || [];
 
@@ -51,6 +55,7 @@ export default function GroupChat({ onClose }) {
     socketRef.current.emit("join_room", activeRoom.id);
     setMessages([]);
     setShowMembers(false);
+    setShowAddMember(false);
   }, [activeRoom?.id]);
 
   useEffect(() => {
@@ -85,6 +90,17 @@ export default function GroupChat({ onClose }) {
   const handleJoin = async (id) => {
     try { await joinRoom(id).unwrap(); refetchRooms(); toast.success("Room-д нэгдлээ"); }
     catch (e) { toast.error(e?.data?.message || "Алдаа"); }
+  };
+
+  const handleAddMember = async () => {
+    if (!inviteEmail.trim()) return toast.error("Email оруулна уу");
+    try {
+      await addMember({ id: activeRoom.id, email: inviteEmail }).unwrap();
+      setInviteEmail("");
+      setShowAddMember(false);
+      toast.success("Хэрэглэгч нэмэгдлээ!");
+      refetchRooms();
+    } catch (e) { toast.error(e?.data?.message || "Алдаа гарлаа"); }
   };
 
   const handleLeave = async (id) => {
@@ -133,9 +149,14 @@ export default function GroupChat({ onClose }) {
         </div>
         <div className="flex items-center gap-2">
           {activeRoom && (
-            <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-white"}`}>
-              <MdPeople size={20} />
-            </button>
+            <>
+              <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-white"}`} title="Invite Person">
+                <MdPersonAdd size={20} />
+              </button>
+              <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-white"}`}>
+                <MdPeople size={20} />
+              </button>
+            </>
           )}
           {!activeRoom && (
             <button onClick={() => setShowCreate(true)} className="p-2 rounded-xl text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">
@@ -150,6 +171,25 @@ export default function GroupChat({ onClose }) {
 
       {/* Content Area */}
       <div className="flex-1 overflow-hidden relative flex flex-col">
+        {activeRoom && showAddMember && (
+          <div className="px-5 py-3 bg-indigo-500/5 border-b border-white/5 flex gap-2 animate-in">
+            <input 
+              type="email" 
+              placeholder="Friend's email..." 
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddMember()}
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-indigo-500"
+            />
+            <button 
+              onClick={handleAddMember}
+              className="px-3 py-1.5 bg-indigo-500 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-indigo-500/20"
+            >
+              ADD
+            </button>
+          </div>
+        )}
+
         {!activeRoom ? (
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {rooms.length === 0 && (
