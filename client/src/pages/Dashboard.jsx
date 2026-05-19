@@ -110,9 +110,25 @@ export default function Dashboard() {
   const completePct = stats?.total ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20,
+    <div className="dash-wrap" style={{ display: "flex", flexDirection: "column", gap: 20,
       background: "linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%)",
       borderRadius: 18, padding: 18, minHeight: "calc(100vh - 110px)" }}>
+      <style>{`
+        .dash-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+        .dash-panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+        .dash-table-head,.dash-table-row{display:grid;grid-template-columns:minmax(180px,1fr) 90px 110px 90px}
+        @media (max-width: 760px){
+          .dash-wrap{padding:12px!important;border-radius:14px!important;gap:14px!important}
+          .dash-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+          .dash-panel-grid{grid-template-columns:1fr!important;gap:10px!important}
+          .dash-table-scroll{overflow-x:auto!important}
+          .dash-table-head,.dash-table-row{grid-template-columns:180px 86px 104px 78px!important;min-width:448px}
+        }
+        @media (max-width: 460px){
+          .dash-stat-grid{grid-template-columns:1fr!important}
+          .dash-wrap h2{font-size:20px!important}
+        }
+      `}</style>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
@@ -126,7 +142,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))", gap: 14 }}>
+      <div className="dash-stat-grid">
         <StatCard label={lang === "mn" ? "Нийт" : "Total"} count={stats?.total} icon={<MdOutlineChecklist size={20} />} accent={theme.accent} to="/todos" />
         <StatCard label={lang === "mn" ? "Хийх" : "To Do"} count={stats?.todo} icon={<MdOutlineRadioButtonUnchecked size={20} />} accent="#94a3b8" to="/todos/todo" />
         <StatCard label={lang === "mn" ? "Хийж байна" : "In Progress"} count={stats?.in_progress} icon={<MdOutlineTimer size={20} />} accent="#3b82f6" to="/todos/in_progress" />
@@ -134,7 +150,7 @@ export default function Dashboard() {
       </div>
 
       {/* Progress + priority */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
+      <div className="dash-panel-grid">
         {/* Progress */}
         <div style={{ ...PANEL, padding: "18px 20px" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 12 }}>
@@ -192,8 +208,9 @@ export default function Dashboard() {
           </Link>
         </div>
 
+        <div className="dash-table-scroll">
         {/* Table header */}
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(180px,1fr) 90px 110px 90px", padding: "10px 20px", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
+        <div className="dash-table-head" style={{ padding: "10px 20px", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
           {[
             { f: "title",     l: lang === "mn" ? "Гарчиг"    : "Title" },
             { f: "priority",  l: lang === "mn" ? "Чухал"     : "Priority" },
@@ -215,8 +232,8 @@ export default function Dashboard() {
           <div>
             {sorted.map((todo, i) => (
               <div key={todo.id}
+                className="dash-table-row"
                 style={{
-                  display: "grid", gridTemplateColumns: "minmax(180px,1fr) 90px 110px 90px",
                   padding: "12px 20px", borderBottom: i < sorted.length - 1 ? "1px solid #f1f5f9" : "none",
                   alignItems: "center", transition: "background .1s",
                 }}
@@ -253,6 +270,7 @@ export default function Dashboard() {
             ))}
           </div>
         )}
+        </div>
       </div>
 
     </div>

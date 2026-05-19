@@ -1263,7 +1263,7 @@ export default function Calendar() {
   const sc=(c)=>SCOLORS[c]||SCOLORS[0];
 
   return (
-    <div style={{fontFamily:"DM Sans",overflowY:"auto",background:"linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%)",borderRadius:18,padding:18}}>
+    <div className="kr-calendar-page" style={{fontFamily:"DM Sans",overflowY:"auto",background:"linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%)",borderRadius:18,padding:18}}>
       <style>{`
         @.kr-cal-wrap{background:#f8f6f2;border:1px solid #e0dbd4;border-radius:0;overflow:hidden;width:100%;}
         .kr-top-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 0;border-bottom:0.5px solid #e5e0d8;background:#fff;}
@@ -1362,6 +1362,19 @@ export default function Calendar() {
           .kr-sidebar{display:none!important;}
           .kr-top-nav{align-items:flex-start!important;gap:10px!important;flex-wrap:wrap!important;}
           .kr-month-tab{padding:9px 5px!important;}
+          .kr-calendar-page{padding:10px!important;border-radius:14px!important;}
+          .kr-cal-wrap{overflow-x:auto!important;border-radius:14px!important;}
+          .kr-main-body{min-width:720px!important;}
+          .kr-top-nav > div{flex-wrap:wrap!important;}
+          .kr-calendar-grid{min-width:640px!important;}
+          .kr-cell{min-height:96px!important;padding:6px!important;}
+          .kr-event{font-size:11px!important;padding:3px 6px!important;}
+        }
+        @media (max-width: 520px){
+          .kr-main-body{min-width:660px!important;}
+          .kr-calendar-grid{min-width:590px!important;}
+          .kr-day-hdr{font-size:10px!important;}
+          .kr-day-num{width:22px!important;height:22px!important;font-size:11px!important;}
         }
       `}</style>
 
@@ -1411,7 +1424,7 @@ export default function Calendar() {
 
 
         {/* Main Body */}
-        <div style={{display:"flex"}}>
+        <div className="kr-main-body" style={{display:"flex"}}>
           {activeTab === "WEEK" ? (
             <div style={{flex:1}}>
               <WeeklyPlanner year={year} month={month} lang={lang} />
@@ -1507,7 +1520,7 @@ export default function Calendar() {
           </div>
 
           {/* Calendar Grid + Month Tabs */}
-          <div style={{display:"flex",flex:1,minHeight:0}}>
+          <div className="kr-calendar-grid" style={{display:"flex",flex:1,minHeight:0}}>
             <div style={{flex:1,display:"flex",flexDirection:"column"}}>
               {/* Day Headers */}
               <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",borderBottom:"0.5px solid #ece8e2",background:"#fff"}}>
