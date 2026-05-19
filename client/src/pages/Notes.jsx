@@ -27,7 +27,7 @@ const COVERS = [
   { id:"violet",   bg:"#4c1d95", bg2:"#5b21b6", spine:"#a78bfa", text:"#ffffff", deco:["🔮","👾","🌌","✨"] },
 ];
 
-const NOTE_STICKERS = ["🔥","⭐","✨","💡","✅","❌","📍","❤️","🚀","🎉","💎","🌈","🍀","🌸"];
+const NOTE_STICKERS = ["🔥","⭐","✨","💡","✅","❌","📍","❤️","🚀","🎉","💎","🌈","🍀","🌸","🎨","🍕","🍟","🍦","🍔","🍩"];
 
 const PAGE_COLORS = ["#ffffff", "#f8fafc", "#fef2f2", "#f0fdf4", "#eff6ff", "#fff7ed"];
 const FONTS = [
@@ -129,7 +129,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
 
   const addSticker = (emoji) => {
     const newId = Date.now();
-    setItems([...items, { id: newId, type: "sticker", x: 150, y: 150, emoji, size: 64, rot: 0 }]);
+    setItems([...items, { id: newId, type: "sticker", x: 150, y: 150, emoji, size: 80, rot: 0 }]);
     setSelected(newId); setShowStickerPicker(false);
   };
 
@@ -138,7 +138,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
     const reader = new FileReader();
     reader.onload = ev => {
       const newId = Date.now();
-      setItems([...items, { id: newId, type: "image", x: 150, y: 150, w: 200, h: 150, src: ev.target.result, rot: 0 }]);
+      setItems([...items, { id: newId, type: "image", x: 150, y: 150, w: 240, h: 180, src: ev.target.result, rot: 0 }]);
       setSelected(newId);
     };
     reader.readAsDataURL(file);
@@ -161,7 +161,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xl" onMouseMove={onMouseMove} onMouseUp={() => dragRef.current = null}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xl" onMouseMove={onMouseMove} onMouseUp={() => dragRef.current = null} onClick={() => { setShowStickerPicker(false); setSelected(null); }}>
       <style>{`
         .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
@@ -173,7 +173,6 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         }
         .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #6366f1; }
         
-        /* Notebook Paper Styles */
         .paper-background {
           background-color: #fefcf0;
           background-image: 
@@ -183,42 +182,14 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           position: relative;
         }
         .paper-background::before {
-          content: '';
-          position: absolute;
-          top: 0; bottom: 0; left: 40px;
-          width: 1px;
-          background: rgba(255, 0, 0, 0.2);
-          z-index: 1;
-        }
-        .notebook-holes {
-          position: absolute;
-          left: 10px;
-          top: 0; bottom: 0;
-          width: 20px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 24px;
-          padding-top: 40px;
-          z-index: 2;
-        }
-        .hole {
-          width: 12px; height: 12px;
-          background: #1e293b;
-          border-radius: 50%;
-          box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+          content: ''; position: absolute; top: 0; bottom: 0; left: 40px; width: 1px; background: rgba(255, 0, 0, 0.2); z-index: 1;
         }
       `}</style>
       
-      <div className="bg-slate-900 w-full max-w-6xl h-[92vh] rounded-[40px] overflow-hidden flex flex-col shadow-2xl border border-white/10 relative">
+      <div className="bg-slate-900 w-full max-w-6xl h-[92vh] rounded-[40px] overflow-hidden flex flex-col shadow-2xl border border-white/10 relative" onClick={e => e.stopPropagation()}>
         {/* Editor Header */}
-        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-50">
-          <input 
-            value={title} 
-            onChange={e => setTitle(e.target.value)} 
-            placeholder="Journal Title..." 
-            className="bg-transparent border-none text-2xl font-black text-white outline-none w-2/3 placeholder:text-white/20" 
-          />
+        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-[100]">
+          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Journal Title..." className="bg-transparent border-none text-2xl font-black text-white outline-none w-2/3 placeholder:text-white/20" />
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-white/50 hover:text-white transition-all"><MdClose size={24}/></button>
             <button onClick={handleSave} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-8 py-3 rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 flex items-center gap-2">
@@ -228,7 +199,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         </div>
 
         {/* Toolbar */}
-        <div className="px-6 py-3 border-b border-white/5 flex items-center gap-4 bg-slate-900/50 overflow-x-auto z-40">
+        <div className="px-6 py-3 border-b border-white/5 flex items-center gap-4 bg-slate-900/50 overflow-x-auto z-[90]">
           <div className="flex items-center bg-black/20 rounded-xl p-1">
             <button onClick={() => document.execCommand('bold')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatBold size={20}/></button>
             <button onClick={() => document.execCommand('italic')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatItalic size={20}/></button>
@@ -237,12 +208,12 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           
           <div className="w-px h-6 bg-white/10" />
           
-          <div className="relative group">
-            <button onClick={() => setShowStickerPicker(!showStickerPicker)} className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all flex items-center gap-2 font-bold text-sm">
+          <div className="relative">
+            <button onClick={(e) => { e.stopPropagation(); setShowStickerPicker(!showStickerPicker); }} className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 font-bold text-sm ${showStickerPicker ? 'bg-indigo-600 text-white' : 'bg-white/5 text-white/70 hover:text-white'}`}>
               <MdEmojiEmotions size={20}/> Stickers
             </button>
             {showStickerPicker && (
-              <div className="absolute top-full left-0 mt-3 p-4 bg-slate-800 border border-white/10 rounded-3xl shadow-2xl z-[100] grid grid-cols-4 gap-3 w-56 animate-in fade-in zoom-in duration-200">
+              <div className="absolute top-full left-0 mt-3 p-4 bg-slate-800 border border-white/10 rounded-3xl shadow-2xl z-[100] grid grid-cols-5 gap-3 w-64" onClick={e => e.stopPropagation()}>
                 {NOTE_STICKERS.map(s => (
                   <button key={s} onClick={() => addSticker(s)} className="text-3xl hover:scale-125 transition-transform active:scale-95">{s}</button>
                 ))}
@@ -254,23 +225,10 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
             <MdImage size={20}/> Add Photo
             <input type="file" hidden accept="image/*" onChange={addImage} />
           </label>
-
-          <div className="flex-1" />
-
-          <div className="flex items-center gap-2 bg-black/20 p-1 rounded-xl">
-            {COVERS.map((c, i) => (
-              <button 
-                key={c.id}
-                onClick={() => setCoverIdx(i)}
-                className={`w-6 h-6 rounded-full border-2 transition-all hover:scale-110 ${coverIdx === i ? 'border-white scale-125' : 'border-transparent opacity-50'}`}
-                style={{ background: c.bg }}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Notebook Body */}
-        <div className="flex-1 relative overflow-hidden bg-slate-950 flex" ref={boardRef}>
+        <div className="flex-1 relative overflow-hidden bg-slate-950 flex">
           {/* Side binding effect */}
           <div className="w-16 h-full bg-slate-900 border-r border-white/10 flex flex-col items-center gap-12 pt-12 shadow-2xl z-10">
             {Array.from({length: 15}).map((_, i) => (
@@ -279,7 +237,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           </div>
 
           {/* Paper Area */}
-          <div className="flex-1 relative paper-background overflow-hidden">
+          <div className="flex-1 relative paper-background overflow-hidden" ref={boardRef}>
             <div 
               ref={editorRef}
               contentEditable
@@ -304,13 +262,13 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
                   }}
                   style={{ position: "absolute", left: item.x, top: item.y, width: item.w || 'auto', height: item.h || 'auto', transform: rotate, zIndex: isSel ? 20 : 10 }}
                 >
-                  <button onClick={() => del(item.id)} className="action-btn absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center z-30 shadow-xl border-2 border-white"><MdClose size={16}/></button>
+                  <button onClick={() => del(item.id)} className="action-btn absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center z-30 shadow-xl border-2 border-white transition-all"><MdClose size={16}/></button>
                   <div className="action-btn">
                      <div className="rot-line" />
                      <div className="rot-handle handle" onMouseDown={(e) => {
                        e.stopPropagation(); e.preventDefault(); setSelected(item.id);
                        const rect = boardRef.current.getBoundingClientRect();
-                       const cx = item.x + (item.w || 64) / 2; const cy = item.y + (item.h || 64) / 2;
+                       const cx = item.x + (item.w || 80) / 2; const cy = item.y + (item.h || 80) / 2;
                        dragRef.current = { mode: "rotate", id: item.id, centerX: cx, centerY: cy, startAngle: item.rot || 0, startMouseAngle: Math.atan2(e.clientY - rect.top - cy, e.clientX - rect.left - cx) };
                      }}><MdRefresh size={14}/></div>
                   </div>
@@ -322,7 +280,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
                   )}
 
                   {item.type === 'sticker' ? (
-                    <div className="text-7xl drop-shadow-2xl select-none hover:scale-110 transition-transform">{item.emoji}</div>
+                    <div className="text-7xl drop-shadow-2xl select-none hover:scale-110 transition-transform active:scale-95">{item.emoji}</div>
                   ) : (
                     <div className={`rounded-2xl overflow-hidden shadow-2xl border-4 ${isSel ? 'border-indigo-500' : 'border-white'} transition-all`}>
                       <img src={item.src} className="w-full h-full object-cover select-none pointer-events-none" alt="" />
@@ -374,7 +332,6 @@ export default function Notes() {
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* Sidebar */}
       <div className="w-80 border-r border-white/5 flex flex-col bg-slate-900/30 backdrop-blur-3xl">
         <div className="p-8">
           <div className="flex items-center justify-between mb-10">
@@ -428,7 +385,6 @@ export default function Notes() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden bg-slate-950">
         <header className="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-10">
           <div className="flex flex-col">
@@ -456,38 +412,12 @@ export default function Notes() {
             {filtered.map((note, i) => (
               <NoteCard key={note.id} note={note} idx={i} onClick={() => setEditing(note)} onDelete={handleDelete} />
             ))}
-            
-            <button 
-              onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: activeSubj !== "all" ? activeSubj : null, floatItems: [] })}
-              className="h-64 border-4 border-dashed border-white/5 rounded-[32px] flex flex-col items-center justify-center text-slate-600 hover:text-indigo-400 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all group"
-            >
-              <div className="w-16 h-16 rounded-[24px] bg-white/5 group-hover:bg-indigo-600 transition-all mb-4 flex items-center justify-center">
-                <MdAdd size={32} className="group-hover:text-white transition-colors" />
-              </div>
-              <span className="font-black text-sm uppercase tracking-widest">Create New</span>
-            </button>
           </div>
-
-          {filtered.length === 0 && search && (
-            <div className="flex flex-col items-center justify-center py-32 text-slate-500">
-              <div className="w-24 h-24 rounded-[32px] bg-white/5 flex items-center justify-center mb-6">
-                <MdSearch size={48} className="opacity-20" />
-              </div>
-              <p className="text-xl font-black text-white mb-2">No results found</p>
-              <p className="text-sm font-medium">We couldn't find any entries matching "{search}"</p>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Editor Modal */}
       {editing && (
-        <NoteEditor 
-          note={editing} 
-          subjects={subjects} 
-          onSave={handleSave} 
-          onClose={() => setEditing(null)} 
-        />
+        <NoteEditor note={editing} subjects={subjects} onSave={handleSave} onClose={() => setEditing(null)} />
       )}
     </div>
   );
