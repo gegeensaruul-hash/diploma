@@ -223,7 +223,6 @@ export default function AIChat({ onClose }) {
           </div>
         )}
 
-        <div ref={bottomRef} />
       </div>
 
       {/* Input */}
