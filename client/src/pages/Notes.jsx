@@ -1019,6 +1019,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             {selectedFloatId === s.id && (
               <div
                 className="float-sticker-del"
+                onPointerDown={e => e.stopPropagation()}
                 onMouseDown={e => e.stopPropagation()}
                 style={{ position:"absolute",top:-34,left:"50%",transform:"translateX(-50%)",
                   display:"flex",alignItems:"center",gap:4,padding:"3px 5px",borderRadius:9,
@@ -1031,6 +1032,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                   { label:"↻", title:"Rotate right", action:()=>nudgeSelectedFloat(item=>({ rot:(item.rot||0)+10 })) },
                 ].map(btn => (
                   <button key={btn.title} title={btn.title}
+                    onPointerDown={e => e.stopPropagation()}
                     onClick={e => { e.stopPropagation(); btn.action(); }}
                     style={{ width:22,height:22,borderRadius:6,border:"none",background:"white",
                       color:"#334155",fontSize:13,fontWeight:800,cursor:"pointer",
@@ -1043,8 +1045,9 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             {/* delete */}
             <button
               className="float-sticker-del"
+              onPointerDown={e => e.stopPropagation()}
               onMouseDown={e => e.stopPropagation()}
-              onClick={e => { e.stopPropagation(); deleteFloatSticker(s.id); }}
+              onClick={e => { e.preventDefault(); e.stopPropagation(); deleteFloatSticker(s.id); }}
               style={{ position:"absolute",top:-9,right:-9,width:22,height:22,borderRadius:"50%",
                 background:"#ef4444",border:"2.5px solid white",color:"white",fontSize:13,
                 cursor:"pointer",display:"none",alignItems:"center",justifyContent:"center",
