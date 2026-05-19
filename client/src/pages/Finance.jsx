@@ -1,13 +1,15 @@
 import { useState, useRef } from "react";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
 // ── Helpers ──────────────────────────────────────────────
-const store = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
-const save  = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+const store = getUserStore;
+const save = setUserStore;
 const fmt   = (n) => "$" + Number(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const now = new Date();
 const thisYear = now.getFullYear();
 const thisMonth = now.getMonth();
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
 
 // ── Category icons ────────────────────────────────────────
 const CAT_ICONS = { Groceries:"G", Rent:"R", Restaurant:"F", Activities:"A", Transport:"T", Shopping:"S", Essentials:"E", Subscriptions:"S", Other:"O" };
@@ -156,6 +158,10 @@ export default function Finance() {
 
   // Quick add form
   const [qForm, setQForm] = useState({ name:"", amount:"", date:new Date().toISOString().slice(0,10), category:"Groceries", account:"Checking", type:"expense" });
+  const [payForm, setPayForm] = useState({ amount:"", description:"App payment" });
+  const [payment, setPayment] = useState(null);
+  const [paymentMsg, setPaymentMsg] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   const persist = (key, setter, val) => { setter(val); save(key, val); };
 
@@ -187,6 +193,48 @@ export default function Finance() {
     const i = { id:Date.now(), type:qForm.name, amount:+qForm.amount, date:qForm.date };
     persist("fin_incomes", setIncomes, [i, ...incomes]);
     setQForm(f=>({...f, name:"", amount:""}));
+  };
+
+  const createPayment = async () => {
+    if (!payForm.amount || Number(payForm.amount) <= 0) return;
+    setPaymentLoading(true);
+    setPaymentMsg("");
+    try {
+      const res = await fetch(`${API_BASE}/payments/qpay/invoice`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: Number(payForm.amount), description: payForm.description || "App payment" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Payment invoice failed");
+      setPayment(data.payment);
+      setPaymentMsg("Invoice created");
+    } catch (err) {
+      setPaymentMsg(err.message || "Payment failed");
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const checkPayment = async () => {
+    if (!payment?.id) return;
+    setPaymentLoading(true);
+    setPaymentMsg("");
+    try {
+      const res = await fetch(`${API_BASE}/payments/qpay/check/${payment.id}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Payment check failed");
+      setPayment(data.payment);
+      setPaymentMsg(data.paid ? "Payment confirmed" : "Payment is still pending");
+    } catch (err) {
+      setPaymentMsg(err.message || "Payment check failed");
+    } finally {
+      setPaymentLoading(false);
+    }
   };
 
   return (
@@ -355,6 +403,41 @@ export default function Finance() {
             <div style={{ fontSize:15, fontWeight:700, color:C.red }}>{fmt(totalExpense)}</div>
             <div style={{ fontSize:11, color:C.muted, marginTop:6 }}>Net</div>
             <div style={{ fontSize:15, fontWeight:700, color: net>=0 ? C.green : C.red }}>{fmt(net)}</div>
+          </Card>
+
+          <Card style={{ flex:"1 1 260px", minWidth:260 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.muted, marginBottom:10, letterSpacing:.5, textTransform:"uppercase" }}>QPay</div>
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
+              <input value={payForm.description} onChange={e=>setPayForm(f=>({...f,description:e.target.value}))}
+                placeholder="Payment description"
+                style={{ flex:2, minWidth:130, border:`1px solid ${C.border}`, borderRadius:8, padding:"6px 10px", fontSize:13, outline:"none" }}/>
+              <input value={payForm.amount} onChange={e=>setPayForm(f=>({...f,amount:e.target.value}))}
+                placeholder="$0.00" type="number"
+                style={{ width:90, border:`1px solid ${C.border}`, borderRadius:8, padding:"6px 10px", fontSize:13, outline:"none" }}/>
+              <button onClick={createPayment} disabled={paymentLoading}
+                style={{ background:C.green, color:"white", border:"none", borderRadius:8, padding:"6px 14px", fontSize:12, fontWeight:700, cursor:paymentLoading?"wait":"pointer" }}>
+                {paymentLoading ? "Working..." : "Create invoice"}
+              </button>
+            </div>
+            {payment && (
+              <div style={{ background:C.greenLight, borderRadius:10, padding:10, display:"grid", gap:8 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", gap:10, alignItems:"center" }}>
+                  <span style={{ fontSize:12, color:C.text, fontWeight:700 }}>{payment.status}</span>
+                  <button onClick={checkPayment} disabled={paymentLoading}
+                    style={{ border:`1px solid ${C.border}`, background:"#ffffff", color:C.text, borderRadius:8, padding:"5px 10px", fontSize:12, cursor:paymentLoading?"wait":"pointer" }}>
+                    Check
+                  </button>
+                </div>
+                {payment.qrImage && <img src={`data:image/png;base64,${payment.qrImage}`} alt="QPay QR" style={{ width:120, height:120, objectFit:"contain", borderRadius:8, background:"#ffffff", padding:6 }}/>}
+                {Array.isArray(payment.urls) && payment.urls.length > 0 && (
+                  <a href={payment.urls[0].link || payment.urls[0].url} target="_blank" rel="noreferrer"
+                    style={{ color:C.green, fontSize:12, fontWeight:700, textDecoration:"none" }}>
+                    Open payment link
+                  </a>
+                )}
+              </div>
+            )}
+            {paymentMsg && <div style={{ marginTop:8, fontSize:12, color:paymentMsg.includes("failed") || paymentMsg.includes("Missing") ? C.red : C.muted }}>{paymentMsg}</div>}
           </Card>
         </div>
 

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { useSettings } from "../context/SettingsContext";
 import { MdChevronLeft, MdChevronRight, MdAdd, MdClose, MdSave, MdDelete, MdEdit } from "react-icons/md";
 import { useGetTodosQuery, useCreateTodoMutation, useUpdateTodoMutation, useUpdateStatusMutation, useTrashTodoMutation } from "../redux/slices/api/todoApiSlice";
+import { getUserStore, setUserStore, getUserString, setUserString } from "../utils/userStorage";
 
 
 /* ════════════════════════════════════════════════════════
@@ -21,8 +22,7 @@ function SchoolSchedule({ lang }) {
   const COLORS = ["#e0e7ff","#fce7f3","#dcfce7","#fef9c3","#ffe4e6","#e0f2fe","#f3e8ff","#fff7ed"];
 
   const initSched = () => {
-    try { const v=localStorage.getItem(SCHED_KEY); if(v) return JSON.parse(v); } catch{}
-    return [];
+    return getUserStore(SCHED_KEY, []);
   };
 
   const [slots, setSlots]         = useState(initSched); // [{subject,start,end,color,col,emoji}]
@@ -36,7 +36,7 @@ function SchoolSchedule({ lang }) {
   const [slotEmoji, setSlotEmoji] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [title, setTitle]         = useState(() => {
-    try { return localStorage.getItem("sched_title_v4")||"📚 Хичээлийн хуваарь"; } catch{ return "📚 Хичээлийн хуваарь"; }
+    return getUserString("sched_title_v4", lang === "mn" ? "Хичээлийн хуваарь" : "School schedule");
   });
   const [editTitle, setEditTitle] = useState(false);
 
@@ -46,7 +46,7 @@ function SchoolSchedule({ lang }) {
   const totalMins = (endHour - startHour) * 60;
   const totalPx   = totalMins; // 1min = 1px
 
-  const persist = s => { setSlots(s); try{ localStorage.setItem(SCHED_KEY,JSON.stringify(s)); }catch{} };
+  const persist = s => { setSlots(s); setUserStore(SCHED_KEY, s); };
 
   const openNew = (col) => {
     setNewCol(col); setSubject(""); setStart(`${String(startHour).padStart(2,"0")}:00`);
@@ -79,14 +79,20 @@ function SchoolSchedule({ lang }) {
   const slotH    = s => Math.max(20, ((toMin(s.end) - toMin(s.start)) / totalMins) * totalPx);
 
   return (
-    <div style={{marginTop:24,paddingBottom:32}}>
+    <div className="school-schedule" style={{marginTop:24,paddingBottom:32}}>
+      <style>{`
+        .school-schedule button,.school-schedule input{transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+        .school-schedule button:hover{transform:translateY(-1px)}
+        .school-schedule .sched-slot{transition:filter .18s ease,box-shadow .18s ease,transform .18s ease}
+        .school-schedule .sched-slot:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(15,23,42,.12)!important}
+      `}</style>
       {/* Header */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
-        padding:"12px 20px",background:"white",borderRadius:0,
-        borderBottom:"1px solid #f0ece6",boxShadow:"0 -2px 12px rgba(0,0,0,0.04)"}}>
+        padding:"12px 20px",background:"#ffffff",borderRadius:16,
+        border:"1px solid #e5e7eb",boxShadow:"0 12px 30px rgba(15,23,42,0.06)"}}>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           {editTitle ? (
-            <input autoFocus value={title} onChange={e=>{setTitle(e.target.value);try{localStorage.setItem("sched_title_v4",e.target.value);}catch{}}}
+            <input autoFocus value={title} onChange={e=>{setTitle(e.target.value);setUserString("sched_title_v4",e.target.value);}}
               onBlur={()=>setEditTitle(false)} onKeyDown={e=>{if(e.key==="Enter"||e.key==="Escape")setEditTitle(false);}}
               style={{fontFamily:"DM Sans",fontSize:18,fontWeight:600,color:"#3a3530",
                 border:"none",borderBottom:"2px solid #7c3aed",outline:"none",background:"transparent",minWidth:200}}/>
@@ -106,8 +112,8 @@ function SchoolSchedule({ lang }) {
       </div>
 
       {!collapsed && (
-        <div style={{background:"white",borderRadius:0,
-          boxShadow:"0 4px 20px rgba(0,0,0,0.06)",overflowX:"auto"}}>
+        <div style={{background:"#ffffff",borderRadius:16,marginTop:12,
+          border:"1px solid #e5e7eb",boxShadow:"0 18px 40px rgba(15,23,42,0.07)",overflowX:"auto"}}>
 
           {/* Edit modal */}
           {editing!==null && (
@@ -115,7 +121,7 @@ function SchoolSchedule({ lang }) {
               justifyContent:"center",background:"rgba(0,0,0,0.3)"}}
               onClick={()=>{ setEditing(null); setShowEmojiPicker(false); }}>
               <div onClick={e=>e.stopPropagation()}
-                style={{background:"white",borderRadius:14,padding:20,width:280,
+                style={{background:"#ffffff",borderRadius:14,padding:20,width:280,
                   boxShadow:"0 8px 32px rgba(0,0,0,0.18)"}}>
                 <p style={{fontWeight:700,fontSize:14,margin:"0 0 12px",color:"#1e293b"}}>
                   {editing==="new"?(lang==="mn"?"Хичээл нэмэх":"Add class"):(lang==="mn"?"Хичээл засах":"Edit class")}
@@ -160,11 +166,11 @@ function SchoolSchedule({ lang }) {
                       style={{
                         width:36, height:36, borderRadius:8,
                         border: showEmojiPicker ? "2px solid #7c3aed" : "1px solid #e0dbd5",
-                        background: showEmojiPicker ? "#f5f0ff" : "white",
+                        background: showEmojiPicker ? "#f5f0ff" : "#ffffff",
                         fontSize:20, cursor:"pointer",
                         display:"flex", alignItems:"center", justifyContent:"center",
                       }}>
-                      {slotEmoji || "➕"}
+                      {slotEmoji || "+"}
                     </button>
                     {slotEmoji && (
                       <button type="button" onClick={() => setSlotEmoji("")}
@@ -180,23 +186,23 @@ function SchoolSchedule({ lang }) {
                       border:"1px solid #e0dbd5", maxHeight:160, overflowY:"auto",
                     }}>
                       {[
-                        ["📚","📝","✏️","📖","🔬","🎨","🎵","🏃","💡","🧪","🖥️","📐","🔭","🎯","🏆","📌"],
-                        ["😊","🎉","🌸","⭐","❤️","🔥","💯","✅","⚡","🌈","🎈","💫","🦋","🌺","🍀","🎭"],
+                        ["READ","NOTE","WRITE","BOOK","SCI","ART","MUSIC","MOVE"],
+                        ["FOCUS","WIN","DONE","IDEA","PLAN","BUILD","NEXT","CALM"],
                       ].map((row, ri) => (
                         <div key={ri} style={{display:"flex",flexWrap:"wrap",gap:2,marginBottom:ri===0?4:0}}>
-                          {row.map(emoji => (
-                            <button key={emoji} type="button"
-                              onClick={() => { setSlotEmoji(emoji); setShowEmojiPicker(false); }}
+                          {row.map(label => (
+                            <button key={label} type="button"
+                              onClick={() => { setSlotEmoji(label); setShowEmojiPicker(false); }}
                               style={{
-                                width:28, height:28, borderRadius:6, fontSize:16,
-                                border: slotEmoji===emoji ? "2px solid #7c3aed" : "1px solid transparent",
-                                background: slotEmoji===emoji ? "#f5f0ff" : "transparent",
+                                minWidth:42, height:28, borderRadius:6, fontSize:9, fontWeight:800,
+                                border: slotEmoji===label ? "2px solid #7c3aed" : "1px solid transparent",
+                                background: slotEmoji===label ? "#f5f0ff" : "transparent",
                                 cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
                                 transition:"all 0.1s",
                               }}
                               onMouseEnter={e => e.currentTarget.style.background="#ede9fe"}
-                              onMouseLeave={e => e.currentTarget.style.background = slotEmoji===emoji ? "#f5f0ff" : "transparent"}>
-                              {emoji}
+                              onMouseLeave={e => e.currentTarget.style.background = slotEmoji===label ? "#f5f0ff" : "transparent"}>
+                              {label}
                             </button>
                           ))}
                         </div>
@@ -214,11 +220,11 @@ function SchoolSchedule({ lang }) {
                   {editing!=="new" && (
                     <button onClick={()=>{deleteSlot(editing);setEditing(null);}}
                       style={{padding:"8px 12px",borderRadius:8,border:"1px solid #fecdd3",
-                        background:"#fff1f2",color:"#e11d48",fontSize:13,cursor:"pointer"}}>🗑</button>
+                        background:"#fff1f2",color:"#e11d48",fontSize:13,cursor:"pointer"}}>Delete</button>
                   )}
                   <button onClick={()=>setEditing(null)}
                     style={{padding:"8px 12px",borderRadius:8,border:"1px solid #e0dbd5",
-                      background:"white",fontSize:13,cursor:"pointer"}}>✕</button>
+                      background:"#ffffff",fontSize:13,cursor:"pointer"}}>x</button>
                 </div>
               </div>
             </div>
@@ -229,7 +235,7 @@ function SchoolSchedule({ lang }) {
           <div style={{display:"flex",minWidth:600}}>
             {/* Time axis */}
             <div style={{width:52,flexShrink:0,position:"relative",height:totalPx,
-              borderRight:"1px solid #f0ece6",background:"#fdfcfb"}}>
+              borderRight:"1px solid #e5e7eb",background:"#f8fafc"}}>
               {hours.map(h=>(
                 <div key={h} style={{position:"absolute",top:(h-startHour)*HOUR_H-8,
                   right:6,fontSize:10,color:"#b0a8a0",fontWeight:600,userSelect:"none"}}>
@@ -246,23 +252,23 @@ function SchoolSchedule({ lang }) {
             {/* Day columns */}
             {DAYS.map((day,ci)=>(
               <div key={ci} style={{flex:1,position:"relative",height:totalPx,
-                borderRight:ci<DAYS.length-1?"1px solid #f0ece6":"none",
+                borderRight:ci<DAYS.length-1?"1px solid #e5e7eb":"none",
                 cursor:"pointer"}}
                 onClick={()=>openNew(ci)}>
                 {/* Day header */}
                 <div style={{position:"absolute",top:-32,left:0,right:0,textAlign:"center",
-                  fontSize:12,fontWeight:700,color:"#5a5350",userSelect:"none"}}>
+                  fontSize:12,fontWeight:700,color:"#334155",userSelect:"none"}}>
                   {day}
                 </div>
                 {/* Hour lines */}
                 {hours.map(h=>(
                   <div key={h} style={{position:"absolute",top:(h-startHour)*HOUR_H,
-                    left:0,right:0,borderTop:"1px solid #f5f0ec"}}/>
+                    left:0,right:0,borderTop:"1px solid #e5e7eb"}}/>
                 ))}
                 {/* Half-hour lines */}
                 {hours.slice(0,-1).map(h=>(
                   <div key={h} style={{position:"absolute",top:(h-startHour)*HOUR_H+30,
-                    left:4,right:4,borderTop:"1px dashed #f0ece6"}}/>
+                    left:4,right:4,borderTop:"1px dashed #cbd5e1"}}/>
                 ))}
                 {/* Slots for this column */}
                 {slots.filter(s=>s.col===ci).map((s,si)=>{
@@ -270,6 +276,7 @@ function SchoolSchedule({ lang }) {
                   const top=slotTop(s), h=slotH(s);
                   return(
                     <div key={si}
+                      className="sched-slot"
                       onClick={e=>{e.stopPropagation();openEdit(idx);}}
                       style={{position:"absolute",top,left:3,right:3,height:h,
                         background:s.color,borderRadius:8,padding:"4px 8px",
@@ -311,8 +318,8 @@ const DOW_EN = ["Mo","Tu","We","Th","Fr","Sa","Su"];
 const DOW_FULL_MN = ["ДАВАА","МЯГМАР","ЛХАГВА","ПҮРЭВ","БААСАН","БЯМБА","НЯМ"];
 const DOW_FULL_EN = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
 
-function getStore(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch{return d;}}
-function setStore(k,v){localStorage.setItem(k,JSON.stringify(v));}
+const getStore = getUserStore;
+const setStore = setUserStore;
 
 // ══════════════════════════════════════════
 //  WEEKLY PLANNER COMPONENT
@@ -405,10 +412,10 @@ function WeeklyPlanner({ year, month, lang }) {
   };
 
   const HABITS_DEF = [
-    { id: "reading", emoji: "📚", label: lang === "mn" ? "Унших" : "Reading" },
-    { id: "journal", emoji: "✏️", label: lang === "mn" ? "Тэмдэглэл" : "Journal Time" },
-    { id: "exercise", emoji: "🏃", label: lang === "mn" ? "Дасгал хөдөлгөөн" : "Morning exercise" },
-    { id: "water", emoji: "💧", label: lang === "mn" ? "8 аяга ус" : "8 cups water" },
+    { id: "reading", emoji: "R", label: lang === "mn" ? "Унших" : "Reading" },
+    { id: "journal", emoji: "J", label: lang === "mn" ? "Тэмдэглэл" : "Journal Time" },
+    { id: "exercise", emoji: "E", label: lang === "mn" ? "Дасгал хөдөлгөөн" : "Morning exercise" },
+    { id: "water", emoji: "W", label: lang === "mn" ? "8 аяга ус" : "8 cups water" },
   ];
 
   const toggleHabit = (dayKey, hid) => {
@@ -671,7 +678,7 @@ const VB_FONTS = [
 ];
 const NOTE_COLORS = ["#fffde7","#fce4ec","#e8eaf6","#e0f7fa","#f3e5f5","#e8f5e9","#fff3e0","#e3f2fd","#fafafa","#fff8e1"];
 const PIN_COLORS  = ["#e05252","#5272e0","#52c052","#e0c052","#a052e0","#e07852","#52b8e0","#e05288"];
-const VB_STICKERS = ["🌟","💪","✨","🎯","🌸","💫","🔥","🌈","💎","🦋","🌺","⭐","🏆","💡","🌙","❤️","🎀","🍀","🌻","🦄","🎵","☁️","🌊","🍓","🫐","🐝","🌷","🧸","🎪","🎨","🦊","🐱","🌍","🍭","🎸","🏄"];
+const VB_STICKERS = ["FOCUS","GROW","WIN","PLAN","MOVE","BUILD","SAVE","LEARN","HEALTH","IDEA","CALM","NEXT"];
 
 function VisionBoard({ lang, theme }) {
   const BOARD_W = 560, BOARD_H = 340;
@@ -782,13 +789,13 @@ function VisionBoard({ lang, theme }) {
         {/* Add note */}
         <button onClick={addNote} title={lang==="mn"?"Карт нэмэх":"Add note"}
           style={{fontSize:11,background:"#fffde7",border:"1px solid #fcd34d",borderRadius:6,padding:"3px 9px",cursor:"pointer",color:"#78350f",fontWeight:600,boxShadow:"1px 1px 3px rgba(0,0,0,0.1)"}}>
-          📝 {lang==="mn"?"Карт":"Note"}
+          {lang==="mn"?"Карт":"Note"}
         </button>
         {/* Add sticker */}
         <div style={{position:"relative"}}>
           <button onClick={()=>setShowStickerPicker(v=>!v)}
             style={{fontSize:11,background:"#fce4ec",border:"1px solid #f9a8d4",borderRadius:6,padding:"3px 9px",cursor:"pointer",color:"#9d174d",fontWeight:600,boxShadow:"1px 1px 3px rgba(0,0,0,0.1)"}}>
-            🎀 {lang==="mn"?"Sticker":"Sticker"}
+            {lang==="mn"?"Sticker":"Sticker"}
           </button>
           {showStickerPicker && (
             <div style={{position:"absolute",top:"calc(100% + 4px)",right:0,zIndex:100,
@@ -796,7 +803,7 @@ function VisionBoard({ lang, theme }) {
               border:"1px solid #e2e8f0",padding:8,width:220,display:"flex",flexWrap:"wrap",gap:3}}>
               {VB_STICKERS.map(s=>(
                 <button key={s} onClick={()=>addSticker(s)}
-                  style={{fontSize:20,background:"none",border:"none",cursor:"pointer",padding:"2px 3px",borderRadius:4,transition:"background .1s"}}
+                  style={{fontSize:10,fontWeight:800,background:"none",border:"1px solid #e2e8f0",cursor:"pointer",padding:"5px 7px",borderRadius:6,transition:"background .1s"}}
                   onMouseEnter={e=>e.currentTarget.style.background="#f1f5f9"}
                   onMouseLeave={e=>e.currentTarget.style.background="none"}>
                   {s}
@@ -807,14 +814,14 @@ function VisionBoard({ lang, theme }) {
         </div>
         {/* Add image */}
         <label style={{fontSize:11,background:"#e0f2fe",border:"1px solid #7dd3fc",borderRadius:6,padding:"3px 9px",cursor:"pointer",color:"#075985",fontWeight:600,boxShadow:"1px 1px 3px rgba(0,0,0,0.1)"}}>
-          🖼 {lang==="mn"?"Зураг":"Image"}
+          {lang==="mn"?"Зураг":"Image"}
           <input type="file" accept="image/*" style={{display:"none"}} onChange={addImage}/>
         </label>
         {/* Delete selected */}
         {selected && (
           <button onClick={()=>del(selected)}
             style={{fontSize:11,background:"#fde2e2",border:"1px solid #fca5a5",borderRadius:6,padding:"3px 8px",cursor:"pointer",color:"#991b1b",fontWeight:600}}>
-            🗑
+            Delete
           </button>
         )}
         {/* Font picker for selected note */}
@@ -1112,11 +1119,11 @@ export default function Calendar() {
   const [topNote, setTopNote] = useState(()=>getStore("cal_tnote",""));
   const [priorities, setPriorities] = useState(()=>getStore("cal_pri",["","",""]));
   const DEFAULT_HABITS = [
-    {id:1,emoji:"😴",name:"7-8 цаг унтах"},
-    {id:2,emoji:"🏃",name:"Дасгал хийх"},
-    {id:3,emoji:"🧘",name:"Meditation"},
-    {id:4,emoji:"📚",name:"Ном унших"},
-    {id:5,emoji:"💧",name:"2л ус уух"},
+    {id:1,emoji:"S",name:"7-8 цаг унтах"},
+    {id:2,emoji:"E",name:"Дасгал хийх"},
+    {id:3,emoji:"M",name:"Meditation"},
+    {id:4,emoji:"R",name:"Ном унших"},
+    {id:5,emoji:"W",name:"2л ус уух"},
   ];
   const [habits, setHabits] = useState(()=>{
     const stored = getStore("cal_habits", DEFAULT_HABITS);
@@ -1124,7 +1131,7 @@ export default function Calendar() {
   });
   const [habitChecks, setHabitChecks] = useState(()=>getStore("cal_hchecks",{}));
   const [habitModal, setHabitModal] = useState(false);
-  const [newHabit, setNewHabit] = useState({emoji:"⭐",name:""});
+  const [newHabit, setNewHabit] = useState({emoji:"H",name:""});
   // Monthly Goals: сар бүрт тусдаа хадгална
   const goalsKey = (y, m) => `cal_goals_${y}-${m+1}`;
   const [monthGoals, setMonthGoals] = useState(()=>getStore(goalsKey(today.getFullYear(), today.getMonth()),""));
@@ -1153,7 +1160,7 @@ export default function Calendar() {
     if (!newHabit.name.trim()) return;
     const h = [...habits, {id: Date.now(), emoji: newHabit.emoji, name: newHabit.name}];
     setHabits(h); setStore("cal_habits", h);
-    setNewHabit({emoji:"⭐", name:""});
+    setNewHabit({emoji:"H", name:""});
   };
   const removeHabit = (id) => {
     const h = habits.filter(hb=>hb.id!==id);
@@ -1416,7 +1423,7 @@ export default function Calendar() {
               }}
               onMouseEnter={e=>{e.currentTarget.style.background="#f9f5f2";e.currentTarget.style.borderColor="#c8b0a8";}}
               onMouseLeave={e=>{e.currentTarget.style.background="white";e.currentTarget.style.borderColor="#e5e0d8";}}>
-              ⚙️ {lang==="mn"?"Habits":"Manage Habits"}
+              {lang==="mn"?"Habits":"Manage Habits"}
             </button>
           </div>
         </div>
@@ -1879,7 +1886,7 @@ export default function Calendar() {
               <div style={{display:"flex",gap:6,marginBottom:10}}>
                 <input
                   id="popup-habit-emoji"
-                  defaultValue="⭐"
+                  defaultValue="H"
                   style={{width:38,border:"1.5px solid #e5e7eb",borderRadius:7,padding:"5px 6px",fontSize:15,textAlign:"center",outline:"none",fontFamily:"inherit"}}
                 />
                 <input
@@ -1888,7 +1895,7 @@ export default function Calendar() {
                   onKeyDown={e=>{
                     if(e.key==="Enter"){
                       const name=e.target.value.trim();
-                      const emoji=document.getElementById("popup-habit-emoji").value||"⭐";
+                      const emoji=document.getElementById("popup-habit-emoji").value||"H";
                       if(!name) return;
                       const newH={id:Date.now(),name,emoji};
                       const updated=[...habits,newH];
@@ -1904,7 +1911,7 @@ export default function Calendar() {
                 <button
                   onClick={()=>{
                     const name=document.getElementById("popup-habit-name").value.trim();
-                    const emoji=document.getElementById("popup-habit-emoji").value||"⭐";
+                    const emoji=document.getElementById("popup-habit-emoji").value||"H";
                     if(!name) return;
                     const newH={id:Date.now(),name,emoji};
                     const updated=[...habits,newH];
@@ -2225,7 +2232,7 @@ export default function Calendar() {
             <div style={{padding:"4px 14px 10px"}}>
               <button onClick={()=>setStickerOpen(p=>!p)}
                 style={{fontSize:11,border:"1px solid #e0e0e0",borderRadius:8,padding:"3px 10px",background:"white",cursor:"pointer",color:"#6b6358",marginBottom:stickerOpen?8:0}}>
-                🎀 Sticker
+                Sticker
               </button>
               {stickerOpen&&(
                 <div style={{display:"flex",flexWrap:"wrap",gap:5}}>

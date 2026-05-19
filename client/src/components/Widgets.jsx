@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useSettings } from "../context/SettingsContext";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
 /* ─── storage ─── */
 function getWidgets() {
-  try { return JSON.parse(localStorage.getItem("app_widgets_v1") || "[]"); } catch { return []; }
+  return getUserStore("app_widgets_v1", []);
 }
-function saveWidgets(w) { localStorage.setItem("app_widgets_v1", JSON.stringify(w)); }
+function saveWidgets(w) { setUserStore("app_widgets_v1", w); }
 
 /* ─── constants ─── */
 const WIDGET_TYPES = [

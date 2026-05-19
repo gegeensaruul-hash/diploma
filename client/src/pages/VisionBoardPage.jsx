@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSettings } from "../context/SettingsContext";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
 const VB_FONTS = [
   {id:"caveat",    label:"Caveat",       css:"DM Sans"},
@@ -14,8 +15,8 @@ const NOTE_COLORS = ["#fffde7","#fce4ec","#e8eaf6","#e0f7fa","#f3e5f5","#e8f5e9"
 const PIN_COLORS  = ["#e05252","#5272e0","#52c052","#e0c052","#a052e0","#e07852","#52b8e0","#e05288"];
 const VB_STICKERS = ["FOCUS","GROW","WIN","PLAN","MOVE","BUILD","SAVE","LEARN","HEALTH","IDEA","CALM","NEXT"];
 
-function getStore(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch{return d;}}
-function setStore(k,v){localStorage.setItem(k,JSON.stringify(v));}
+const getStore = getUserStore;
+const setStore = setUserStore;
 
 export default function VisionBoardPage() {
   const { lang, theme } = useSettings();

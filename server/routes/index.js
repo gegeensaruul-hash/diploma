@@ -6,6 +6,7 @@ import userRoute from "./userRoute.js";
 import chatRoute from "./chatRoute.js";
 import capsuleRoute from "./capsuleRoute.js";
 import aiRoute from "./aiRoute.js";
+import paymentRoute from "./paymentRoute.js";
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use("/users", userRoute);
 router.use("/chat", chatRoute);
 router.use("/capsule", capsuleRoute);
 router.use("/ai", aiRoute);
+router.use("/payments", paymentRoute);
 
 export default router;

@@ -5,6 +5,7 @@ import {
   MdAdd, MdEdit, MdDelete, MdCalendarToday, MdTrendingUp,
   MdCheckCircle, MdRadioButtonUnchecked, MdClose,
 } from "react-icons/md";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
 const DEFAULT_HABITS = [
   { id: 1, name: "7-8 цаг унтах", icon: "🕒", completed: false, streak: 3 },
@@ -30,30 +31,30 @@ export default function Habits() {
 
   // Load habits from localStorage on component mount
   useEffect(() => {
-    const savedHabits = localStorage.getItem('daily-habits');
-    const savedTodos = localStorage.getItem('daily-todos');
+    const savedHabits = getUserStore("daily-habits", null);
+    const savedTodos = getUserStore("daily-todos", null);
     
     if (savedHabits) {
-      setHabits(JSON.parse(savedHabits));
+      setHabits(savedHabits);
     } else {
       setHabits(DEFAULT_HABITS);
-      localStorage.setItem('daily-habits', JSON.stringify(DEFAULT_HABITS));
+      setUserStore("daily-habits", DEFAULT_HABITS);
     }
     
     if (savedTodos) {
-      setDailyTodos(JSON.parse(savedTodos));
+      setDailyTodos(savedTodos);
     }
   }, []);
 
   // Save to localStorage whenever habits or todos change
   useEffect(() => {
     if (habits.length > 0) {
-      localStorage.setItem('daily-habits', JSON.stringify(habits));
+      setUserStore("daily-habits", habits);
     }
   }, [habits]);
 
   useEffect(() => {
-    localStorage.setItem('daily-todos', JSON.stringify(dailyTodos));
+    setUserStore("daily-todos", dailyTodos);
   }, [dailyTodos]);
 
   const getProgress = () => {

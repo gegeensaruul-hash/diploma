@@ -13,6 +13,7 @@ import { useLogoutMutation } from "../redux/slices/api/authApiSlice";
 
 import { useSettings } from "../context/SettingsContext";
 import { WidgetPanel, AddWidgetModal } from "./Widgets";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
 // App.jsx-ийн session cache-г reset хийх helper
 function resetSessionCache() {
@@ -70,7 +71,7 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
             targetId = newBoard.id;
           }
           setVbBoards(updated);
-          localStorage.setItem("sidebar_vb_boards", JSON.stringify(updated));
+          setUserStore("sidebar_vb_boards", updated);
           setShowVBPopup(false);
           navigate(`/visionboard/${targetId}`);
         }}
@@ -105,7 +106,7 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
             updated = [...fcBoards, newFc];
           }
           setFcBoards(updated);
-          localStorage.setItem("sidebar_fc_boards", JSON.stringify(updated));
+          setUserStore("sidebar_fc_boards", updated);
           setShowVBPopup(false);
           navigate("/futurecapsule");
         }}
@@ -166,13 +167,13 @@ export default function Sidebar({ onClose, onMenuToggle }) {
   const [showVBPopup, setShowVBPopup] = useState(false);
   const plusBtnRef = useRef(null);
   const [vbBoards, setVbBoards] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("sidebar_vb_boards") || "[]"); } catch { return []; }
+    return getUserStore("sidebar_vb_boards", []);
   });
   const [fcBoards, setFcBoards] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("sidebar_fc_boards") || "[]"); } catch { return []; }
+    return getUserStore("sidebar_fc_boards", []);
   });
   const [showFinance, setShowFinance] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("sidebar_show_finance") || "false"); } catch { return false; }
+    return getUserStore("sidebar_show_finance", false);
   });
 
   // Accordion: open if currently on a todos sub-route
@@ -286,7 +287,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
                   fcBoards={fcBoards}
                   setFcBoards={setFcBoards}
                   setShowVBPopup={setShowVBPopup}
-                  setShowFinance={(v)=>{ setShowFinance(v); localStorage.setItem("sidebar_show_finance",JSON.stringify(v)); }}
+                  setShowFinance={(v)=>{ setShowFinance(v); setUserStore("sidebar_show_finance", v); }}
                   navigate={navigate}
                 />
               </>,
@@ -359,7 +360,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
               onClick={() => {
                 const updated = fcBoards.map(b => b.id === board.id ? {...b, hidden: true} : b);
                 setFcBoards(updated);
-                localStorage.setItem("sidebar_fc_boards", JSON.stringify(updated));
+                setUserStore("sidebar_fc_boards", updated);
                 navigate("/dashboard");
               }}
               style={{
@@ -387,7 +388,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
                 // Data-г устгахгүй, зөвхөн sidebar-аас нуух
                 const updated = vbBoards.map(b => b.id === board.id ? {...b, hidden: true} : b);
                 setVbBoards(updated);
-                localStorage.setItem("sidebar_vb_boards", JSON.stringify(updated));
+                setUserStore("sidebar_vb_boards", updated);
                 navigate("/dashboard");
               }}
               style={{
@@ -409,7 +410,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
               <MdAccountBalanceWallet size={19}/>Finance
             </NavLink>
             <button
-              onClick={()=>{ setShowFinance(false); localStorage.setItem("sidebar_show_finance","false"); navigate("/dashboard"); }}
+              onClick={()=>{ setShowFinance(false); setUserStore("sidebar_show_finance", false); navigate("/dashboard"); }}
               style={{
                 position:"absolute", right:6,
                 width:18, height:18, borderRadius:5,
@@ -447,8 +448,8 @@ export default function Sidebar({ onClose, onMenuToggle }) {
       {showAddWidget && <AddWidgetModal
         onAdd={(w)=>{
           try {
-            const existing = JSON.parse(localStorage.getItem("app_widgets_v1") || "[]");
-            localStorage.setItem("app_widgets_v1", JSON.stringify([...existing, w]));
+            const existing = getUserStore("app_widgets_v1", []);
+            setUserStore("app_widgets_v1", [...existing, w]);
             window.dispatchEvent(new CustomEvent("widget-added", { detail: w }));
           } catch(e) {}
           setShowAddWidget(false);

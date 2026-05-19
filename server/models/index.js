@@ -4,6 +4,7 @@ import Category from "./categoryModel.js";
 import ChatRoom from "./chatRoomModel.js";
 import ChatMessage from "./chatMessageModel.js";
 import RoomMember from "./roomMemberModel.js";
+import Payment from "./paymentModel.js";
 
 // User -> Todo
 User.hasMany(Todo, { foreignKey: "userId", as: "todos", onDelete: "CASCADE" });
@@ -29,4 +30,8 @@ ChatMessage.belongsTo(ChatRoom, { foreignKey: "roomId", as: "room" });
 User.hasMany(ChatMessage, { foreignKey: "userId", as: "messages", onDelete: "CASCADE" });
 ChatMessage.belongsTo(User, { foreignKey: "userId", as: "sender" });
 
-export { User, Todo, Category, ChatRoom, ChatMessage, RoomMember };
+// User -> Payment
+User.hasMany(Payment, { foreignKey: "userId", as: "payments", onDelete: "CASCADE" });
+Payment.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+export { User, Todo, Category, ChatRoom, ChatMessage, RoomMember, Payment };

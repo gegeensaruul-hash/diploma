@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { MdClose, MdSend, MdAdd, MdLock, MdLockOpen, MdDelete } from "react-icons/md";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
-function getStore(k, d) { try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(d)); } catch { return d; } }
-function setStore(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+const getStore = getUserStore;
+const setStore = setUserStore;
 
 const ENVELOPE_STYLES = [
   { bg:"#fce8ec", border:"#f48fb1", flap:"#e91e8c" },

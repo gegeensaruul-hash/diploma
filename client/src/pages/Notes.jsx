@@ -2,12 +2,13 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useSettings } from "../context/SettingsContext";
 import { toast } from "sonner";
+import { getUserStore, setUserStore } from "../utils/userStorage";
 
 /* ─── storage ─── */
-function getNotes()    { try { return JSON.parse(localStorage.getItem("app_notes_v3")    || "[]"); } catch { return []; } }
-function getSubjects() { try { return JSON.parse(localStorage.getItem("app_subjects_v1") || "[]"); } catch { return []; } }
-function saveNotes(n)    { localStorage.setItem("app_notes_v3",    JSON.stringify(n)); }
-function saveSubjects(s) { localStorage.setItem("app_subjects_v1", JSON.stringify(s)); }
+function getNotes()    { return getUserStore("app_notes_v3", []); }
+function getSubjects() { return getUserStore("app_subjects_v1", []); }
+function saveNotes(n)    { setUserStore("app_notes_v3", n); }
+function saveSubjects(s) { setUserStore("app_subjects_v1", s); }
 
 /* ─── constants ─── */
 const COVERS = [
