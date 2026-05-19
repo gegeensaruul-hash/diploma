@@ -22,8 +22,8 @@ const BENTO_FEATURES = [
     mnDesc: "AI-д суурилсан эрэмбэлэлт болон бодит цагийн синхрончлол.",
     icon: <MdOutlineTaskAlt />,
     size: "large",
-    bg: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)",
-    accent: "#818cf8"
+    bg: "linear-gradient(135deg, #292524 0%, #3c3936 100%)",
+    accent: "#84cc16"
   },
   {
     title: "AI Assistant",
@@ -32,8 +32,8 @@ const BENTO_FEATURES = [
     mnDesc: "Бүтээмжид тань туслах Llama 3.3 AI туслах.",
     icon: <MdAutoAwesome />,
     size: "small",
-    bg: "#0f172a",
-    accent: "#c084fc"
+    bg: "#1c1917",
+    accent: "#a3e635"
   },
   {
     title: "Finance Tracker",
@@ -42,8 +42,8 @@ const BENTO_FEATURES = [
     mnDesc: "Зарлага бүрээ үзэмжтэй графикаар хянах.",
     icon: <MdOutlineAccountBalanceWallet />,
     size: "small",
-    bg: "#0f172a",
-    accent: "#4ade80"
+    bg: "#1c1917",
+    accent: "#facc15"
   },
   {
     title: "Bento Workflow",
@@ -52,8 +52,8 @@ const BENTO_FEATURES = [
     mnDesc: "Хэрэгцээт бүх зүйлс таны нэг дороос.",
     icon: <MdOutlineDashboardCustomize />,
     size: "medium",
-    bg: "linear-gradient(135deg, #064e3b 0%, #065f46 100%)",
-    accent: "#34d399"
+    bg: "linear-gradient(135deg, #292524 0%, #44403c 100%)",
+    accent: "#84cc16"
   },
   {
     title: "Secure Collaboration",
@@ -62,8 +62,8 @@ const BENTO_FEATURES = [
     mnDesc: "Багийн чатад зориулсан өндөр түвшний аюулгүй байдал.",
     icon: <MdOutlineLock />,
     size: "medium",
-    bg: "#0f172a",
-    accent: "#60a5fa"
+    bg: "#1c1917",
+    accent: "#fb923c"
   }
 ];
 
@@ -95,13 +95,15 @@ export default function Landing() {
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
         
         :root {
-          --brand: #6366f1;
-          --brand-light: #818cf8;
-          --bg: #020617;
-          --bg-card: #0f172a;
-          --text: #f8fafc;
-          --text-dim: #94a3b8;
-          --border: rgba(255, 255, 255, 0.08);
+          --brand: #84cc16;
+          --brand-light: #a3e635;
+          --brand-dim: rgba(132, 204, 22, 0.15);
+          --bg: #1c1917;
+          --bg-card: #292524;
+          --bg-card2: #3c3936;
+          --text: #fefce8;
+          --text-dim: #a8a29e;
+          --border: rgba(254, 252, 232, 0.08);
         }
 
         .landing-root {
@@ -119,7 +121,7 @@ export default function Landing() {
           position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
           display: flex; align-items: center; justify-content: space-between;
           padding: ${scrolled ? '14px 6%' : '24px 6%'};
-          background: ${scrolled ? 'rgba(2, 6, 23, 0.8)' : 'transparent'};
+          background: ${scrolled ? 'rgba(28, 25, 23, 0.85)' : 'transparent'};
           backdrop-filter: ${scrolled ? 'blur(16px)' : 'none'};
           border-bottom: ${scrolled ? '1px solid var(--border)' : '1px solid transparent'};
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -132,7 +134,7 @@ export default function Landing() {
         .logo-box {
           width: 32px; height: 32px; background: var(--brand); border-radius: 8px;
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+          box-shadow: 0 0 20px rgba(132, 204, 22, 0.4);
         }
 
         .nav-links { display: flex; gap: 40px; }
@@ -153,12 +155,12 @@ export default function Landing() {
         .hero-glow {
           position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
           width: 80vw; height: 60vh;
-          background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(132, 204, 22, 0.12) 0%, rgba(28, 25, 23, 0) 70%);
           filter: blur(100px); z-index: 0; pointer-events: none;
         }
 
         .hero-badge {
-          background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2);
+          background: rgba(132, 204, 22, 0.1); border: 1px solid rgba(132, 204, 22, 0.25);
           color: var(--brand-light); padding: 6px 16px; border-radius: 100px;
           font-size: 13px; font-weight: 600; margin-bottom: 24px;
           display: flex; align-items: center; gap: 8px;
@@ -168,7 +170,7 @@ export default function Landing() {
         .hero-title {
           font-size: clamp(40px, 8vw, 92px); font-weight: 800; line-height: 1.05;
           letter-spacing: -3px; margin-bottom: 24px; max-width: 1000px;
-          background: linear-gradient(to bottom, #fff 40%, rgba(255,255,255,0.6) 100%);
+          background: linear-gradient(to bottom, #fefce8 40%, rgba(254,252,232,0.5) 100%);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent;
           animation: fadeInUp 0.8s ease 0.1s both;
         }
@@ -184,12 +186,12 @@ export default function Landing() {
         }
 
         .btn-primary {
-          background: var(--brand); color: #fff; padding: 14px 32px; border-radius: 12px;
-          font-size: 15px; font-weight: 600; border: none; cursor: pointer;
+          background: var(--brand); color: #1c1917; padding: 14px 32px; border-radius: 12px;
+          font-size: 15px; font-weight: 700; border: none; cursor: pointer;
           display: flex; align-items: center; gap: 8px; transition: all 0.3s;
-          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+          box-shadow: 0 10px 25px rgba(132, 204, 22, 0.3);
         }
-        .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4); }
+        .btn-primary:hover { background: #a3e635; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(132, 204, 22, 0.4); }
 
         .btn-secondary {
           background: rgba(255, 255, 255, 0.03); color: #fff; padding: 14px 32px; border-radius: 12px;
@@ -213,8 +215,9 @@ export default function Landing() {
           border-radius: 24px; padding: 32px; border: 1px solid var(--border);
           position: relative; overflow: hidden; display: flex; flex-direction: column;
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: default;
+          background: var(--bg-card);
         }
-        .bento-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-5px); }
+        .bento-card:hover { border-color: rgba(132, 204, 22, 0.3); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .bento-card.large { grid-column: span 2; grid-row: span 2; }
         .bento-card.medium { grid-column: span 2; }
         .bento-card.small { grid-column: span 1; }
@@ -225,7 +228,7 @@ export default function Landing() {
           font-size: 24px; margin-bottom: 24px;
         }
 
-        .bento-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: #fff; }
+        .bento-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
         .bento-desc { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
 
         .bento-bg {
@@ -363,8 +366,8 @@ export default function Landing() {
       {/* ── CTA SECTION ── */}
       <section className="section" style={{textAlign:'center'}}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
-          padding: '80px 40px', borderRadius: '40px', border: '1px solid var(--border)',
+          background: 'linear-gradient(135deg, rgba(132, 204, 22, 0.08) 0%, rgba(41, 37, 36, 0.6) 100%)',
+          padding: '80px 40px', borderRadius: '40px', border: '1px solid rgba(132, 204, 22, 0.15)',
           maxWidth: '1000px', margin: '0 auto'
         }}>
           <h2 className="section-title" style={{fontSize: 'clamp(32px, 4vw, 52px)'}}>

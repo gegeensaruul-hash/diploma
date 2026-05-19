@@ -29,14 +29,14 @@ function EyeIcon({ open }) {
 function IllustrationPanel({ mn }) {
   return (
     <div style={{
-      background: "#020617",
+      background: "#1c1917",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "60px 48px", position: "relative", overflow: "hidden",
       width: "100%", height: "100%",
     }}>
       {/* Decorative orbs */}
-      <div style={{position:"absolute",top:-100,right:-100,width:400,height:400,borderRadius:"50%",background:"rgba(99, 102, 241, 0.1)",filter:"blur(80px)"}}/>
-      <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background:"rgba(16, 185, 129, 0.05)",filter:"blur(60px)"}}/>
+      <div style={{position:"absolute",top:-100,right:-100,width:400,height:400,borderRadius:"50%",background:"rgba(132, 204, 22, 0.08)",filter:"blur(80px)"}}/>
+      <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background:"rgba(250, 204, 21, 0.05)",filter:"blur(60px)"}}/>
 
       {/* Grid pattern overlay */}
       <div style={{
@@ -175,11 +175,11 @@ export default function Login() {
   };
 
   if (checking) return (
-    <div style={{width:"100vw",height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#020617"}}>
+    <div style={{width:"100vw",height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#1c1917"}}>
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
         <div style={{
           width:40,height:40,borderRadius:"50%",
-          border:"3px solid rgba(255,255,255,0.05)",borderTopColor:"#6366f1",
+          border:"3px solid rgba(254,252,232,0.05)",borderTopColor:"#84cc16",
           animation:"spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
         }}/>
       </div>
@@ -192,46 +192,46 @@ export default function Login() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         
-        :root { --brand: #6366f1; }
+        :root { --brand: #84cc16; }
         
-        html, body, #root { margin:0; padding:0; width:100%; height:100%; background: #020617; }
+        html, body, #root { margin:0; padding:0; width:100%; height:100%; background: #1c1917; }
         
         .li-inp:focus {
           border-color: var(--brand) !important;
-          background: rgba(255, 255, 255, 0.06) !important;
-          box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+          background: rgba(254, 252, 232, 0.04) !important;
+          box-shadow: 0 0 0 4px rgba(132, 204, 22, 0.12) !important;
         }
         
         .li-btn {
-          background: var(--brand); color: #fff; border: none; border-radius: 14px;
+          background: var(--brand); color: #1c1917; border: none; border-radius: 14px;
           padding: 16px 0; font-size: 15px; font-weight: 700; cursor: pointer;
           font-family: 'Inter', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+          box-shadow: 0 8px 24px rgba(132, 204, 22, 0.25);
         }
         .li-btn:hover:not(:disabled) {
-          background: #4f46e5; transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+          background: #a3e635; transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(132, 204, 22, 0.35);
         }
         
         .tab-btn {
           flex: 1; padding: 14px 0; font-size: 14px; font-weight: 600;
-          font-family: 'Inter', sans-serif; color: #94a3b8; background: none; border: none;
+          font-family: 'Inter', sans-serif; color: #a8a29e; background: none; border: none;
           border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
         }
-        .tab-btn.active { color: #fff; border-bottom-color: var(--brand); }
+        .tab-btn.active { color: #fefce8; border-bottom-color: var(--brand); }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
         
         .top-btn {
-          background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(254, 252, 232, 0.03); border: 1px solid rgba(254, 252, 232, 0.08);
           border-radius: 12px; padding: 8px 16px; font-size: 13px; font-family: 'Inter', sans-serif;
-          color: #94a3b8; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+          color: #a8a29e; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
         }
-        .top-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+        .top-btn:hover { background: rgba(254, 252, 232, 0.08); color: #fefce8; border-color: rgba(254, 252, 232, 0.2); }
       `}</style>
 
-      <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-[1fr_1.1fr] bg-[#020617] overflow-hidden">
+      <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-[1fr_1.1fr] bg-[#1c1917] overflow-hidden">
 
         {/* ── LEFT PANEL ── */}
         <div className="flex flex-col justify-center px-8 md:px-[8%] h-screen overflow-y-auto relative border-r border-white/5">
