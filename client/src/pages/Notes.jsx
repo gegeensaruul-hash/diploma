@@ -522,71 +522,20 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   });
 
   const addImage = async (e) => {
-    const file=e.target.files?.[0]; if (!file) return;
-    if (file.size>10*1024*1024) return toast.error("10MB-с бага зураг оруулна уу");
-    e.target.value="";
+    const file = e.target.files?.[0]; if (!file) return;
+    if (file.size > 10 * 1024 * 1024) return toast.error("10MB-с бага зураг оруулна уу");
+    e.target.value = "";
     const src = await compressImage(file);
-      const uid="ni-"+Date.now();
-      // Insert floated image inside contentEditable
-      const wrap=document.createElement("span");
-      wrap.contentEditable="false";
-      wrap.dataset.imgid=uid;
-      wrap.style.cssText="float:left;margin:4px 14px 6px 0;position:relative;display:inline-block;cursor:grab;vertical-align:top;";
-      const img=document.createElement("img");
-      img.src=src;
-      img.style.cssText="max-width:180px;max-height:160px;border-radius:8px;object-fit:cover;box-shadow:0 4px 16px rgba(0,0,0,0.18);border:2px solid white;display:block;pointer-events:none;";
-      img.draggable=false;
-      const del=document.createElement("button");
-      del.innerHTML="×";
-      del.style.cssText="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#e05252;border:2px solid white;color:white;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.25);z-index:5;";
-      del.onmousedown=ev=>ev.stopPropagation();
-      del.onclick=()=>{ wrap.remove(); };
-      wrap.appendChild(img);
-      wrap.appendChild(del);
-
-      // Drag to switch float side
-      wrap.onmousedown=(ev)=>{
-        if(ev.target===del) return;
-        ev.preventDefault();
-        const startX=ev.clientX;
-        let moved=false;
-        const onMove=(mv)=>{
-          if(Math.abs(mv.clientX-startX)>30){
-            moved=true;
-            wrap.style.float=mv.clientX>startX?"right":"left";
-            wrap.style.margin=mv.clientX>startX?"0 0 8px 14px":"0 14px 8px 0";
-          }
-        };
-        const onUp=()=>{
-          wrap.style.cursor="grab";
-          wrap.style.opacity="1";
-          window.removeEventListener("mousemove",onMove);
-          window.removeEventListener("mouseup",onUp);
-        };
-        wrap.style.cursor="grabbing";
-        wrap.style.opacity="0.8";
-        window.addEventListener("mousemove",onMove);
-        window.addEventListener("mouseup",onUp);
-      };
-
-      const editor=editorRef.current;
-      if(editor){
-        editor.focus();
-        const sel=window.getSelection();
-        if(sel&&sel.rangeCount){
-          const r=sel.getRangeAt(0);
-          r.collapse(true);
-          r.insertNode(wrap);
-          // move cursor after wrap
-          const r2=document.createRange();
-          r2.setStartAfter(wrap);
-          r2.collapse(true);
-          sel.removeAllRanges();
-          sel.addRange(r2);
-        } else {
-          editor.insertBefore(wrap,editor.firstChild);
-        }
-      }
+    const area = noteAreaRef.current;
+    const aw = area ? area.offsetWidth  : 500;
+    const ah = area ? area.offsetHeight : 400;
+    const w = 200;
+    const x = aw / 2 - w / 2 + (Math.random() - 0.5) * 80;
+    const y = ah / 2 - 80  + (Math.random() - 0.5) * 60;
+    setFloatStickers(prev => [...prev, {
+      id: Date.now(), imgSrc: src,
+      x, y, size: w, rot: (Math.random() - 0.5) * 6,
+    }]);
   };
   const [fmtState, setFmtState] = useState({ bold:false, italic:false, underline:false, strikeThrough:false });
 
@@ -902,34 +851,43 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             style={{ fontFamily:fontObj.style,fontSize:17,lineHeight:"32px",color:"#2d2a26",textDecorationThickness:"1.5px",textUnderlineOffset:"3px" }}/>
         </div>
 
-        {/* ── Floating draggable stickers layer ── */}
+        {/* ── Floating draggable stickers + images layer ── */}
         {floatStickers.map(s => (
           <div key={s.id}
             className="float-sticker"
             style={{
               position:"absolute", left:s.x, top:s.y,
-              width:s.size, height:s.size,
+              width:s.size, height:s.imgSrc ? "auto" : s.size,
               cursor:"grab", userSelect:"none",
               transform:`rotate(${s.rot||0}deg)`,
-              transition:"transform 0.1s",
+              transition:"box-shadow 0.15s",
               zIndex:50,
+              borderRadius: s.imgSrc ? 10 : 0,
             }}
             onMouseDown={e => onStickerMouseDown(e, s.id)}
             onWheel={e => onStickerWheel(e, s.id)}>
-            <img
-              src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(s.svg)}`}
-              style={{ width:"100%", height:"100%", display:"block", pointerEvents:"none",
-                filter:"drop-shadow(0 3px 8px rgba(0,0,0,0.22))" }}
-              draggable={false}
-              alt=""
-            />
-            {/* delete on hover */}
+            {s.imgSrc ? (
+              <img
+                src={s.imgSrc}
+                style={{ width:"100%", height:"auto", display:"block", pointerEvents:"none",
+                  borderRadius:10, boxShadow:"0 4px 18px rgba(0,0,0,0.22)",
+                  border:"3px solid white" }}
+                draggable={false} alt=""
+              />
+            ) : (
+              <img
+                src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(s.svg)}`}
+                style={{ width:"100%", height:"100%", display:"block", pointerEvents:"none",
+                  filter:"drop-shadow(0 3px 8px rgba(0,0,0,0.22))" }}
+                draggable={false} alt=""
+              />
+            )}
             <button
               className="float-sticker-del"
               onMouseDown={e => e.stopPropagation()}
               onClick={e => { e.stopPropagation(); deleteFloatSticker(s.id); }}
-              style={{ position:"absolute",top:-9,right:-9,width:20,height:20,borderRadius:"50%",
-                background:"#ef4444",border:"2px solid white",color:"white",fontSize:12,
+              style={{ position:"absolute",top:-9,right:-9,width:22,height:22,borderRadius:"50%",
+                background:"#ef4444",border:"2.5px solid white",color:"white",fontSize:13,
                 cursor:"pointer",display:"none",alignItems:"center",justifyContent:"center",
                 boxShadow:"0 2px 6px rgba(0,0,0,0.3)",fontWeight:900,lineHeight:1,zIndex:10 }}>
               ×
