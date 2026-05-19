@@ -138,7 +138,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xl" onPointerMove={onPointerMove} onPointerUp={() => dragRef.current = null} onPointerCancel={() => dragRef.current = null} onClick={() => { setShowStickerPicker(false); setSelected(null); }}>
+    <div className="h-full w-full flex flex-col relative bg-slate-50 dark:bg-slate-900 animate-in" onPointerMove={onPointerMove} onPointerUp={() => dragRef.current = null} onPointerCancel={() => dragRef.current = null} onClick={() => { setShowStickerPicker(false); setSelected(null); }}>
       <style>{`
         .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
@@ -163,9 +163,8 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         }
       `}</style>
       
-      <div className="bg-slate-900 w-full max-w-5xl h-[85vh] max-h-[800px] rounded-[40px] shadow-2xl border border-black/10 dark:border-white/10 relative flex flex-col overflow-visible" onClick={e => e.stopPropagation()}>
-        {/* Editor Header */}
-        <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-[110] rounded-t-[40px] shrink-0">
+      {/* Editor Header */}
+      <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-slate-100 dark:bg-slate-900 z-[110] shrink-0">
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Journal Title..." className="bg-transparent border-none text-2xl font-black text-stone-900 dark:text-white outline-none w-2/3 placeholder:text-stone-900 dark:text-white/20" />
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl text-stone-900 dark:text-white/50 hover:text-stone-900 dark:text-white transition-all"><MdClose size={24}/></button>
@@ -205,9 +204,9 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         </div>
 
         {/* Notebook Body */}
-        <div className="flex-1 relative bg-slate-950 flex overflow-hidden rounded-b-[40px]">
+        <div className="flex-1 relative bg-slate-950 flex overflow-hidden">
           {/* Side binding effect */}
-          <div className="w-16 h-full bg-slate-900 border-r border-black/10 dark:border-white/10 flex flex-col items-center gap-12 pt-12 shadow-2xl z-10">
+          <div className="w-16 h-full bg-slate-200 dark:bg-slate-900 border-r border-black/10 dark:border-white/10 flex flex-col items-center gap-12 pt-12 shadow-2xl z-10">
             {Array.from({length: 15}).map((_, i) => (
               <div key={i} className="w-3 h-3 rounded-full bg-black/40 shadow-inner" />
             ))}
@@ -271,7 +270,6 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
             })}
           </div>
         </div>
-      </div>
     </div>
   );
 }
@@ -303,6 +301,10 @@ export default function Notes() {
     const matchSubj = activeSubj === "all" ? true : n.subjectId === activeSubj;
     return matchSearch && matchSubj;
   });
+
+  if (editing) {
+    return <NoteEditor note={editing} subjects={subjects} onSave={handleSave} onClose={() => setEditing(null)} />;
+  }
 
   return (
     <div className="h-full flex bg-transparent text-stone-900 dark:text-white overflow-hidden animate-in">
@@ -395,10 +397,6 @@ export default function Notes() {
           </div>
         </div>
       </div>
-
-      {editing && (
-        <NoteEditor note={editing} subjects={subjects} onSave={handleSave} onClose={() => setEditing(null)} />
-      )}
     </div>
   );
 }
