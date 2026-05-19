@@ -401,9 +401,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const [activeHL,  setActiveHL]  = useState(null);
   const [activeTc,  setActiveTc]  = useState(null);
   const [showStickerPicker, setShowStickerPicker] = useState(false);
+  const [stickerPickerPos, setStickerPickerPos] = useState({ top: 0, right: 0 });
   const [floatStickers, setFloatStickers] = useState(note.floatStickers || []);
-  const draggingRef = useRef(null); // { id, startX, startY, origX, origY }
+  const draggingRef = useRef(null);
   const noteAreaRef = useRef(null);
+  const stickerBtnRef = useRef(null);
   const editorRef = useRef(null);
   const imgRef    = useRef(null);
   const cv        = COVERS[coverIdx];
@@ -774,8 +776,19 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
 
         {/* Sticker button */}
         <div style={{ position:"relative" }}>
-          <button
-            onClick={(e) => { e.stopPropagation(); saveSelection(); setShowStickerPicker(v => !v); }}
+          <button ref={stickerBtnRef}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              saveSelection();
+              if (showStickerPicker) {
+                setShowStickerPicker(false);
+              } else {
+                const rect = stickerBtnRef.current?.getBoundingClientRect();
+                if (rect) setStickerPickerPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right });
+                setShowStickerPicker(true);
+              }
+            }}
             style={{
               padding:"4px 9px", borderRadius:6, fontSize:11, border:"1px solid",
               borderColor: showStickerPicker ? "#fcd34d" : "#e2e8f0",
@@ -787,18 +800,23 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
           </button>
 
           {showStickerPicker && (
-            <div style={{
-              position:"absolute", top:"calc(100% + 6px)", right:0,
-              background:"white", borderRadius:16, boxShadow:"0 12px 40px rgba(0,0,0,0.16)",
-              border:"1px solid #e2e8f0", zIndex:9999, width:300, padding:14,
-              maxHeight:360, overflowY:"auto",
-            }}
-            onClick={e => e.stopPropagation()}>
+            <div
+              onMouseDown={e => e.stopPropagation()}
+              style={{
+                position:"fixed",
+                top: stickerPickerPos.top,
+                right: stickerPickerPos.right,
+                background:"white", borderRadius:16,
+                boxShadow:"0 12px 40px rgba(0,0,0,0.22)",
+                border:"1px solid #e2e8f0", zIndex:99999,
+                width:300, padding:14,
+                maxHeight:380, overflowY:"auto",
+              }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
                 <span style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:"0.05em" }}>
                   {lang==="mn" ? "✨ СТИКЕР СОНГОХ" : "✨ PICK A STICKER"}
                 </span>
-                <button onClick={() => setShowStickerPicker(false)}
+                <button onMouseDown={e => { e.preventDefault(); setShowStickerPicker(false); }}
                   style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:18, lineHeight:1, padding:"0 2px" }}>×</button>
               </div>
               {SVG_STICKERS.map(set => (
@@ -811,22 +829,24 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                   </div>
                   <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
                     {set.items.map((svg, i) => (
-                      <div key={i}
-                        onClick={(e) => { e.stopPropagation(); insertSvgSticker(svg); }}
+                      <button key={i}
+                        onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); insertSvgSticker(svg); }}
                         style={{
                           width:44, height:44, borderRadius:10, cursor:"pointer",
                           border:"1.5px solid transparent", background:"#f8fafc",
                           display:"flex", alignItems:"center", justifyContent:"center",
                           transition:"all 0.12s", overflow:"hidden", padding:2,
+                          outline:"none",
                         }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor=set.color; e.currentTarget.style.transform="scale(1.15)"; e.currentTarget.style.background="#f0f9ff"; }}
                         onMouseLeave={e => { e.currentTarget.style.borderColor="transparent"; e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.background="#f8fafc"; }}>
                         <img
                           src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`}
                           style={{ width:38, height:38, pointerEvents:"none" }}
+                          draggable={false}
                           alt=""
                         />
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
