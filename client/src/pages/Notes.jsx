@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useSettings } from "../context/SettingsContext";
 import { toast } from "sonner";
 
@@ -785,7 +786,10 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                 setShowStickerPicker(false);
               } else {
                 const rect = stickerBtnRef.current?.getBoundingClientRect();
-                if (rect) setStickerPickerPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right });
+                if (rect) setStickerPickerPos({
+                  top: rect.bottom + 6,
+                  left: Math.max(8, Math.min(rect.right - 300, window.innerWidth - 316)),
+                });
                 setShowStickerPicker(true);
               }
             }}
@@ -799,59 +803,52 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             ✨ {lang==="mn"?"Стикер":"Sticker"}
           </button>
 
-          {showStickerPicker && (
+          {showStickerPicker && createPortal(
             <div
               onMouseDown={e => e.stopPropagation()}
               style={{
                 position:"fixed",
                 top: stickerPickerPos.top,
-                right: stickerPickerPos.right,
+                left: stickerPickerPos.left,
                 background:"white", borderRadius:16,
-                boxShadow:"0 12px 40px rgba(0,0,0,0.22)",
-                border:"1px solid #e2e8f0", zIndex:99999,
-                width:300, padding:14,
-                maxHeight:380, overflowY:"auto",
+                boxShadow:"0 16px 48px rgba(0,0,0,0.24)",
+                border:"1px solid #e2e8f0", zIndex:999999,
+                width:308, padding:14,
+                maxHeight:400, overflowY:"auto",
               }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                <span style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:"0.05em" }}>
-                  {lang==="mn" ? "✨ СТИКЕР СОНГОХ" : "✨ PICK A STICKER"}
-                </span>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                <span style={{ fontSize:12, fontWeight:700, color:"#64748b" }}>✨ СТИКЕР</span>
                 <button onMouseDown={e => { e.preventDefault(); setShowStickerPicker(false); }}
-                  style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:18, lineHeight:1, padding:"0 2px" }}>×</button>
+                  style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:20, lineHeight:1, padding:"0 4px" }}>×</button>
               </div>
               {SVG_STICKERS.map(set => (
-                <div key={set.label} style={{ marginBottom:12 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:7 }}>
-                    <div style={{ width:8, height:8, borderRadius:"50%", background:set.color }}/>
-                    <span style={{ fontSize:10, color:"#94a3b8", fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase" }}>
-                      {set.label}
-                    </span>
+                <div key={set.label} style={{ marginBottom:10 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:6 }}>
+                    <div style={{ width:7, height:7, borderRadius:"50%", background:set.color, flexShrink:0 }}/>
+                    <span style={{ fontSize:10, color:"#94a3b8", fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase" }}>{set.label}</span>
                   </div>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                     {set.items.map((svg, i) => (
                       <button key={i}
                         onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); insertSvgSticker(svg); }}
                         style={{
-                          width:44, height:44, borderRadius:10, cursor:"pointer",
-                          border:"1.5px solid transparent", background:"#f8fafc",
+                          width:46, height:46, borderRadius:10, cursor:"pointer",
+                          border:"2px solid transparent", background:"#f8fafc",
                           display:"flex", alignItems:"center", justifyContent:"center",
-                          transition:"all 0.12s", overflow:"hidden", padding:2,
-                          outline:"none",
+                          padding:3, outline:"none", flexShrink:0,
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor=set.color; e.currentTarget.style.transform="scale(1.15)"; e.currentTarget.style.background="#f0f9ff"; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor="transparent"; e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.background="#f8fafc"; }}>
-                        <img
-                          src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`}
-                          style={{ width:38, height:38, pointerEvents:"none" }}
-                          draggable={false}
-                          alt=""
-                        />
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=set.color; e.currentTarget.style.background="#f0f9ff"; e.currentTarget.style.transform="scale(1.12)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor="transparent"; e.currentTarget.style.background="#f8fafc"; e.currentTarget.style.transform="scale(1)"; }}>
+                        <img src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`}
+                          style={{ width:38, height:38, pointerEvents:"none", display:"block" }}
+                          draggable={false} alt=""/>
                       </button>
                     ))}
                   </div>
                 </div>
               ))}
-            </div>
+            </div>,
+            document.body
           )}
         </div>
       </div>
