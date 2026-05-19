@@ -8,7 +8,7 @@ function TypingDots() {
     <div style={{ display: "flex", gap: 5, alignItems: "center", padding: "6px 4px" }}>
       {[0, 1, 2].map(i => (
         <div key={i} style={{
-          width: 7, height: 7, borderRadius: "50%", background: "#94a3b8",
+          width: 6, height: 6, borderRadius: "50%", background: "#6366f1",
           animation: "aiBounce 1.2s infinite",
           animationDelay: `${i * 0.2}s`,
         }} />
@@ -26,12 +26,12 @@ function TypingDots() {
 const SUGGESTIONS_MN = [
   "Өнөөдрийн ажлуудаа тоймлоод өг",
   "Бүтээмжтэй байх зөвлөгөө өг",
-  "Todo-г яаж ангилах вэ?",
+  "Ажлуудаа яаж зөв ангилах вэ?",
 ];
 const SUGGESTIONS_EN = [
   "Summarize my tasks for today",
   "Give me productivity tips",
-  "How should I prioritize tasks?",
+  "How to organize my workspace?",
 ];
 
 export default function AIChat({ onClose }) {
@@ -43,8 +43,8 @@ export default function AIChat({ onClose }) {
     {
       role: "assistant",
       content: mn
-        ? `Сайн байна уу, ${user?.name || ""}! Би таны Groq AI туслах. Юу тусалж болох вэ? 🤖`
-        : `Hi ${user?.name || ""}! I'm your Groq AI assistant. How can I help you today? 🤖`,
+        ? `Сайн байна уу, ${user?.name || ""}! Би таны Groq AI туслах. Танд юугаар туслах вэ? ✨`
+        : `Hi ${user?.name || ""}! I'm your Groq AI assistant. How can I help you today? ✨`,
     }
   ]);
   const [input, setInput] = useState("");
@@ -99,98 +99,82 @@ export default function AIChat({ onClose }) {
     setMessages([{
       role: "assistant",
       content: mn
-        ? `Чат цэвэрлэгдлээ. Юу тусалж болох вэ? 🤖`
-        : `Chat cleared. How can I help you? 🤖`,
+        ? `Чат цэвэрлэгдлээ. Юу тусалж болох вэ? ✨`
+        : `Chat cleared. How can I help you? ✨`,
     }]);
   };
 
   const suggestions = mn ? SUGGESTIONS_MN : SUGGESTIONS_EN;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "white" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#020617", borderLeft: "1px solid rgba(255,255,255,0.05)" }}>
       {/* Header */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 10, padding: "13px 16px",
-        borderBottom: "1px solid #e2e8f0", flexShrink: 0,
-        background: `linear-gradient(135deg, ${theme.sidebar}, ${theme.accent}22)`,
+        display: "flex", alignItems: "center", gap: 12, padding: "16px 20px",
+        borderBottom: "1px solid rgba(255,255,255,0.05)", flexShrink: 0,
+        background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)"
       }}>
         <div style={{
-          width: 34, height: 34, borderRadius: 11,
-          background: `linear-gradient(135deg, ${theme.accent}, ${theme.sidebar})`,
+          width: 36, height: 36, borderRadius: 12,
+          background: "linear-gradient(135deg, #6366f1, #4f46e5)",
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-          boxShadow: `0 4px 12px ${theme.accent}40`,
+          boxShadow: "0 8px 20px rgba(99, 102, 241, 0.3)",
         }}>
-          <MdAutoAwesome size={18} color="white" />
+          <MdAutoAwesome size={20} color="white" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 13, fontWeight: 700, color: "white", margin: 0 }}>
-            {mn ? "Groq AI Туслах" : "Groq AI Assistant"}
+          <p style={{ fontSize: 14, fontWeights: 800, color: "white", margin: 0, letterSpacing: "-0.5px" }}>
+            Groq AI Assistant
           </p>
-          <p style={{ fontSize: 10.5, color: "rgba(255,255,255,0.65)", margin: 0 }}>
-            {loading
-              ? (mn ? "Бичиж байна..." : "Typing...")
-              : (mn ? "Llama 3.3 70B • Онлайн" : "Llama 3.3 70B • Online")}
+          <p style={{ fontSize: 11, color: "#6366f1", margin: 0, fontWeight: 700 }}>
+            {loading ? (mn ? "БОДОЖ БАЙНА..." : "THINKING...") : "ONLINE"}
           </p>
         </div>
-        <button onClick={clearChat} title={mn ? "Цэвэрлэх" : "Clear chat"} style={{
-          width: 28, height: 28, borderRadius: 7,
-          background: "rgba(255,255,255,0.12)", border: "none", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.7)",
-          marginRight: 2, transition: "background 0.15s",
-        }}>
-          <MdDelete size={15} />
-        </button>
-        <button onClick={onClose} style={{
-          width: 28, height: 28, borderRadius: 7,
-          background: "rgba(255,255,255,0.12)", border: "none", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center", color: "white",
-          transition: "background 0.15s",
-        }}>
-          <MdClose size={15} />
-        </button>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button onClick={clearChat} style={{
+            width: 32, height: 32, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)",
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8"
+          }} className="hover:text-red-400 transition-colors">
+            <MdDelete size={18} />
+          </button>
+          <button onClick={onClose} style={{
+            width: 32, height: 32, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)",
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "white"
+          }} className="hover:bg-white/5 transition-colors">
+            <MdClose size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
       <div style={{
-        flex: 1, overflowY: "auto", padding: "14px 12px",
-        display: "flex", flexDirection: "column", gap: 12,
+        flex: 1, overflowY: "auto", padding: "24px 20px",
+        display: "flex", flexDirection: "column", gap: 20,
       }}>
         {messages.map((msg, i) => (
           <div key={i} style={{
-            display: "flex", gap: 8,
+            display: "flex", gap: 12,
             flexDirection: msg.role === "user" ? "row-reverse" : "row",
-            alignItems: "flex-end",
+            alignItems: "flex-start",
           }}>
-            {/* Avatar */}
             <div style={{
-              width: 27, height: 27, borderRadius: 9, flexShrink: 0,
+              width: 32, height: 32, borderRadius: 10, flexShrink: 0,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: msg.role === "user"
-                ? `linear-gradient(135deg, ${theme.accent}, ${theme.sidebar})`
-                : "#f1f5f9",
-              boxShadow: msg.role === "user" ? `0 2px 8px ${theme.accent}30` : "none",
+              background: msg.role === "user" ? "rgba(99, 102, 241, 0.2)" : "rgba(255,255,255,0.05)",
+              color: msg.role === "user" ? "#6366f1" : "#94a3b8",
+              border: `1px solid ${msg.role === "user" ? "rgba(99, 102, 241, 0.2)" : "rgba(255,255,255,0.08)"}`
             }}>
-              {msg.role === "user"
-                ? <MdPerson size={14} color="white" />
-                : <MdSmartToy size={14} color="#64748b" />}
+              {msg.role === "user" ? <MdPerson size={18} /> : <MdSmartToy size={18} />}
             </div>
-            {/* Bubble */}
             <div style={{
-              maxWidth: "80%",
-              padding: "10px 13px",
-              borderRadius: msg.role === "user"
-                ? "16px 16px 4px 16px"
-                : "16px 16px 16px 4px",
-              background: msg.role === "user"
-                ? `linear-gradient(135deg, ${theme.accent}, ${theme.sidebar})`
-                : "#f8fafc",
-              color: msg.role === "user" ? "white" : "#1e293b",
-              fontSize: 13.5,
+              maxWidth: "85%",
+              padding: "14px 18px",
+              borderRadius: msg.role === "user" ? "20px 2px 20px 20px" : "2px 20px 20px 20px",
+              background: msg.role === "user" ? "#6366f1" : "rgba(15, 23, 42, 0.6)",
+              color: msg.role === "user" ? "white" : "#cbd5e1",
+              fontSize: 14,
               lineHeight: 1.6,
-              boxShadow: msg.role === "user"
-                ? `0 2px 10px ${theme.accent}25`
-                : "0 1px 3px rgba(0,0,0,0.05)",
-              border: msg.role === "assistant" ? "1px solid #e2e8f0" : "none",
+              border: msg.role === "assistant" ? "1px solid rgba(255,255,255,0.05)" : "none",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
             }}>
@@ -200,45 +184,44 @@ export default function AIChat({ onClose }) {
         ))}
 
         {loading && (
-          <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             <div style={{
-              width: 27, height: 27, borderRadius: 9, flexShrink: 0,
+              width: 32, height: 32, borderRadius: 10, flexShrink: 0,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: "#f1f5f9",
+              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)"
             }}>
-              <MdSmartToy size={14} color="#64748b" />
+              <MdSmartToy size={18} color="#94a3b8" />
             </div>
             <div style={{
-              padding: "10px 14px", borderRadius: "16px 16px 16px 4px",
-              background: "#f8fafc", border: "1px solid #e2e8f0",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              padding: "12px 16px", borderRadius: "2px 20px 20px 20px",
+              background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.05)",
             }}>
               <TypingDots />
             </div>
           </div>
         )}
 
-        {/* Quick suggestions — show only at start */}
         {messages.length === 1 && !loading && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
-            <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", fontWeight: 500 }}>
-              {mn ? "Санал болгох асуултууд:" : "Suggested questions:"}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
+            <p style={{ fontSize: 11, color: "#6366f1", textAlign: "center", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>
+              Quick Suggestions
             </p>
-            {suggestions.map((s, i) => (
-              <button key={i} onClick={() => sendMessage(s)}
-                style={{
-                  background: "#f8fafc", border: "1px solid #e2e8f0",
-                  borderRadius: 10, padding: "8px 12px",
-                  fontSize: 12.5, color: "#475569", cursor: "pointer",
-                  textAlign: "left", fontFamily: "inherit",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={e => { e.target.style.background = "#f1f5f9"; e.target.style.borderColor = "#cbd5e1"; }}
-                onMouseLeave={e => { e.target.style.background = "#f8fafc"; e.target.style.borderColor = "#e2e8f0"; }}
-              >
-                {s}
-              </button>
-            ))}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {suggestions.map((s, i) => (
+                <button key={i} onClick={() => sendMessage(s)}
+                  style={{
+                    background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
+                    borderRadius: 12, padding: "12px 16px",
+                    fontSize: 13, color: "#94a3b8", cursor: "pointer",
+                    textAlign: "left", fontFamily: "inherit", transition: "all 0.2s",
+                  }}
+                  onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "#fff"; }}
+                  onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.02)"; e.target.style.borderColor = "rgba(255,255,255,0.05)"; e.target.style.color = "#94a3b8"; }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -247,56 +230,46 @@ export default function AIChat({ onClose }) {
 
       {/* Input */}
       <div style={{
-        padding: "10px 12px", borderTop: "1px solid #e2e8f0", flexShrink: 0,
-        display: "flex", gap: 8, alignItems: "flex-end",
-        background: "#fafcff",
+        padding: "20px", borderTop: "1px solid rgba(255,255,255,0.05)", flexShrink: 0,
+        background: "rgba(15, 23, 42, 0.4)"
       }}>
-        <textarea
-          ref={inputRef}
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-          }}
-          placeholder={mn ? "Асуулт бичих... (Enter → илгээх)" : "Ask something... (Enter to send)"}
-          rows={1}
-          style={{
-            flex: 1, border: "1.5px solid #e2e8f0", borderRadius: 12,
-            padding: "9px 13px", fontSize: 13.5, outline: "none",
-            resize: "none", maxHeight: 100,
-            fontFamily: "inherit", color: "#1e293b", background: "white",
-            lineHeight: 1.5, transition: "border-color 0.2s, box-shadow 0.2s",
-          }}
-          onInput={e => {
-            e.target.style.height = "auto";
-            e.target.style.height = Math.min(e.target.scrollHeight, 100) + "px";
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = theme.accent;
-            e.target.style.boxShadow = `0 0 0 3px ${theme.accent}18`;
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = "#e2e8f0";
-            e.target.style.boxShadow = "none";
-          }}
-        />
-        <button
-          onClick={() => sendMessage()}
-          disabled={!input.trim() || loading}
-          style={{
-            width: 38, height: 38, borderRadius: 11, border: "none",
-            cursor: input.trim() && !loading ? "pointer" : "default",
-            background: input.trim() && !loading
-              ? `linear-gradient(135deg, ${theme.accent}, ${theme.sidebar})`
-              : "#e2e8f0",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0, transition: "all 0.15s",
-            color: input.trim() && !loading ? "white" : "#94a3b8",
-            boxShadow: input.trim() && !loading ? `0 4px 14px ${theme.accent}30` : "none",
-          }}
-        >
-          <MdSend size={16} />
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-end", background: "rgba(255,255,255,0.03)", borderRadius: 16, padding: "6px", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+            }}
+            placeholder={mn ? "Асуулт бичих..." : "Ask anything..."}
+            rows={1}
+            style={{
+              flex: 1, border: "none", background: "transparent",
+              padding: "10px 14px", fontSize: 14, outline: "none",
+              resize: "none", maxHeight: 120,
+              fontFamily: "inherit", color: "white",
+              lineHeight: 1.5,
+            }}
+            onInput={e => {
+              e.target.style.height = "auto";
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+            }}
+          />
+          <button
+            onClick={() => sendMessage()}
+            disabled={!input.trim() || loading}
+            style={{
+              width: 40, height: 40, borderRadius: 12, border: "none",
+              cursor: input.trim() && !loading ? "pointer" : "default",
+              background: input.trim() && !loading ? "#6366f1" : "rgba(255,255,255,0.05)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0, transition: "all 0.2s",
+              color: input.trim() && !loading ? "white" : "#475569",
+            }}
+          >
+            <MdSend size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );

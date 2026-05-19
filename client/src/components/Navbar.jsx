@@ -14,8 +14,8 @@ function SearchDropdown({ q, setQ, onClose }) {
     t.description?.toLowerCase().includes(q.toLowerCase())
   ).slice(0, 6);
 
-  const statusColor = { todo: "#94a3b8", in_progress: "#3b82f6", completed: "#22c55e" };
-  const priColor = { high: "#ef4444", medium: "#f59e0b", low: "#22c55e" };
+  const statusColor = { todo: "#94a3b8", in_progress: "#6366f1", completed: "#10b981" };
+  const priColor = { high: "#ef4444", medium: "#f59e0b", low: "#10b981" };
   const priLabel = lang === "mn"
     ? { high: "Өндөр", medium: "Дунд", low: "Бага" }
     : { high: "High", medium: "Med", low: "Low" };
@@ -27,9 +27,11 @@ function SearchDropdown({ q, setQ, onClose }) {
 
   return (
     <div style={{
-      position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
-      background: "white", borderRadius: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.13)",
-      border: "1px solid #e2e8f0", zIndex: 200, overflow: "hidden",
+      position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0,
+      background: "rgba(15, 23, 42, 0.95)", borderRadius: 16, 
+      boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+      border: "1px solid rgba(255,255,255,0.1)", zIndex: 200, overflow: "hidden",
+      backdropFilter: "blur(12px)"
     }}>
       {results.length === 0 ? (
         <div style={{ padding: 16, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
@@ -39,27 +41,28 @@ function SearchDropdown({ q, setQ, onClose }) {
         <div key={todo.id}
           onClick={() => { navigate("/todos"); onClose(); }}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #f1f5f9" }}
-          onMouseEnter={e => e.currentTarget.style.background = "#f8fafc"}
-          onMouseLeave={e => e.currentTarget.style.background = "white"}
+            padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+          onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+          onMouseLeave={e => e.currentTarget.style.background = "transparent"}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor[todo.status], flexShrink: 0 }} />
-            <span style={{ fontSize: 13, color: "#334155", fontWeight: 500,
+            <span style={{ fontSize: 13, color: "#f8fafc", fontWeight: 500,
               overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
               textDecoration: todo.status === "completed" ? "line-through" : "none" }}>
               {todo.title}
             </span>
           </div>
-          <div style={{ display: "flex", gap: 6, flexShrink: 0, marginLeft: 8 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: priColor[todo.priority] }}>{priLabel[todo.priority]}</span>
-            <span style={{ fontSize: 10, color: statusColor[todo.status] }}>{statusLabel[todo.status]}</span>
+          <div style={{ display: "flex", gap: 8, flexShrink: 0, marginLeft: 12 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: priColor[todo.priority], padding: '2px 6px', background: `${priColor[todo.priority]}20`, borderRadius: 4 }}>
+              {priLabel[todo.priority]}
+            </span>
           </div>
         </div>
       ))}
-      <div style={{ padding: "8px 14px", background: "#f8fafc", borderTop: "1px solid #f1f5f9" }}>
+      <div style={{ padding: "10px 16px", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
         <button onClick={() => { navigate("/todos"); onClose(); }}
-          style={{ fontSize: 12, color: "#64748b", background: "none", border: "none", cursor: "pointer" }}>
+          style={{ fontSize: 12, color: "#6366f1", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
           {lang === "mn" ? "Бүх todo харах →" : "View all todos →"}
         </button>
       </div>
@@ -75,7 +78,6 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
   const inputRef = useRef(null);
   const wrapRef = useRef(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
@@ -89,55 +91,56 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
 
   return (
     <header style={{
-      height: 56, background: "white", borderBottom: "1px solid #e2e8f0",
-      display: "flex", alignItems: "center", padding: "0 20px", gap: 10,
-      flexShrink: 0, zIndex: 10,
+      height: 64, background: "rgba(2, 6, 23, 0.7)", borderBottom: "1px solid rgba(255,255,255,0.08)",
+      display: "flex", alignItems: "center", padding: "0 24px", gap: 16,
+      flexShrink: 0, zIndex: 10, backdropFilter: "blur(12px)"
     }}>
       {/* Burger */}
       <button onClick={onMenuToggle} style={{
-        width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+        width: 38, height: 38, borderRadius: 10, flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: sidebarOpen ? "#f1f5f9" : "white",
-        border: "1px solid #e2e8f0", cursor: "pointer", color: "#475569", transition: "all .15s",
+        background: sidebarOpen ? "rgba(255,255,255,0.05)" : "transparent",
+        border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", color: "#f8fafc", transition: "all .2s",
       }}
-        onMouseEnter={e => e.currentTarget.style.background = "#e9eef5"}
-        onMouseLeave={e => e.currentTarget.style.background = sidebarOpen ? "#f1f5f9" : "white"}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+        onMouseLeave={e => e.currentTarget.style.background = sidebarOpen ? "rgba(255,255,255,0.05)" : "transparent"}
       >
-        <MdMenu size={19} />
+        <MdMenu size={20} />
       </button>
 
       {/* Greeting */}
-      <span style={{ fontSize: 14, fontWeight: 600, color: "#475569", flexShrink: 0, whiteSpace: "nowrap" }}>
-        {t.hello}, {user?.name} 👋
-      </span>
+      <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: "#94a3b8" }}>{t.hello},</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{user?.name} 👋</span>
+      </div>
 
-      {/* Search — inline after greeting */}
-      <div ref={wrapRef} style={{ position: "relative", flex: 1, maxWidth: 380 }}>
+      {/* Search */}
+      <div ref={wrapRef} style={{ position: "relative", flex: 1, maxWidth: 420, marginLeft: 20 }}>
         <div style={{
-          display: "flex", alignItems: "center", gap: 8,
-          background: focused ? "white" : "#f8fafc",
-          borderRadius: 10, padding: "7px 12px",
-          border: focused ? "1.5px solid #fcd34d" : "1px solid #e2e8f0",
-          boxShadow: focused ? "0 0 0 3px rgba(251,191,36,0.15)" : "none",
-          transition: "all .15s",
+          display: "flex", alignItems: "center", gap: 10,
+          background: focused ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
+          borderRadius: 12, padding: "8px 14px",
+          border: focused ? "1px solid #6366f1" : "1px solid rgba(255,255,255,0.08)",
+          boxShadow: focused ? "0 0 0 4px rgba(99, 102, 241, 0.15)" : "none",
+          transition: "all .2s",
         }}>
-          <MdSearch size={16} style={{ color: focused ? "#d97706" : "#94a3b8", flexShrink: 0 }} />
+          <MdSearch size={18} style={{ color: focused ? "#6366f1" : "#64748b", flexShrink: 0 }} />
           <input
             ref={inputRef}
             value={q}
             onChange={e => setQ(e.target.value)}
             onFocus={() => setFocused(true)}
-            placeholder={lang === "mn" ? "Хайх..." : "Search..."}
+            placeholder={lang === "mn" ? "Хайх..." : "Search anything..."}
             style={{
               flex: 1, border: "none", outline: "none", background: "transparent",
-              fontSize: 13, color: "#1e293b", minWidth: 0,
+              fontSize: 14, color: "#fff", minWidth: 0, fontFamily: "'Inter', sans-serif"
             }}
           />
           {q && (
             <button onClick={() => { setQ(""); inputRef.current?.focus(); }}
               style={{ background: "none", border: "none", cursor: "pointer",
-                color: "#94a3b8", display: "flex", flexShrink: 0, padding: 0 }}>
-              <MdClose size={14} />
+                color: "#64748b", display: "flex", flexShrink: 0, padding: 0 }}>
+              <MdClose size={16} />
             </button>
           )}
         </div>
@@ -146,39 +149,37 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
 
       <div style={{ flex: 1 }} />
 
-      {/* Date */}
-      <span style={{ fontSize: 12, color: "#94a3b8", flexShrink: 0 }}>
-        {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { year: "numeric", month: "short", day: "numeric" })}
-      </span>
-
       {/* Dark mode toggle */}
       <button
         onClick={toggleDark}
-        title={darkMode ? (lang === "mn" ? "Цайвар горим" : "Light mode") : (lang === "mn" ? "Харанхуй горим" : "Dark mode")}
         style={{
-          width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+          width: 38, height: 38, borderRadius: 10, flexShrink: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
-          background: darkMode ? "#1e293b" : "#f1f5f9",
-          border: "1px solid var(--border)",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
           cursor: "pointer", transition: "all .2s",
-          color: darkMode ? "#f59e0b" : "#64748b",
+          color: darkMode ? "#f59e0b" : "#94a3b8",
         }}
+        onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"}
+        onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
       >
-        {darkMode ? <MdLightMode size={18} /> : <MdDarkMode size={18} />}
+        {darkMode ? <MdLightMode size={19} /> : <MdDarkMode size={19} />}
       </button>
 
       {/* Chat */}
       <button onClick={onChatToggle} style={{
-        display: "flex", alignItems: "center", gap: 6,
-        padding: "6px 12px", borderRadius: 8, border: "none",
-        background: chatOpen ? "#eff6ff" : "transparent",
-        color: chatOpen ? "#2563eb" : "#64748b",
-        cursor: "pointer", fontSize: 13, fontWeight: 500,
-        flexShrink: 0, transition: "all .15s",
-      }}>
-        <MdChat size={17} />
+        display: "flex", alignItems: "center", gap: 8,
+        padding: "8px 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)",
+        background: chatOpen ? "rgba(99, 102, 241, 0.15)" : "rgba(255,255,255,0.03)",
+        color: chatOpen ? "#818cf8" : "#94a3b8",
+        cursor: "pointer", fontSize: 13, fontWeight: 700,
+        flexShrink: 0, transition: "all .2s",
+      }}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+        onMouseLeave={e => e.currentTarget.style.background = chatOpen ? "rgba(99, 102, 241, 0.15)" : "rgba(255,255,255,0.03)"}
+      >
+        <MdChat size={18} />
         <span>Chat</span>
-        {chatOpen && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80" }} />}
       </button>
     </header>
   );

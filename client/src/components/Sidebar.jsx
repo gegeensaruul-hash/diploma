@@ -15,7 +15,6 @@ import { useSettings } from "../context/SettingsContext";
 import { WidgetPanel, AddWidgetModal } from "./Widgets";
 import { getUserStore, setUserStore } from "../utils/userStorage";
 
-// App.jsx-ийн session cache-г reset хийх helper
 function resetSessionCache() {
   window.dispatchEvent(new CustomEvent("session-invalidate"));
 }
@@ -38,22 +37,12 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
   return (
     <div style={{
       position:"fixed", top: pos.top, left: pos.left, zIndex:200,
-      background:"#2a2a3a", borderRadius:16, padding:16, width:260,
-      boxShadow:"0 20px 60px rgba(0,0,0,0.55)",
+      background:"rgba(15, 23, 42, 0.98)", borderRadius:20, padding:20, width:280,
+      boxShadow:"0 32px 64px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)",
+      backdropFilter: "blur(20px)"
     }}>
-      <button onClick={()=>setShowVBPopup(false)}
-        style={{
-          position:"absolute", top:-10, left:-10,
-          width:26, height:26, borderRadius:"50%",
-          background:"#6b2e74", border:"none",
-          display:"flex", alignItems:"center", justifyContent:"center",
-          cursor:"pointer", color:"white",
-        }}>
-        <MdClose size={14}/>
-      </button>
-
-      <p style={{fontSize:10,color:"#aaa",letterSpacing:"0.08em",marginBottom:10,paddingLeft:2}}>
-        ШИНЭ ҮҮСГЭХ
+      <p style={{fontSize:11, color:"#94a3b8", fontWeight: 700, letterSpacing:"0.08em", marginBottom:16, textTransform: "uppercase"}}>
+        CREATE NEW
       </p>
 
       <div
@@ -74,21 +63,22 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
           navigate(`/visionboard/${targetId}`);
         }}
         style={{
-          display:"flex", alignItems:"center", gap:12,
-          padding:"10px 12px", background:"#1e1e2e",
-          borderRadius:10, cursor:"pointer", transition:"background .15s",
+          display:"flex", alignItems:"center", gap:14,
+          padding:"12px", background:"rgba(255,255,255,0.03)",
+          borderRadius:14, cursor:"pointer", transition:"all .2s",
+          border: "1px solid rgba(255,255,255,0.05)"
         }}
-        onMouseEnter={e=>e.currentTarget.style.background="#2e2e44"}
-        onMouseLeave={e=>e.currentTarget.style.background="#1e1e2e"}>
+        onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}
+        onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.05)"}}>
         <div style={{
-          width:38, height:38, borderRadius:10, background:"#3a2a5a",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+          width:40, height:40, borderRadius:12, background:"rgba(129, 140, 248, 0.15)",
+          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color: "#818cf8"
         }}>
-          <MdDashboardCustomize size={22} color="#c4a8ff"/>
+          <MdDashboardCustomize size={22} />
         </div>
         <div>
-          <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:2}}>Vision Board</div>
-          <div style={{fontSize:12,color:"#aaa"}}>Нэрт тохирсон загвар</div>
+          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>Vision Board</div>
+          <div style={{fontSize:12,color:"#94a3b8"}}>Visual your dreams</div>
         </div>
       </div>
 
@@ -108,44 +98,44 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
           navigate("/futurecapsule");
         }}
         style={{
-          display:"flex", alignItems:"center", gap:12,
-          padding:"10px 12px", background:"#1e1e2e",
-          borderRadius:10, cursor:"pointer", transition:"background .15s",
-          marginTop:8,
+          display:"flex", alignItems:"center", gap:14,
+          padding:"12px", background:"rgba(255,255,255,0.03)",
+          borderRadius:14, cursor:"pointer", transition:"all .2s",
+          marginTop:10, border: "1px solid rgba(255,255,255,0.05)"
         }}
-        onMouseEnter={e=>e.currentTarget.style.background="#2e2e44"}
-        onMouseLeave={e=>e.currentTarget.style.background="#1e1e2e"}>
+        onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}
+        onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.05)"}}>
         <div style={{
-          width:38, height:38, borderRadius:10, background:"#2a1a3a",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+          width:40, height:40, borderRadius:12, background:"rgba(192, 132, 252, 0.15)",
+          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color: "#c084fc"
         }}>
-          <MdMailOutline size={22} color="#f0a8ff"/>
+          <MdMailOutline size={22} />
         </div>
         <div>
-          <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:2}}>Future Capsule</div>
-          <div style={{fontSize:12,color:"#aaa"}}>Ирээдүйдөө захидал бич</div>
+          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>Future Capsule</div>
+          <div style={{fontSize:12,color:"#94a3b8"}}>Write to future you</div>
         </div>
       </div>
 
       <div
         onClick={()=>{ setShowFinance&&setShowFinance(true); setShowVBPopup(false); navigate("/finance"); }}
         style={{
-          display:"flex", alignItems:"center", gap:12,
-          padding:"10px 12px", background:"#1e1e2e",
-          borderRadius:10, cursor:"pointer", transition:"background .15s",
-          marginTop:8,
+          display:"flex", alignItems:"center", gap:14,
+          padding:"12px", background:"rgba(255,255,255,0.03)",
+          borderRadius:14, cursor:"pointer", transition:"all .2s",
+          marginTop:10, border: "1px solid rgba(255,255,255,0.05)"
         }}
-        onMouseEnter={e=>e.currentTarget.style.background="#2e2e44"}
-        onMouseLeave={e=>e.currentTarget.style.background="#1e1e2e"}>
+        onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}
+        onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.05)"}}>
         <div style={{
-          width:38, height:38, borderRadius:10, background:"#1a2a3a",
-          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+          width:40, height:40, borderRadius:12, background:"rgba(74, 222, 128, 0.15)",
+          display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color: "#4ade80"
         }}>
-          <MdAccountBalanceWallet size={22} color="#a8d8a8"/>
+          <MdAccountBalanceWallet size={22} />
         </div>
         <div>
-          <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:2}}>Finance</div>
-          <div style={{fontSize:12,color:"#aaa"}}>Зарлага орлогоо хянах</div>
+          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>Finance</div>
+          <div style={{fontSize:12,color:"#94a3b8"}}>Track your wealth</div>
         </div>
       </div>
     </div>
@@ -159,34 +149,27 @@ export default function Sidebar({ onClose, onMenuToggle }) {
   const location = useLocation();
   const [logout] = useLogoutMutation();
 
-  const { t, theme } = useSettings();
+  const { t } = useSettings();
   const [showVBPopup, setShowVBPopup] = useState(false);
   const plusBtnRef = useRef(null);
-  const [vbBoards, setVbBoards] = useState(() => {
-    return getUserStore("sidebar_vb_boards", []);
-  });
-  const [fcBoards, setFcBoards] = useState(() => {
-    return getUserStore("sidebar_fc_boards", []);
-  });
-  const [showFinance, setShowFinance] = useState(() => {
-    return getUserStore("sidebar_show_finance", false);
-  });
+  const [vbBoards, setVbBoards] = useState(() => getUserStore("sidebar_vb_boards", []));
+  const [fcBoards, setFcBoards] = useState(() => getUserStore("sidebar_fc_boards", []));
+  const [showFinance, setShowFinance] = useState(() => getUserStore("sidebar_show_finance", false));
 
   const isTodosActive = location.pathname.startsWith("/todos");
   const [todosOpen, setTodosOpen] = useState(isTodosActive);
-  const [showAddWidget, setShowAddWidget] = useState(false);
 
   const topLinks = [
-    { to: "/dashboard", label: t.dashboard, icon: <MdDashboard size={19} /> },
+    { to: "/dashboard", label: t.dashboard, icon: <MdDashboard size={20} /> },
   ];
   const todosSubLinks = [
-    { to: "/todos/todo",        label: t.todo,       dot: "bg-white/30" },
-    { to: "/todos/in_progress", label: t.inProgress, dot: "bg-blue-300" },
-    { to: "/todos/completed",   label: t.completed,  dot: "bg-green-300" },
+    { to: "/todos/todo",        label: t.todo,       color: "#94a3b8" },
+    { to: "/todos/in_progress", label: t.inProgress, color: "#6366f1" },
+    { to: "/todos/completed",   label: t.completed,  color: "#10b981" },
   ];
   const bottomLinks = [
-    { to: "/notes",    label: t.notes,    icon: <MdNote size={19} /> },
-    { to: "/calendar", label: t.calendar, icon: <MdCalendarMonth size={19} /> },
+    { to: "/notes",    label: t.notes,    icon: <MdNote size={20} /> },
+    { to: "/calendar", label: t.calendar, icon: <MdCalendarMonth size={20} /> },
   ];
 
   const handleLogout = async () => {
@@ -200,125 +183,79 @@ export default function Sidebar({ onClose, onMenuToggle }) {
 
   const colorIdx = (user?.name?.charCodeAt(0) || 0) % AVATAR_COLORS.length;
   const [c1, c2] = AVATAR_COLORS[colorIdx];
-  const bg = theme.sidebar;
 
   const linkClass = (isActive) =>
-    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-      isActive ? "bg-white/15 text-white" : "text-white/50 hover:text-white hover:bg-white/10"
+    `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+      isActive 
+        ? "bg-indigo-500/15 text-indigo-400 border border-indigo-500/20" 
+        : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
     }`;
 
   return (
-    <aside className="w-52 flex flex-col h-full overflow-hidden" style={{ background: bg }}>
+    <aside className="w-[220px] flex flex-col h-full overflow-hidden bg-[#020617]">
       <style>{`.group:hover .vb-del { display:flex!important; }`}</style>
 
-      <div className="relative flex-shrink-0">
-        <div className="w-full overflow-hidden" style={{ height: 96 }}>
-          {user?.coverImage ? (
-            <img src={user.coverImage} alt="cover" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full" style={{
-              background: `radial-gradient(ellipse at 25% 60%, ${c1}77 0%, transparent 60%),
-                           radial-gradient(ellipse at 75% 30%, ${c2}66 0%, transparent 55%),
-                           linear-gradient(160deg, ${bg}, ${bg}88)`
-            }} />
-          )}
-        </div>
-
-        <div className="absolute left-4 z-10" style={{ bottom: -28 }}>
-          <NavLink to="/profile">
-            <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white"
-              style={{
-                background: user?.avatarImage ? "transparent" : `linear-gradient(135deg, ${c1}, ${c2})`,
-                border: `3px solid ${bg}`,
-                boxShadow: "0 3px 14px rgba(0,0,0,0.45)",
-              }}>
-              {user?.avatarImage
-                ? <img src={user.avatarImage} alt="avatar" className="w-full h-full object-cover" />
-                : user?.name?.[0]?.toUpperCase()}
+      {/* Profile Section */}
+      <div className="flex-shrink-0 pt-8 px-4 pb-4">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+             <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black text-white"
+                style={{
+                  background: user?.avatarImage ? "transparent" : `linear-gradient(135deg, ${c1}, ${c2})`,
+                  border: `2px solid rgba(255,255,255,0.08)`,
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                }}>
+                {user?.avatarImage
+                  ? <img src={user.avatarImage} alt="avatar" className="w-full h-full object-cover" />
+                  : user?.name?.[0]?.toUpperCase()}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-[#020617] rounded-full"></div>
+          </div>
+          
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-base font-bold text-white truncate max-w-[120px]">{user?.name}</span>
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-black tracking-widest bg-indigo-500 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]">PRO</span>
             </div>
-          </NavLink>
-        </div>
-      </div>
-
-      <div className="flex-shrink-0 pt-9 pb-3 px-4">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <p className="text-[15px] font-bold text-white truncate leading-tight">{user?.name}</p>
-            <span className="flex-shrink-0 px-1.5 py-0.5 rounded text-[9px] font-black tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg">PRO</span>
-          </div>
-          <div style={{ display:"flex", alignItems:"center", gap:6, position:"relative" }}>
-            <button
-              ref={plusBtnRef}
-              onClick={() => setShowVBPopup(v => !v)}
-              title="Нэмэх"
-              style={{
-                width:22, height:22, borderRadius:6,
-                background:"rgba(255,255,255,0.15)",
-                border:"1px solid rgba(255,255,255,0.25)",
-                display:"flex", alignItems:"center", justifySelf:"center", justifyContent:"center",
-                cursor:"pointer", color:"white", flexShrink:0,
-                transition:"background .15s",
-              }}
-              onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"}
-              onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>
-              <MdAdd size={15} />
-            </button>
-            <NavLink to="/profile" className="text-white/40 hover:text-white transition-colors flex-shrink-0">
-              <MdSettings size={15} />
-            </NavLink>
-
-            {showVBPopup && createPortal(
-              <>
-                <div style={{ position:"fixed", inset:0, zIndex:199 }} onClick={()=>setShowVBPopup(false)}/>
-                <VBPopup
-                  anchorRef={plusBtnRef}
-                  vbBoards={vbBoards}
-                  setVbBoards={setVbBoards}
-                  fcBoards={fcBoards}
-                  setFcBoards={setFcBoards}
-                  setShowVBPopup={setShowVBPopup}
-                  setShowFinance={(v)=>{ setShowFinance(v); setUserStore("sidebar_show_finance", v); }}
-                  navigate={navigate}
-                />
-              </>,
-              document.body
-            )}
+            <p className="text-[11px] font-medium text-slate-500 uppercase tracking-widest">Active User</p>
           </div>
         </div>
       </div>
 
-      <div className="mx-3 flex-shrink-0" style={{ height: 1, background: "rgba(255,255,255,0.1)" }} />
+      <div className="mx-6 h-px bg-white/5 my-4"></div>
 
-      <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         {topLinks.map(({ to, label, icon }) => (
           <NavLink key={to} to={to} className={({ isActive }) => linkClass(isActive)}>
             {icon}{label}
           </NavLink>
         ))}
 
-        <div>
+        <div className="py-1">
           <button
             onClick={() => setTodosOpen((v) => !v)}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isTodosActive ? "bg-white/15 text-white" : "text-white/50 hover:text-white hover:bg-white/10"
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              isTodosActive ? "text-indigo-400" : "text-slate-400 hover:text-white"
             }`}
           >
-            <MdOutlineChecklist size={19} />
+            <MdOutlineChecklist size={20} />
             <span className="flex-1 text-left">{t.allTodos}</span>
-            {todosOpen
-              ? <MdExpandLess size={16} className="opacity-60" />
-              : <MdExpandMore size={16} className="opacity-60" />}
+            {todosOpen ? <MdExpandLess size={18} /> : <MdExpandMore size={18} />}
           </button>
 
           <div style={{
-            maxHeight: todosOpen ? 200 : 0,
+            maxHeight: todosOpen ? 160 : 0,
             overflow: "hidden",
-            transition: "max-height 0.25s ease",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           }}>
-            <div className="pl-3 pt-0.5 space-y-0.5">
-              {todosSubLinks.map(({ to, label, dot }) => (
-                <NavLink key={to} to={to} className={({ isActive }) => linkClass(isActive)}>
-                  <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ml-0.5 ${dot}`} />
+            <div className="pl-6 pt-1 space-y-1 border-l border-white/5 ml-6">
+              {todosSubLinks.map(({ to, label, color }) => (
+                <NavLink key={to} to={to} className={({ isActive }) => 
+                  `flex items-center gap-3 py-2 px-2 text-[13px] font-medium transition-all ${
+                    isActive ? "text-white" : "text-slate-500 hover:text-slate-300"
+                  }`
+                }>
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />
                   {label}
                 </NavLink>
               ))}
@@ -332,103 +269,75 @@ export default function Sidebar({ onClose, onMenuToggle }) {
           </NavLink>
         ))}
 
-        {fcBoards.filter(b => !b.hidden).map((board) => (
-          <div key={board.id} className="group flex items-center rounded-lg" style={{ position:"relative" }}>
-            <NavLink to="/futurecapsule" className={({ isActive }) => linkClass(isActive)} style={{ flex:1 }}>
-              <MdMailOutline size={19}/>{board.label}
-            </NavLink>
+        {/* Dynamic Items */}
+        <div className="pt-4 pb-2 px-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em]">Modules</span>
             <button
-              onClick={() => {
-                const updated = fcBoards.map(b => b.id === board.id ? {...b, hidden: true} : b);
-                setFcBoards(updated);
-                setUserStore("sidebar_fc_boards", updated);
-                navigate("/dashboard");
-              }}
-              style={{
-                position:"absolute", right:6,
-                width:18, height:18, borderRadius:5,
-                background:"rgba(220,38,38,0.15)", border:"none",
-                color:"rgba(255,100,100,0.6)", cursor:"pointer",
-                display:"none", alignItems:"center", justifyContent:"center",
-                fontSize:14, fontWeight:700, lineHeight:1,
-              }}
-              className="vb-del"
-            >×</button>
+              ref={plusBtnRef}
+              onClick={() => setShowVBPopup(v => !v)}
+              className="p-1 rounded-md bg-white/5 hover:bg-indigo-500/20 text-slate-500 hover:text-indigo-400 transition-all border border-white/5"
+            >
+              <MdAdd size={14} />
+            </button>
           </div>
-        ))}
-        {vbBoards.filter(b => !b.hidden).map((board) => (
-          <div key={board.id} className="group flex items-center rounded-lg" style={{ position:"relative" }}>
-            <NavLink to={`/visionboard/${board.id}`} className={({ isActive }) => linkClass(isActive)} style={{ flex:1 }}>
-              <MdDashboardCustomize size={19} />{board.label}
-            </NavLink>
-            <button
-              onClick={() => {
-                const updated = vbBoards.map(b => b.id === board.id ? {...b, hidden: true} : b);
-                setVbBoards(updated);
-                setUserStore("sidebar_vb_boards", updated);
-                navigate("/dashboard");
-              }}
-              style={{
-                position:"absolute", right:6,
-                width:18, height:18, borderRadius:5,
-                background:"rgba(220,38,38,0.15)", border:"none",
-                color:"rgba(255,100,100,0.6)", cursor:"pointer",
-                display:"none", alignItems:"center", justifyContent:"center",
-                fontSize:14, fontWeight:700, lineHeight:1,
-              }}
-              className="vb-del"
-            >×</button>
+          
+          <div className="space-y-1">
+            {fcBoards.filter(b => !b.hidden).map((board) => (
+              <div key={board.id} className="group relative">
+                <NavLink to="/futurecapsule" className={({ isActive }) => linkClass(isActive)}>
+                  <MdMailOutline size={20}/>{board.label}
+                </NavLink>
+              </div>
+            ))}
+            {vbBoards.filter(b => !b.hidden).map((board) => (
+              <div key={board.id} className="group relative">
+                <NavLink to={`/visionboard/${board.id}`} className={({ isActive }) => linkClass(isActive)}>
+                  <MdDashboardCustomize size={20} />{board.label}
+                </NavLink>
+              </div>
+            ))}
+            {showFinance && (
+              <div className="group relative">
+                <NavLink to="/finance" className={({ isActive }) => linkClass(isActive)}>
+                  <MdAccountBalanceWallet size={20}/>Finance
+                </NavLink>
+              </div>
+            )}
           </div>
-        ))}
-        {showFinance && (
-          <div style={{ position:"relative" }} className="group flex items-center rounded-lg">
-            <NavLink to="/finance" className={({ isActive }) => linkClass(isActive)} style={{ flex:1 }}>
-              <MdAccountBalanceWallet size={19}/>Finance
-            </NavLink>
-            <button
-              onClick={()=>{ setShowFinance(false); setUserStore("sidebar_show_finance", false); navigate("/dashboard"); }}
-              style={{
-                position:"absolute", right:6,
-                width:18, height:18, borderRadius:5,
-                background:"rgba(220,38,38,0.15)", border:"none",
-                color:"rgba(255,100,100,0.6)", cursor:"pointer",
-                display:"none", alignItems:"center", justifyContent:"center",
-                fontSize:14, fontWeight:700, lineHeight:1,
-              }}
-              className="vb-del"
-            >×</button>
-          </div>
-        )}
-        {user?.role === "admin" && (
-          <NavLink to="/users" className={({ isActive }) => linkClass(isActive)}>
-            <MdPeople size={19} />{t.users}
-          </NavLink>
-        )}
+        </div>
       </nav>
 
-      <div style={{ overflowY:"auto", flexShrink:0, maxHeight:320 }}>
-        <WidgetPanel />
+      {/* Widget Panel */}
+      <div className="flex-shrink-0 px-2 py-4">
+         <WidgetPanel />
       </div>
 
-      <div className="mx-3 flex-shrink-0" style={{ height: 1, background: "rgba(255,255,255,0.1)" }} />
+      <div className="mx-6 h-px bg-white/5"></div>
 
-      <div className="flex-shrink-0 p-3">
+      <div className="flex-shrink-0 p-4">
         <button type="button" onClick={handleLogout}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors">
-          <MdLogout size={18} />{t.logout}
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-red-400 hover:bg-red-400/5 transition-all">
+          <MdLogout size={20} />{t.logout}
         </button>
       </div>
-      {showAddWidget && <AddWidgetModal
-        onAdd={(w)=>{
-          try {
-            const existing = getUserStore("app_widgets_v1", []);
-            setUserStore("app_widgets_v1", [...existing, w]);
-            window.dispatchEvent(new CustomEvent("widget-added", { detail: w }));
-          } catch(e) {}
-          setShowAddWidget(false);
-          toast.success(w.name + " нэмэгдлээ ✓");
-        }}
-        onClose={()=>setShowAddWidget(false)}/>}
+
+      {showVBPopup && createPortal(
+        <>
+          <div className="fixed inset-0 z-[199]" onClick={()=>setShowVBPopup(false)}/>
+          <VBPopup
+            anchorRef={plusBtnRef}
+            vbBoards={vbBoards}
+            setVbBoards={setVbBoards}
+            fcBoards={fcBoards}
+            setFcBoards={setFcBoards}
+            setShowVBPopup={setShowVBPopup}
+            setShowFinance={(v)=>{ setShowFinance(v); setUserStore("sidebar_show_finance", v); }}
+            navigate={navigate}
+          />
+        </>,
+        document.body
+      )}
     </aside>
   );
 }

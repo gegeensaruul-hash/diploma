@@ -4,41 +4,31 @@ import { Link } from "react-router-dom";
 import { useSettings } from "../context/SettingsContext";
 import {
   MdOutlineChecklist, MdOutlineRadioButtonUnchecked, MdOutlineTimer, MdOutlineCheckCircle,
-  MdArrowUpward, MdArrowDownward, MdDragHandle,
+  MdArrowUpward, MdArrowDownward, MdDragHandle, MdTrendingUp, MdCalendarToday
 } from "react-icons/md";
 
-const PRIORITY_COLOR = { high: "#ef4444", medium: "#f59e0b", low: "#22c55e" };
+const PRIORITY_COLOR = { high: "#ef4444", medium: "#f59e0b", low: "#10b981" };
 const PRIORITY_LABEL_MN = { high: "Өндөр", medium: "Дунд", low: "Бага" };
 const PRIORITY_LABEL_EN = { high: "High", medium: "Medium", low: "Low" };
-const STATUS_COLOR = { todo: "#94a3b8", in_progress: "#3b82f6", completed: "#22c55e" };
-const PANEL = {
-  background: "rgba(255,255,255,0.94)",
-  borderRadius: 18,
-  border: "1px solid #e8edf3",
-  boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
-};
+const STATUS_COLOR = { todo: "#94a3b8", in_progress: "#6366f1", completed: "#10b981" };
 
 function StatCard({ label, count, icon, accent, to, sublabel }) {
   return (
-    <Link to={to} style={{
+    <Link to={to} className="premium-card" style={{
       display: "flex", flexDirection: "column", justifyContent: "space-between",
-      ...PANEL, padding: "18px 20px",
-      textDecoration: "none", transition: "box-shadow .15s, transform .15s, border-color .15s",
-      minHeight: 112, position: "relative", overflow: "hidden",
-    }}
-      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 16px 36px rgba(15,23,42,0.10)"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = accent + "55"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = PANEL.boxShadow; e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "#e8edf3"; }}
-    >
-      <div style={{ position: "absolute", inset: "auto -18px -28px auto", width: 86, height: 86, borderRadius: "50%", background: accent + "12" }} />
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: accent + "18", display: "flex", alignItems: "center", justifyContent: "center", color: accent, boxShadow: `inset 0 0 0 1px ${accent}22` }}>
+      padding: "24px", textDecoration: "none", minHeight: 128, position: "relative", 
+      overflow: "hidden", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)"
+    }}>
+      <div style={{ position: "absolute", inset: "auto -20px -20px auto", width: 100, height: 100, borderRadius: "50%", background: `${accent}10` }} />
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 14, background: `${accent}15`, display: "flex", alignItems: "center", justifyContent: "center", color: accent, border: `1px solid ${accent}30` }}>
           {icon}
         </div>
-        <span style={{ fontSize: 28, fontWeight: 800, color: "#1e293b" }}>{count ?? "—"}</span>
+        <span style={{ fontSize: 32, fontWeight: 800, color: "#fff", letterSpacing: "-1px" }}>{count ?? "0"}</span>
       </div>
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#334155" }}>{label}</div>
-        {sublabel && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{sublabel}</div>}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", tracking: "0.05em" }}>{label}</div>
+        {sublabel && <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>{sublabel}</div>}
       </div>
     </Link>
   );
@@ -48,18 +38,22 @@ function PriorityBar({ high = 0, medium = 0, low = 0, lang }) {
   const total = (high + medium + low) || 1;
   return (
     <div>
-      <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8, fontWeight: 600 }}>
-        {lang === "mn" ? "Чухлын хуваарилалт" : "Priority breakdown"}
+      <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+        <MdTrendingUp size={16} />
+        {lang === "mn" ? "ЧУХЛЫН ХУВААРИЛАЛТ" : "PRIORITY BREAKDOWN"}
       </div>
-      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", height: 10, gap: 2 }}>
-        {high > 0 && <div style={{ width: `${(high / total) * 100}%`, background: "#ef4444", borderRadius: 4 }} title={`High: ${high}`} />}
-        {medium > 0 && <div style={{ width: `${(medium / total) * 100}%`, background: "#f59e0b", borderRadius: 4 }} title={`Medium: ${medium}`} />}
-        {low > 0 && <div style={{ width: `${(low / total) * 100}%`, background: "#22c55e", borderRadius: 4 }} title={`Low: ${low}`} />}
+      <div style={{ display: "flex", borderRadius: 12, overflow: "hidden", height: 12, gap: 3, background: "rgba(255,255,255,0.05)", padding: 2 }}>
+        {high > 0 && <div style={{ width: `${(high / total) * 100}%`, background: "#ef4444", borderRadius: 8 }} />}
+        {medium > 0 && <div style={{ width: `${(medium / total) * 100}%`, background: "#f59e0b", borderRadius: 8 }} />}
+        {low > 0 && <div style={{ width: `${(low / total) * 100}%`, background: "#10b981", borderRadius: 8 }} />}
       </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
-        {[["#ef4444", lang === "mn" ? "Өндөр" : "High", high], ["#f59e0b", lang === "mn" ? "Дунд" : "Med", medium], ["#22c55e", lang === "mn" ? "Бага" : "Low", low]].map(([c, l, v]) => (
-          <div key={l} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "#64748b" }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: c, flexShrink: 0 }} />{l}: <b style={{ color: "#334155" }}>{v}</b>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 16 }}>
+        {[["#ef4444", lang === "mn" ? "Өндөр" : "High", high], ["#f59e0b", lang === "mn" ? "Дунд" : "Med", medium], ["#10b981", lang === "mn" ? "Бага" : "Low", low]].map(([c, l, v]) => (
+          <div key={l} style={{ background: "rgba(255,255,255,0.02)", padding: "10px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#64748b", marginBottom: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: c }} />{l}
+            </div>
+            <b style={{ color: "#fff", fontSize: 16 }}>{v}</b>
           </div>
         ))}
       </div>
@@ -93,13 +87,6 @@ export default function Dashboard() {
     else { setSortField(field); setSortDir("asc"); }
   };
 
-  const SortIcon = ({ field }) => {
-    if (sortField !== field) return <MdDragHandle size={13} style={{ color: "#cbd5e1" }} />;
-    return sortDir === "asc"
-      ? <MdArrowUpward size={13} style={{ color: theme.accent }} />
-      : <MdArrowDownward size={13} style={{ color: theme.accent }} />;
-  };
-
   const priorityLabel = lang === "mn" ? PRIORITY_LABEL_MN : PRIORITY_LABEL_EN;
   const statusLabel = {
     todo:        lang === "mn" ? "Хийх"       : "To Do",
@@ -110,17 +97,14 @@ export default function Dashboard() {
   const completePct = stats?.total ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   return (
-    <div className="dash-wrap" style={{ display: "flex", flexDirection: "column", gap: 20,
-      background: "linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%)",
-      borderRadius: 18, padding: 18, minHeight: "calc(100vh - 110px)" }}>
+    <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <style>{`
-        .dash-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
-        .dash-panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-        .dash-table-head,.dash-table-row{display:grid;grid-template-columns:minmax(180px,1fr) 90px 110px 90px}
+        .dash-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+        .dash-panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+        .dash-table-head,.dash-table-row{display:grid;grid-template-columns:minmax(200px,1fr) 100px 120px 100px; gap: 12px}
         @media (max-width: 760px){
-          .dash-wrap{padding:12px!important;border-radius:14px!important;gap:14px!important}
-          .dash-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
-          .dash-panel-grid{grid-template-columns:1fr!important;gap:10px!important}
+          .dash-stat-grid{grid-template-columns:repeat(2,1fr)!important;gap:12px!important}
+          .dash-panel-grid{grid-template-columns:1fr!important;gap:16px!important}
           .dash-table-scroll{overflow-x:auto!important}
           .dash-table-head,.dash-table-row{grid-template-columns:180px 86px 104px 78px!important;min-width:448px}
         }
@@ -128,139 +112,124 @@ export default function Dashboard() {
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1e293b", margin: 0 }}>
-          {t.dashboard}
-        </h2>
-        <span style={{ fontSize: 12, color: "#64748b", background: "white", border: "1px solid #e2e8f0",
-          borderRadius: 999, padding: "6px 11px", boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
-          {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-        </span>
+        <div>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px" }}>
+            {t.dashboard}
+          </h2>
+          <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 4 }}>{lang === "mn" ? "Таны бүтээмжийн өнөөдрийн тойм" : "Overview of your productivity today"}</p>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "10px 16px" }}>
+          <MdCalendarToday size={16} color="#6366f1" />
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
+            {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { weekday: "short", month: "long", day: "numeric" })}
+          </span>
+        </div>
       </div>
 
       {/* Stat cards */}
       <div className="dash-stat-grid">
-        <StatCard label={lang === "mn" ? "Нийт" : "Total"} count={stats?.total} icon={<MdOutlineChecklist size={20} />} accent={theme.accent} to="/todos" />
-        <StatCard label={lang === "mn" ? "Хийх" : "To Do"} count={stats?.todo} icon={<MdOutlineRadioButtonUnchecked size={20} />} accent="#94a3b8" to="/todos/todo" />
-        <StatCard label={lang === "mn" ? "Хийж байна" : "In Progress"} count={stats?.in_progress} icon={<MdOutlineTimer size={20} />} accent="#3b82f6" to="/todos/in_progress" />
-        <StatCard label={lang === "mn" ? "Дууссан" : "Completed"} count={stats?.completed} icon={<MdOutlineCheckCircle size={20} />} accent="#22c55e" to="/todos/completed" />
+        <StatCard label={lang === "mn" ? "Нийт" : "Total Tasks"} count={stats?.total} icon={<MdOutlineChecklist size={22} />} accent="#6366f1" to="/todos" />
+        <StatCard label={lang === "mn" ? "Хийх" : "To Do"} count={stats?.todo} icon={<MdOutlineRadioButtonUnchecked size={22} />} accent="#94a3b8" to="/todos/todo" />
+        <StatCard label={lang === "mn" ? "Хийж байна" : "In Progress"} count={stats?.in_progress} icon={<MdOutlineTimer size={22} />} accent="#6366f1" to="/todos/in_progress" />
+        <StatCard label={lang === "mn" ? "Дууссан" : "Completed"} count={stats?.completed} icon={<MdOutlineCheckCircle size={22} />} accent="#10b981" to="/todos/completed" />
       </div>
 
-      {/* Progress + priority */}
       <div className="dash-panel-grid">
-        {/* Progress */}
-        <div style={{ ...PANEL, padding: "18px 20px" }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 12 }}>
-            {lang === "mn" ? "Нийт явц" : "Overall progress"}
+        {/* Progress Card */}
+        <div className="premium-card" style={{ padding: "24px", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#94a3b8", marginBottom: 20, tracking: "0.05em" }}>
+            {lang === "mn" ? "НИЙТ ЯВЦ" : "OVERALL PROGRESS"}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {/* Circle */}
-            <div style={{ position: "relative", width: 72, height: 72, flexShrink: 0 }}>
-              <svg width="72" height="72" viewBox="0 0 72 72">
-                <circle cx="36" cy="36" r="28" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-                <circle cx="36" cy="36" r="28" fill="none" stroke={theme.accent} strokeWidth="8"
-                  strokeDasharray={`${2 * Math.PI * 28}`}
-                  strokeDashoffset={`${2 * Math.PI * 28 * (1 - completePct / 100)}`}
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div style={{ position: "relative", width: 90, height: 90, flexShrink: 0 }}>
+              <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="8" />
+                <circle cx="45" cy="45" r="38" fill="none" stroke="#6366f1" strokeWidth="8"
+                  strokeDasharray={`${2 * Math.PI * 38}`}
+                  strokeDashoffset={`${2 * Math.PI * 38 * (1 - completePct / 100)}`}
                   strokeLinecap="round"
-                  style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset .5s" }}
+                  style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1)" }}
                 />
               </svg>
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "#1e293b" }}>
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "#fff" }}>
                 {completePct}%
               </div>
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                { label: lang === "mn" ? "Дууссан" : "Done", val: stats?.completed, color: "#22c55e" },
-                { label: lang === "mn" ? "Хийж байна" : "In Progress", val: stats?.in_progress, color: "#3b82f6" },
-                { label: lang === "mn" ? "Хийх" : "To Do", val: stats?.todo, color: "#e2e8f0" },
+                { label: lang === "mn" ? "Дууссан" : "Done", val: stats?.completed, color: "#10b981" },
+                { label: lang === "mn" ? "Хийж байна" : "In Progress", val: stats?.in_progress, color: "#6366f1" },
+                { label: lang === "mn" ? "Хийх" : "To Do", val: stats?.todo, color: "#94a3b8" },
               ].map((r) => (
-                <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#64748b" }}>
-                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: r.color }} />
+                <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: r.color, boxShadow: `0 0 8px ${r.color}66` }} />
                     {r.label}
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#334155" }}>{r.val ?? 0}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.val ?? 0}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Priority */}
-        <div style={{ ...PANEL, padding: "18px 20px" }}>
+        {/* Priority Card */}
+        <div className="premium-card" style={{ padding: "24px", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)" }}>
           <PriorityBar high={stats?.high ?? 0} medium={stats?.medium ?? 0} low={stats?.low ?? 0} lang={lang} />
         </div>
       </div>
 
-      {/* Todo list — sortable */}
-      <div style={{ ...PANEL, overflow: "hidden" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px 12px", borderBottom: "1px solid #f1f5f9" }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", margin: 0 }}>
-            {lang === "mn" ? "Сүүлийн Todo-нууд" : "Recent Todos"}
+      {/* Table Card */}
+      <div className="premium-card" style={{ overflow: "hidden", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>
+            {lang === "mn" ? "Сүүлийн Ажлууд" : "Recent Tasks"}
           </h3>
-          <Link to="/todos" style={{ fontSize: 12, color: theme.accent, textDecoration: "none", fontWeight: 800,
-            background: theme.accent + "10", borderRadius: 999, padding: "6px 10px" }}>
-            {lang === "mn" ? "Бүгдийг харах →" : "View all →"}
+          <Link to="/todos" style={{ fontSize: 12, color: "#6366f1", textDecoration: "none", fontWeight: 700, background: "rgba(99, 102, 241, 0.1)", borderRadius: 8, padding: "8px 12px", border: "1px solid rgba(99, 102, 241, 0.15)" }}>
+            {lang === "mn" ? "Бүгдийг харах →" : "View all"}
           </Link>
         </div>
 
         <div className="dash-table-scroll">
-        <div className="dash-table-head" style={{ padding: "10px 20px", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
-          {[
-            { f: "title",     l: lang === "mn" ? "Гарчиг"    : "Title" },
-            { f: "priority",  l: lang === "mn" ? "Чухал"     : "Priority" },
-            { f: "status",    l: lang === "mn" ? "Төлөв"     : "Status" },
-            { f: "createdAt", l: lang === "mn" ? "Огноо"     : "Date" },
-          ].map(({ f, l }) => (
-            <button key={f} onClick={() => toggleSort(f)}
-              style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 700, color: sortField === f ? theme.accent : "#64748b", padding: 0 }}>
-              {l} <SortIcon field={f} />
-            </button>
-          ))}
-        </div>
-
-        {sorted.length === 0 ? (
-          <div style={{ padding: "32px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
-            {lang === "mn" ? "Todo байхгүй байна" : "No todos yet"}
-          </div>
-        ) : (
-          <div>
-            {sorted.map((todo, i) => (
-              <div key={todo.id}
-                className="dash-table-row"
-                style={{
-                  padding: "12px 20px", borderBottom: i < sorted.length - 1 ? "1px solid #f1f5f9" : "none",
-                  alignItems: "center", transition: "background .1s",
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = "#fafafa"}
-                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: STATUS_COLOR[todo.status], flexShrink: 0 }} />
-                  <span style={{
-                    fontSize: 13, fontWeight: 500, color: "#334155",
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                    textDecoration: todo.status === "completed" ? "line-through" : "none",
-                  }}>{todo.title}</span>
-                </div>
-                <span style={{
-                  fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20,
-                  background: PRIORITY_COLOR[todo.priority] + "18",
-                  color: PRIORITY_COLOR[todo.priority],
-                  width: "fit-content",
-                }}>
-                  {priorityLabel[todo.priority]}
-                </span>
-                <span style={{ fontSize: 12, color: STATUS_COLOR[todo.status], fontWeight: 500 }}>
-                  {statusLabel[todo.status]}
-                </span>
-                <span style={{ fontSize: 11, color: "#94a3b8" }}>
-                  {todo.createdAt ? new Date(todo.createdAt).toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { month: "short", day: "numeric" }) : "—"}
-                </span>
-              </div>
+          <div className="dash-table-head" style={{ padding: "12px 24px", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            {[
+              { f: "title",     l: lang === "mn" ? "ГАРЧИГ"    : "TITLE" },
+              { f: "priority",  l: lang === "mn" ? "ЧУХАЛ"     : "PRIORITY" },
+              { f: "status",    l: lang === "mn" ? "ТӨЛӨВ"     : "STATUS" },
+              { f: "createdAt", l: lang === "mn" ? "ОГНОО"     : "DATE" },
+            ].map(({ f, l }) => (
+              <button key={f} onClick={() => toggleSort(f)}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 800, color: sortField === f ? "#6366f1" : "#64748b", padding: 0, tracking: "0.05em" }}>
+                {l}
+              </button>
             ))}
           </div>
-        )}
+
+          {sorted.length === 0 ? (
+            <div style={{ padding: "48px", textAlign: "center", color: "#64748b", fontSize: 14 }}>
+              {lang === "mn" ? "Todo байхгүй байна" : "No tasks found"}
+            </div>
+          ) : (
+            <div style={{ padding: "8px 0" }}>
+              {sorted.map((todo, i) => (
+                <div key={todo.id} className="dash-table-row" style={{ padding: "14px 24px", alignItems: "center", transition: "all .2s" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: STATUS_COLOR[todo.status], flexShrink: 0, boxShadow: `0 0 8px ${STATUS_COLOR[todo.status]}44` }} />
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "#f8fafc", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: todo.status === "completed" ? "line-through" : "none", opacity: todo.status === "completed" ? 0.5 : 1 }}>{todo.title}</span>
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8, background: `${PRIORITY_COLOR[todo.priority]}15`, color: PRIORITY_COLOR[todo.priority], width: "fit-content", border: `1px solid ${PRIORITY_COLOR[todo.priority]}25` }}>
+                    {priorityLabel[todo.priority]}
+                  </span>
+                  <span style={{ fontSize: 13, color: STATUS_COLOR[todo.status], fontWeight: 600 }}>
+                    {statusLabel[todo.status]}
+                  </span>
+                  <span style={{ fontSize: 12, color: "#64748b" }}>
+                    {todo.createdAt ? new Date(todo.createdAt).toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { month: "short", day: "numeric" }) : "—"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

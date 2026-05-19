@@ -14,21 +14,21 @@ import TodoModal from "../components/TodoModal";
 import { useSettings } from "../context/SettingsContext";
 
 const statusIcon = {
-  todo:        <MdRadioButtonUnchecked className="text-slate-400" size={20} />,
-  in_progress: <MdPending className="text-blue-500" size={20} />,
-  completed:   <MdCheckCircle className="text-green-500" size={20} />,
+  todo:        <MdRadioButtonUnchecked className="text-slate-500" size={20} />,
+  in_progress: <MdPending className="text-indigo-400" size={20} />,
+  completed:   <MdCheckCircle className="text-emerald-400" size={20} />,
 };
 
 const priorityTone = {
-  high: { bg: "#fff1f2", text: "#be123c", border: "#fecdd3" },
-  medium: { bg: "#fffbeb", text: "#92400e", border: "#fde68a" },
-  low: { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
+  high:   { bg: "rgba(239, 68, 68, 0.15)",  text: "#ef4444", border: "rgba(239, 68, 68, 0.2)" },
+  medium: { bg: "rgba(245, 158, 11, 0.15)", text: "#f59e0b", border: "rgba(245, 158, 11, 0.2)" },
+  low:    { bg: "rgba(16, 185, 129, 0.15)", text: "#10b981", border: "rgba(16, 185, 129, 0.2)" },
 };
 
 const statusTone = {
-  todo: { bg: "#f8fafc", text: "#475569", border: "#e2e8f0" },
-  in_progress: { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
-  completed: { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
+  todo:        { bg: "rgba(255, 255, 255, 0.03)", text: "#94a3b8", border: "rgba(255, 255, 255, 0.05)" },
+  in_progress: { bg: "rgba(99, 102, 241, 0.15)",  text: "#818cf8", border: "rgba(99, 102, 241, 0.2)" },
+  completed:   { bg: "rgba(16, 185, 129, 0.15)",  text: "#34d399", border: "rgba(16, 185, 129, 0.2)" },
 };
 
 export default function Todos() {
@@ -42,8 +42,7 @@ export default function Todos() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTodo, setEditTodo]   = useState(null);
 
-  const { data, isLoading } = useGetTodosQuery({ status, search, priority, categoryId, page, limit: 8 });
-  const { data: catData }   = useGetCategoriesQuery();
+  const { data, isLoading } = useGetTodosQuery({ status, search, priority, categoryId, page, limit: 10 });
   const [updateStatus]      = useUpdateStatusMutation();
   const [trashTodo]         = useTrashTodoMutation();
   const [updateTodo]        = useUpdateTodoMutation();
@@ -53,12 +52,6 @@ export default function Todos() {
   const todos      = data?.todos || [];
   const totalPages = data?.totalPages || 1;
 
-  /* ── i18n labels ── */
-  const priorityStyle = {
-    high:   "bg-red-100 text-red-700",
-    medium: "bg-yellow-100 text-yellow-700",
-    low:    "bg-green-100 text-green-700",
-  };
   const priorityLabel = lang === "mn"
     ? { high: "Өндөр", medium: "Дунд", low: "Бага" }
     : { high: "High",  medium: "Medium", low: "Low" };
@@ -71,7 +64,6 @@ export default function Todos() {
     ? { todo: "Хийх", in_progress: "Хийж байна", completed: "Дууссан" }
     : { todo: "To Do", in_progress: "In Progress", completed: "Completed" };
 
-  /* ── handlers ── */
   const handleStatusToggle = async (todo) => {
     const next = todo.status === "todo" ? "in_progress"
                : todo.status === "in_progress" ? "completed" : "todo";
@@ -97,7 +89,7 @@ export default function Todos() {
         dueDate: dateValue || null,
         categoryId: todo.categoryId || "",
       }).unwrap();
-      toast.success(lang === "mn" ? "Огноо хадгалагдлаа 📅" : "Due date saved 📅");
+      toast.success(lang === "mn" ? "Огноо хадгалагдлаа" : "Due date saved");
     } catch {
       toast.error(lang === "mn" ? "Алдаа гарлаа" : "An error occurred");
     }
@@ -108,177 +100,177 @@ export default function Todos() {
   const openCreate = ()     => { setEditTodo(null);  setModalOpen(true); };
 
   return (
-    <div className="todo-page space-y-6">
+    <div className="animate-in space-y-6">
       <style>{`
-        .todo-page{background:linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%);border-radius:18px;padding:18px;min-height:calc(100vh - 110px)}
-        .todo-page h2{letter-spacing:0;color:#0f172a}
-        .todo-page > .flex:first-of-type{background:rgba(255,255,255,.72);border:1px solid #e8edf3;border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(15,23,42,.05);backdrop-filter:blur(10px)}
-        .todo-page > .flex:first-of-type button{border-radius:12px!important;padding:10px 16px!important;font-weight:800!important;box-shadow:0 10px 24px rgba(15,23,42,.14);transition:transform .15s,box-shadow .15s,opacity .15s}
-        .todo-page > .flex:first-of-type button:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(15,23,42,.18)}
-        .todo-page table{border-collapse:separate;border-spacing:0;min-width:760px}
-        .todo-page table thead tr{background:#f8fafc!important}
-        .todo-page table th{padding:12px 16px!important;font-size:11px!important;font-weight:900!important;color:#64748b!important;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid #e8edf3!important}
-        .todo-page table td{padding:14px 16px!important;vertical-align:middle}
-        .todo-page tbody tr{transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
-        .todo-page tbody tr:hover{background:#fbfdff!important;transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,23,42,.05)}
-        .todo-page .bg-white.rounded-xl{border-radius:18px!important;border:1px solid #e8edf3;box-shadow:0 10px 30px rgba(15,23,42,.06)!important}
-        .todo-page .overflow-hidden{overflow-x:auto!important}
-        .todo-page .rounded-full{border:1px solid rgba(15,23,42,.08);font-weight:800}
-        .todo-page td button{transition:transform .15s,background .15s,color .15s}
-        .todo-page td button:hover{transform:translateY(-1px)}
-        .todo-page .text-right button{border-radius:10px!important;padding:8px!important}
-        .todo-page input[type="date"]{border-radius:10px!important;padding:5px 8px!important}
-        .todo-page .text-center.py-16{border-radius:18px!important;border:1px solid #e8edf3;box-shadow:0 10px 30px rgba(15,23,42,.06)!important;background:rgba(255,255,255,.94)!important}
-        @media (max-width:760px){
-          .todo-page{padding:12px;border-radius:14px}
-          .todo-page > .flex:first-of-type{align-items:flex-start!important;gap:12px}
-          .todo-page h2{font-size:22px!important}
-          .todo-page table{min-width:760px}
+        .todo-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .todo-table th { 
+          text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 800; 
+          color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+        .todo-table td { padding: 16px; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .todo-row { transition: all 0.2s; }
+        .todo-row:hover { background: rgba(255,255,255,0.02); }
+        .pagination-btn {
+           padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+           transition: all 0.2s; border: 1px solid rgba(255,255,255,0.08);
+           background: rgba(255,255,255,0.03); color: #94a3b8;
+        }
+        .pagination-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: #fff; }
+        .pagination-btn.active { background: #6366f1; color: #fff; border-color: #6366f1; box-shadow: 0 0 12px rgba(99, 102, 241, 0.3); }
       `}</style>
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-slate-800">
-          {status ? (titleMap[status] || status) : t.allTodos}
-        </h2>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px" }}>
+            {status ? (titleMap[status] || status) : t.allTodos}
+          </h2>
+          <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 4 }}>
+            {lang === "mn" ? `${todos.length} ажил олдлоо` : `${todos.length} tasks found`}
+          </p>
+        </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-90"
-          style={{ background: theme.accent }}
+          className="btn-primary"
+          style={{ padding: "12px 24px", fontSize: 14, borderRadius: 12 }}
         >
-          <MdAdd size={18} /> {lang === "mn" ? "Нэмэх" : "Add"}
+          <MdAdd size={20} /> {lang === "mn" ? "Шинэ ажил" : "Create Task"}
         </button>
       </div>
-      {/* List */}
-      {isLoading ? (
-        <div className="text-center py-16 text-slate-400">
-          {lang === "mn" ? "Уншиж байна..." : "Loading..."}
-        </div>
-      ) : todos.length === 0 ? (
-        <div className="text-center py-16 text-slate-400 bg-white rounded-xl shadow-sm">
-          <div style={{width:44,height:44,borderRadius:14,background:"#f1f5f9",margin:"0 auto 14px",boxShadow:"inset 0 0 0 1px #e2e8f0"}} />
-          <p className="text-lg font-medium">{lang === "mn" ? "Todo байхгүй байна" : "No todos yet"}</p>
-          <p className="text-sm mt-1">{lang === "mn" ? "Шинэ todo нэмнэ үү" : "Add a new todo"}</p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-xs text-slate-500 uppercase">
-                <th className="px-4 py-3 text-left w-8"></th>
-                <th className="px-4 py-3 text-left">{lang === "mn" ? "Гарчиг" : "Title"}</th>
-                <th className="px-4 py-3 text-left hidden md:table-cell">{lang === "mn" ? "Категори" : "Category"}</th>
-                <th className="px-4 py-3 text-left hidden sm:table-cell">{lang === "mn" ? "Чухал" : "Priority"}</th>
-                <th className="px-4 py-3 text-left hidden lg:table-cell">{lang === "mn" ? "Огноо" : "Due Date"}</th>
-                <th className="px-4 py-3 text-left">{lang === "mn" ? "Төлөв" : "Status"}</th>
-                <th className="px-4 py-3 text-right">{lang === "mn" ? "Үйлдэл" : "Actions"}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {todos.map((todo) => (
-                <tr key={todo.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3">
-                    <button onClick={() => handleStatusToggle(todo)} title={lang === "mn" ? "Төлөв солих" : "Toggle status"}>
-                      {statusIcon[todo.status]}
-                    </button>
-                  </td>
-                  <td className="px-4 py-3">
-                    <p className={`text-sm font-medium ${todo.status === "completed" ? "line-through text-slate-400" : "text-slate-800"}`}>
-                      {todo.title}
-                    </p>
-                    {todo.description && (
-                      <p className="text-xs text-slate-400 mt-0.5 truncate max-w-xs">{todo.description}</p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 hidden md:table-cell">
-                    {todo.category ? (
-                      <span className="inline-flex items-center gap-1 text-xs">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: todo.category.color }} />
-                        {todo.category.name}
-                      </span>
-                    ) : (
-                      <span className="text-slate-300 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 hidden sm:table-cell">
-                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: priorityTone[todo.priority]?.bg, color: priorityTone[todo.priority]?.text, borderColor: priorityTone[todo.priority]?.border }}>
-                      {priorityLabel[todo.priority]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 hidden lg:table-cell">
-                    {quickDateId === todo.id ? (
-                      <input
-                        ref={dateInputRef}
-                        type="date"
-                        defaultValue={todo.dueDate || ""}
-                        autoFocus
-                        className="border border-blue-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        onBlur={(e) => handleQuickDate(todo, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleQuickDate(todo, e.target.value);
-                          if (e.key === "Escape") setQuickDateId(null);
-                        }}
-                      />
-                    ) : (
-                      <button
-                        onClick={() => setQuickDateId(todo.id)}
-                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 hover:bg-blue-50 px-2 py-0.5 rounded transition-colors group"
-                        title={lang === "mn" ? "Огноо тохируулах" : "Set due date"}
-                      >
-                        <MdCalendarToday size={13} className="text-slate-400 group-hover:text-blue-500" />
-                        {todo.dueDate ? (
-                          <span className="font-medium">{todo.dueDate}</span>
-                        ) : (
-                          <span className="text-slate-300">{lang === "mn" ? "Огноо" : "Set date"}</span>
-                        )}
-                      </button>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: statusTone[todo.status]?.bg, color: statusTone[todo.status]?.text, borderColor: statusTone[todo.status]?.border }}>
-                      {statusLabel[todo.status]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openEdit(todo)}
-                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
-                        <MdEdit size={16} />
-                      </button>
-                      <button onClick={() => handleTrash(todo.id)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg">
-                        <MdDelete size={16} />
-                      </button>
-                    </div>
-                  </td>
+
+      {/* Content */}
+      <div className="premium-card" style={{ background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)", overflow: "hidden" }}>
+        {isLoading ? (
+          <div style={{ padding: 60, textAlign: "center", color: "#64748b" }}>
+            <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4" />
+            {lang === "mn" ? "Уншиж байна..." : "Loading tasks..."}
+          </div>
+        ) : todos.length === 0 ? (
+          <div style={{ padding: 80, textAlign: "center" }}>
+            <div style={{ width: 64, height: 64, borderRadius: 20, background: "rgba(255,255,255,0.03)", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", color: "#334155" }}>
+              <MdOutlineChecklist size={32} />
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#fff", margin: 0 }}>{lang === "mn" ? "Ажил олдсонгүй" : "No tasks found"}</h3>
+            <p style={{ fontSize: 14, color: "#64748b", marginTop: 8 }}>{lang === "mn" ? "Шинэ ажил нэмж бүтээмжээ нэмэгдүүлнэ үү." : "Add a new task to start being productive."}</p>
+          </div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table className="todo-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 50 }}></th>
+                  <th>{lang === "mn" ? "Ажлын нэр" : "Task Name"}</th>
+                  <th className="hidden md:table-cell">{lang === "mn" ? "Категори" : "Category"}</th>
+                  <th className="hidden sm:table-cell">{lang === "mn" ? "Чухал" : "Priority"}</th>
+                  <th className="hidden lg:table-cell">{lang === "mn" ? "Огноо" : "Due Date"}</th>
+                  <th>{lang === "mn" ? "Төлөв" : "Status"}</th>
+                  <th style={{ textAlign: "right" }}>{lang === "mn" ? "Үйлдэл" : "Actions"}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {todos.map((todo) => (
+                  <tr key={todo.id} className="todo-row">
+                    <td>
+                      <button onClick={() => handleStatusToggle(todo)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex" }}>
+                        {statusIcon[todo.status]}
+                      </button>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: todo.status === "completed" ? "#475569" : "#fff", textDecoration: todo.status === "completed" ? "line-through" : "none", transition: "all .2s" }}>
+                          {todo.title}
+                        </span>
+                        {todo.description && (
+                          <span style={{ fontSize: 12, color: "#64748b", marginTop: 2, maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {todo.description}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell">
+                      {todo.category ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#94a3b8" }}>
+                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: todo.category.color }} />
+                          {todo.category.name}
+                        </div>
+                      ) : <span style={{ color: "#334155" }}>—</span>}
+                    </td>
+                    <td className="hidden sm:table-cell">
+                      <span style={{
+                        fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8,
+                        background: priorityTone[todo.priority].bg, color: priorityTone[todo.priority].text,
+                        border: `1px solid ${priorityTone[todo.priority].border}`
+                      }}>
+                        {priorityLabel[todo.priority]}
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell">
+                      {quickDateId === todo.id ? (
+                        <input
+                          ref={dateInputRef}
+                          type="date"
+                          defaultValue={todo.dueDate || ""}
+                          autoFocus
+                          style={{
+                            background: "rgba(255,255,255,0.05)", border: "1px solid #6366f1", borderRadius: 8,
+                            padding: "4px 8px", fontSize: 12, color: "#fff", outline: "none"
+                          }}
+                          onBlur={(e) => handleQuickDate(todo, e.target.value)}
+                        />
+                      ) : (
+                        <button
+                          onClick={() => setQuickDateId(todo.id)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#64748b",
+                            background: "none", border: "none", cursor: "pointer", padding: "4px 0"
+                          }}
+                        >
+                          <MdCalendarToday size={14} color={todo.dueDate ? "#6366f1" : "#334155"} />
+                          {todo.dueDate || (lang === "mn" ? "Огноо" : "Set date")}
+                        </button>
+                      )}
+                    </td>
+                    <td>
+                      <span style={{
+                        fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8,
+                        background: statusTone[todo.status].bg, color: statusTone[todo.status].text,
+                        border: `1px solid ${statusTone[todo.status].border}`
+                      }}>
+                        {statusLabel[todo.status]}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                        <button onClick={() => openEdit(todo)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-indigo-400">
+                          <MdEdit size={18} />
+                        </button>
+                        <button onClick={() => handleTrash(todo.id)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-red-400">
+                          <MdDelete size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button disabled={page === 1} onClick={() => setPage(page - 1)}
-            className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm disabled:opacity-40 hover:bg-slate-100">
-            {lang === "mn" ? "← Өмнөх" : "← Prev"}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, paddingTop: 10 }}>
+          <button disabled={page === 1} onClick={() => setPage(page - 1)} className="pagination-btn">
+            {lang === "mn" ? "Өмнөх" : "Prev"}
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button key={p} onClick={() => setPage(p)}
-              className={`px-3 py-1.5 rounded-lg text-sm ${
-                p === page ? "text-white" : "border border-slate-300 hover:bg-slate-100"
-              }`}
-              style={p === page ? { background: theme.accent } : {}}>
+            <button key={p} onClick={() => setPage(p)} className={`pagination-btn ${p === page ? "active" : ""}`}>
               {p}
             </button>
           ))}
-          <button disabled={page === totalPages} onClick={() => setPage(page + 1)}
-            className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm disabled:opacity-40 hover:bg-slate-100">
-            {lang === "mn" ? "Дараах →" : "Next →"}
+          <button disabled={page === totalPages} onClick={() => setPage(page + 1)} className="pagination-btn">
+            {lang === "mn" ? "Дараах" : "Next"}
           </button>
         </div>
       )}

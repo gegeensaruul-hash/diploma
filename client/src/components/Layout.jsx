@@ -15,17 +15,18 @@ export default function Layout() {
   const toggle = () => setSidebarOpen(v => !v);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-100">
+    <div className="flex h-screen overflow-hidden bg-[#020617]">
       {/* Sidebar */}
       <div style={{
-        width: sidebarOpen ? 208 : 0,
+        width: sidebarOpen ? 220 : 0,
         flexShrink: 0,
         overflow: "hidden",
-        transition: "width 0.28s cubic-bezier(0.4,0,0.2,1)",
+        transition: "width 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
         zIndex: 30,
         position: "relative",
+        borderRight: sidebarOpen ? "1px solid var(--border)" : "none",
       }}>
-        <div style={{ width: 208, height: "100%" }}>
+        <div style={{ width: 220, height: "100%" }}>
           <Sidebar onClose={toggle} onMenuToggle={toggle} />
         </div>
       </div>
@@ -38,8 +39,10 @@ export default function Layout() {
           onMenuToggle={toggle}
           sidebarOpen={sidebarOpen}
         />
-        <main className="flex-1 overflow-y-auto px-6 pb-6">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto px-6 pb-6 bg-[#020617]">
+          <div className="max-w-7xl mx-auto py-6">
+            <Outlet />
+          </div>
         </main>
       </div>
 

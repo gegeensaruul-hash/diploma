@@ -9,13 +9,15 @@ import {
   useDeleteRoomMutation,
   useGetMessagesQuery,
 } from "../redux/slices/api/chatApiSlice";
-import { MdAdd, MdSend, MdClose, MdExitToApp, MdDelete, MdPeople, MdArrowBack, MdChat } from "react-icons/md";
+import { MdAdd, MdSend, MdClose, MdExitToApp, MdDelete, MdPeople, MdArrowBack, MdChat, MdExplore } from "react-icons/md";
 import { toast } from "sonner";
+import { useSettings } from "../context/SettingsContext";
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function GroupChat({ onClose }) {
   const { user } = useSelector((s) => s.auth);
+  const { theme } = useSettings();
   const [activeRoom, setActiveRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -108,207 +110,154 @@ export default function GroupChat({ onClose }) {
   const fmtDate = (d) => new Date(d).toLocaleDateString("mn-MN", { month: "short", day: "numeric" });
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-[#020617]">
+      <style>{`
+        .chat-room-card { transition: all 0.2s; border: 1px solid rgba(255,255,255,0.05); }
+        .chat-room-card:hover { background: rgba(255,255,255,0.03); transform: translateY(-1px); border-color: rgba(255,255,255,0.1); }
+        .msg-bubble { max-width: 80%; padding: 10px 14px; font-size: 14px; line-height: 1.5; }
+      `}</style>
 
-      {/* ── Panel header ─────────────────────────────── */}
-      <div className="h-16 px-4 border-b border-slate-200 flex items-center justify-between flex-shrink-0 bg-white">
-        <div className="flex items-center gap-2">
+      {/* Header */}
+      <div className="h-16 px-5 border-b border-white/5 flex items-center justify-between flex-shrink-0 bg-slate-900/40 backdrop-blur-md">
+        <div className="flex items-center gap-3">
           {activeRoom ? (
-            <button onClick={() => setActiveRoom(null)} className="text-slate-400 hover:text-slate-600 mr-1">
-              <MdArrowBack size={18} />
+            <button onClick={() => setActiveRoom(null)} className="text-slate-400 hover:text-white transition-colors">
+              <MdArrowBack size={20} />
             </button>
           ) : (
-            <MdChat size={18} className="text-blue-500" />
+            <MdExplore size={20} className="text-indigo-400" />
           )}
-          <span className="font-semibold text-slate-800 text-sm truncate">
-            {activeRoom ? `# ${activeRoom.name}` : "Group Chat"}
+          <span className="font-bold text-white text-sm tracking-tight">
+            {activeRoom ? `# ${activeRoom.name}` : "Global Communities"}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {activeRoom && (
-            <button
-              onClick={() => setShowMembers((v) => !v)}
-              className={`p-1.5 rounded-lg transition-colors ${showMembers ? "bg-blue-50 text-blue-500" : "text-slate-400 hover:text-slate-600"}`}
-            >
-              <MdPeople size={17} />
+            <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-white"}`}>
+              <MdPeople size={20} />
             </button>
           )}
           {!activeRoom && (
-            <button
-              onClick={() => setShowCreate(true)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors"
-              title="Room үүсгэх"
-            >
-              <MdAdd size={18} />
+            <button onClick={() => setShowCreate(true)} className="p-2 rounded-xl text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">
+              <MdAdd size={22} />
             </button>
           )}
-          {onClose && (
-            <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
-              <MdClose size={17} />
-            </button>
-          )}
+          <button onClick={onClose} className="p-2 rounded-xl text-slate-500 hover:text-white transition-all">
+            <MdClose size={20} />
+          </button>
         </div>
       </div>
 
-      {/* ── Members bar ─────────────────────────────── */}
-      {activeRoom && showMembers && (
-        <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-1.5 flex-shrink-0">
-          {activeRoom.members?.map((m) => (
-            <span key={m.id} className="text-xs bg-white border border-slate-200 rounded-full px-2 py-0.5 text-slate-600">
-              {m.name}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* ── Room жагсаалт (activeRoom байхгүй үед) ──────── */}
-      {!activeRoom && (
-        <div className="flex-1 overflow-y-auto py-2">
-          {rooms.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-400 px-4">
-              <MdChat size={36} className="text-slate-200" />
-              <p className="text-sm text-center">Room байхгүй байна.<br />+ товч дарж үүсгэнэ үү.</p>
-            </div>
-          )}
-          {rooms.map((room) => {
-            const isMember = room.isMember;
-            return (
-              <div
-                key={room.id}
-                onClick={() => isMember && setActiveRoom(room)}
-                className={`mx-2 mb-1 rounded-lg px-3 py-2.5 flex items-center justify-between gap-2 transition-colors ${
-                  isMember ? "hover:bg-slate-50 cursor-pointer" : "opacity-55"
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-800 truncate"># {room.name}</p>
-                  <p className="text-xs text-slate-400">{room.members?.length || 0} member</p>
+      {/* Content Area */}
+      <div className="flex-1 overflow-hidden relative flex flex-col">
+        {!activeRoom ? (
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {rooms.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-600">
+                <div className="w-16 h-16 rounded-2xl bg-white/3 flex items-center justify-center text-slate-700">
+                  <MdChat size={32} />
                 </div>
-                <div className="flex gap-1 flex-shrink-0">
-                  {!isMember ? (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleJoin(room.id); }}
-                      className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full hover:bg-blue-600 transition-colors"
-                    >
-                      Нэгдэх
-                    </button>
-                  ) : (
-                    <>
-                      {(room.createdBy === user?.id || user?.role === "admin") && (
-                        <button onClick={(e) => { e.stopPropagation(); handleDelete(room.id); }} className="text-slate-300 hover:text-red-500 transition-colors p-1">
-                          <MdDelete size={14} />
-                        </button>
-                      )}
-                      <button onClick={(e) => { e.stopPropagation(); handleLeave(room.id); }} className="text-slate-300 hover:text-orange-500 transition-colors p-1">
-                        <MdExitToApp size={14} />
-                      </button>
-                    </>
-                  )}
-                </div>
+                <p className="text-sm font-medium text-center">No active communities found.<br/>Start a new conversation.</p>
               </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* ── Мессежүүд (activeRoom байгаа үед) ──────────── */}
-      {activeRoom && (
-        <>
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-            {messages.length === 0 && (
-              <p className="text-xs text-slate-400 text-center mt-8">Мессеж байхгүй байна.</p>
             )}
-            {messages.map((msg, i) => {
-              const isMe = msg.sender?.id === user?.id || msg.userId === user?.id;
-              const showDate = i === 0 || fmtDate(messages[i - 1]?.createdAt) !== fmtDate(msg.createdAt);
+            {rooms.map((room) => {
+              const isMember = room.isMember;
               return (
-                <div key={msg.id}>
-                  {showDate && (
-                    <div className="flex items-center gap-2 my-2">
-                      <div className="flex-1 h-px bg-slate-100" />
-                      <span className="text-xs text-slate-400">{fmtDate(msg.createdAt)}</span>
-                      <div className="flex-1 h-px bg-slate-100" />
-                    </div>
-                  )}
-                  <div className={`flex ${isMe ? "justify-end" : "justify-start"} gap-1.5`}>
-                    {!isMe && (
-                      <div className="w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center text-xs font-bold text-slate-600 flex-shrink-0 mt-1">
-                        {msg.sender?.name?.[0]?.toUpperCase()}
+                <div key={room.id} onClick={() => isMember && setActiveRoom(room)}
+                  className={`chat-room-card rounded-2xl px-4 py-3 flex items-center justify-between gap-3 ${isMember ? "cursor-pointer" : "opacity-40"}`}>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] font-bold text-white truncate mb-0.5"># {room.name}</p>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{room.members?.length || 0} Members</p>
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    {!isMember ? (
+                      <button onClick={(e) => { e.stopPropagation(); handleJoin(room.id); }}
+                        className="text-xs font-black bg-indigo-500 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
+                        JOIN
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        {(room.createdBy === user?.id || user?.role === "admin") && (
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(room.id); }} className="text-slate-600 hover:text-red-400 p-2">
+                            <MdDelete size={16} />
+                          </button>
+                        )}
+                        <button onClick={(e) => { e.stopPropagation(); handleLeave(room.id); }} className="text-slate-600 hover:text-orange-400 p-2">
+                          <MdExitToApp size={16} />
+                        </button>
                       </div>
                     )}
-                    <div className="max-w-[85%]">
-                      {!isMe && <p className="text-xs text-slate-400 mb-0.5 ml-1">{msg.sender?.name}</p>}
-                      <div className={`px-3 py-1.5 rounded-2xl text-sm break-words ${
-                        isMe ? "bg-blue-500 text-white rounded-br-sm" : "bg-slate-100 text-slate-800 rounded-bl-sm"
-                      }`}>
-                        {msg.message}
-                      </div>
-                      <p className={`text-xs text-slate-300 mt-0.5 ${isMe ? "text-right mr-1" : "ml-1"}`}>
-                        {fmt(msg.createdAt)}
-                      </p>
-                    </div>
                   </div>
                 </div>
               );
             })}
-            <div ref={bottomRef} />
           </div>
-
-          {/* Input */}
-          <div className="px-3 py-3 border-t border-slate-200 flex-shrink-0">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Мессеж бичих..."
-                className="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-              />
-              <button
-                onClick={handleSend}
-                disabled={!input.trim()}
-                className="w-9 h-9 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:bg-slate-200 text-white flex items-center justify-center transition-colors flex-shrink-0"
-              >
-                <MdSend size={16} />
-              </button>
+        ) : (
+          <>
+            {showMembers && (
+              <div className="px-5 py-3 bg-white/2 border-b border-white/5 flex flex-wrap gap-2 animate-in">
+                {activeRoom.members?.map((m) => (
+                  <span key={m.id} className="text-[11px] font-bold bg-white/5 border border-white/5 rounded-lg px-2.5 py-1 text-slate-400">
+                    @{m.name}
+                  </span>
+                ))}
+              </div>
+            )}
+            
+            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-4">
+              {messages.map((msg, i) => {
+                const isMe = msg.sender?.id === user?.id || msg.userId === user?.id;
+                return (
+                  <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"} gap-3`}>
+                    {!isMe && (
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center text-xs font-black text-indigo-400 flex-shrink-0 mt-1 border border-indigo-500/20">
+                        {msg.sender?.name?.[0]?.toUpperCase()}
+                      </div>
+                    )}
+                    <div className={`max-w-[80%] ${isMe ? "items-end" : "items-start"} flex flex-col`}>
+                      {!isMe && <p className="text-[11px] font-bold text-slate-500 mb-1 ml-1">{msg.sender?.name}</p>}
+                      <div className={`msg-bubble rounded-2xl ${isMe ? "bg-indigo-500 text-white rounded-tr-none" : "bg-white/5 text-slate-200 border border-white/5 rounded-tl-none"}`}>
+                        {msg.message}
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-600 mt-1 mx-1 uppercase">{fmt(msg.createdAt)}</p>
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={bottomRef} />
             </div>
-          </div>
-        </>
-      )}
 
-      {/* ── Create Room Modal ──────────────────────────── */}
+            <div className="p-4 border-t border-white/5 bg-slate-900/20">
+              <div className="flex gap-2 bg-white/3 border border-white/5 rounded-2xl p-1.5 focus-within:border-indigo-500/50 transition-all">
+                <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-transparent text-sm text-white px-3 py-2 outline-none" />
+                <button onClick={handleSend} disabled={!input.trim()}
+                  className="w-10 h-10 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-20 text-white flex items-center justify-center transition-all">
+                  <MdSend size={18} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Create Room Modal */}
       {showCreate && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 rounded-r-none">
-          <div className="bg-white rounded-2xl shadow-xl w-64 mx-4 p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-slate-800">Шинэ Room</h3>
-              <button onClick={() => setShowCreate(false)} className="text-slate-400 hover:text-slate-600">
-                <MdClose size={18} />
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl shadow-2xl w-full max-w-xs p-6 animate-in">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold text-white tracking-tight">Create Community</h3>
+              <button onClick={() => setShowCreate(false)} className="text-slate-500 hover:text-white transition-colors">
+                <MdClose size={20} />
               </button>
             </div>
-            <div className="space-y-2.5">
-              <input
-                type="text"
-                placeholder="Room нэр *"
-                value={newRoom.name}
-                onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-                onKeyDown={(e) => e.key === "Enter" && handleCreateRoom()}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                autoFocus
-              />
-              <input
-                type="text"
-                placeholder="Тайлбар (заавал биш)"
-                value={newRoom.description}
-                onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-              />
-              <button
-                onClick={handleCreateRoom}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-xl transition-colors text-sm"
-              >
-                Үүсгэх
+            <div className="space-y-4">
+              <input type="text" placeholder="Room Name" value={newRoom.name} onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-indigo-500" autoFocus />
+              <button onClick={handleCreateRoom}
+                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                Lauch Room
               </button>
             </div>
           </div>
