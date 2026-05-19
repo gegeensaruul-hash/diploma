@@ -52,10 +52,19 @@ export default function AIChat({ onClose }) {
   const bottomRef = useRef(null);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  const isAtBottomRef = useRef(true); // track if user is at bottom
+
+  // Track scroll position — if user scrolls up, don't force-scroll on new messages
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    // Consider "at bottom" if within 80px of the bottom
+    isAtBottomRef.current = scrollHeight - scrollTop - clientHeight < 80;
+  };
 
   useEffect(() => {
-    // Scroll the container to bottom when messages change or AI is typing
-    if (scrollRef.current) {
+    // Only auto-scroll if user is already at the bottom
+    if (isAtBottomRef.current && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, loading]);
@@ -154,6 +163,7 @@ export default function AIChat({ onClose }) {
       {/* Messages */}
       <div
         ref={scrollRef}
+        onScroll={handleScroll}
         style={{
           flex: 1, overflowY: "auto", padding: "24px 20px",
           display: "flex", flexDirection: "column", gap: 20,
