@@ -128,20 +128,36 @@ export const T = {
 export function SettingsProvider({ children }) {
   const [lang, setLang] = useState(() => localStorage.getItem("app_lang") || "mn");
   const [themeId, setThemeId] = useState(() => localStorage.getItem("app_theme") || "green");
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("app_dark") === "true");
 
   const theme = THEMES.find((th) => th.id === themeId) || THEMES[0];
   const t = T[lang] || T.mn;
 
   const changeLang = (l) => { setLang(l); localStorage.setItem("app_lang", l); };
   const changeTheme = (id) => { setThemeId(id); localStorage.setItem("app_theme", id); };
+  const toggleDark = () => {
+    setDarkMode(v => {
+      const next = !v;
+      localStorage.setItem("app_dark", String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     document.documentElement.style.setProperty("--sidebar-bg", theme.sidebar);
     document.documentElement.style.setProperty("--accent", theme.accent);
   }, [theme]);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
-    <SettingsContext.Provider value={{ lang, theme, t, changeLang, changeTheme, THEMES, LANGUAGES }}>
+    <SettingsContext.Provider value={{ lang, theme, t, changeLang, changeTheme, THEMES, LANGUAGES, darkMode, toggleDark }}>
       {children}
     </SettingsContext.Provider>
   );

@@ -2,8 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family:"DM Sans";
-  background-color: #f1f5f9;
-  color: #0f172a;
+/* ── CSS VARIABLES ── */
+:root {
+  --bg-app:    #f1f5f9;
+  --bg-card:   #ffffff;
+  --bg-card2:  #f8fafc;
+  --bg-hover:  #f1f5f9;
+  --text:      #0f172a;
+  --text2:     #475569;
+  --text3:     #94a3b8;
+  --border:    #e2e8f0;
+  --input-bg:  #f9fafb;
+  --shadow:    rgba(0,0,0,0.06);
 }
+
+.dark {
+  --bg-app:    #0f172a;
+  --bg-card:   #1e293b;
+  --bg-card2:  #162032;
+  --bg-hover:  #263248;
+  --text:      #f1f5f9;
+  --text2:     #94a3b8;
+  --text3:     #64748b;
+  --border:    #334155;
+  --input-bg:  #1e293b;
+  --shadow:    rgba(0,0,0,0.25);
+}
+
+/* ── BASE STYLES ── */
+body {
+  font-family: "DM Sans", sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text);
+  transition: background-color 0.25s, color 0.25s;
+}
+
+/* ── DARK MODE OVERRIDES for Tailwind utilities ── */
+.dark .bg-white         { background-color: var(--bg-card) !important; }
+.dark .bg-gray-50,
+.dark .bg-slate-50      { background-color: var(--bg-card2) !important; }
+.dark .bg-gray-100,
+.dark .bg-slate-100     { background-color: var(--bg-hover) !important; }
+
+.dark .text-gray-900,
+.dark .text-slate-900   { color: var(--text) !important; }
+.dark .text-gray-800,
+.dark .text-slate-800   { color: var(--text) !important; }
+.dark .text-gray-700,
+.dark .text-slate-700   { color: var(--text2) !important; }
+.dark .text-gray-600,
+.dark .text-slate-600   { color: var(--text2) !important; }
+.dark .text-gray-500,
+.dark .text-slate-500   { color: var(--text3) !important; }
+.dark .text-gray-400,
+.dark .text-slate-400   { color: var(--text3) !important; }
+
+.dark .border-gray-200,
+.dark .border-slate-200 { border-color: var(--border) !important; }
+.dark .border-gray-100,
+.dark .border-slate-100 { border-color: var(--border) !important; }
+
+/* Inline style overrides for dark mode via class */
+.dark [style*="background: white"],
+.dark [style*="background:#fff"],
+.dark [style*='background: "#fff"'] {
+  background-color: var(--bg-card) !important;
+}
+.dark [style*="background: rgb(248, 250, 252)"],
+.dark [style*="background:#f8fafc"] {
+  background-color: var(--bg-card2) !important;
+}
+.dark [style*="color: #1e293b"],
+.dark [style*="color:#0f172a"],
+.dark [style*="color: #111827"],
+.dark [style*="color: #374151"] {
+  color: var(--text) !important;
+}
+.dark [style*="border: 1px solid #e2e8f0"],
+.dark [style*="border-bottom: 1px solid #e2e8f0"],
+.dark [style*="border-top: 1px solid #e2e8f0"] {
+  border-color: var(--border) !important;
+}
+
+/* Navbar and cards dark mode */
+.dark header[style*="background: white"],
+.dark header[style*='background: "white"'] {
+  background-color: var(--bg-card) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+/* Smooth theme transition */
+*, *::before, *::after {
+  transition: background-color 0.2s, border-color 0.2s, color 0.15s;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { MdChat, MdMenu, MdSearch, MdClose } from "react-icons/md";
+import { MdChat, MdMenu, MdSearch, MdClose, MdDarkMode, MdLightMode } from "react-icons/md";
 import { useSettings } from "../context/SettingsContext";
 import { useGetTodosQuery } from "../redux/slices/api/todoApiSlice";
 
@@ -69,7 +69,7 @@ function SearchDropdown({ q, setQ, onClose }) {
 
 export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOpen }) {
   const { user } = useSelector((s) => s.auth);
-  const { t, lang } = useSettings();
+  const { t, lang, darkMode, toggleDark } = useSettings();
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef(null);
@@ -150,6 +150,22 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
       <span style={{ fontSize: 12, color: "#94a3b8", flexShrink: 0 }}>
         {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { year: "numeric", month: "short", day: "numeric" })}
       </span>
+
+      {/* Dark mode toggle */}
+      <button
+        onClick={toggleDark}
+        title={darkMode ? (lang === "mn" ? "Цайвар горим" : "Light mode") : (lang === "mn" ? "Харанхуй горим" : "Dark mode")}
+        style={{
+          width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: darkMode ? "#1e293b" : "#f1f5f9",
+          border: "1px solid var(--border)",
+          cursor: "pointer", transition: "all .2s",
+          color: darkMode ? "#f59e0b" : "#64748b",
+        }}
+      >
+        {darkMode ? <MdLightMode size={18} /> : <MdDarkMode size={18} />}
+      </button>
 
       {/* Chat */}
       <button onClick={onChatToggle} style={{

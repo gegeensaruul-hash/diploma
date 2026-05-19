@@ -46,6 +46,16 @@ const SUBJECT_THEMES = [
 
 const SUBJECT_EMOJIS = ["📚","📝","🎨","🎵","💡","🌟","🔬","🏃","🎯","🌺","🎭","✈️","🍕","💻","🧶","📷"];
 
+/* ─── Sticker sets ─── */
+const STICKER_SETS = [
+  { label: "Emotions", emojis: ["😊","😂","🥰","😎","🤔","😴","🥳","😤","🤩","😌","🫡","🤗","🥹","😇","😈","🤯"] },
+  { label: "Nature",   emojis: ["🌸","🌼","🌺","🍀","🌿","🌱","🌈","⭐","🌙","☀️","❄️","🌊","🔥","🌴","🍃","🌻"] },
+  { label: "Objects",  emojis: ["📌","📍","🔖","🗒️","📎","✂️","🔍","💡","🔑","🎯","🏆","⏰","📱","💻","🎁","🎈"] },
+  { label: "Food",     emojis: ["☕","🍕","🍎","🍓","🍩","🍜","🧋","🍰","🥑","🍇","🌮","🍦","🍫","🥐","🍊","🫐"] },
+  { label: "Animals",  emojis: ["🐱","🐶","🦊","🐼","🐨","🦁","🐸","🦋","🐝","🐙","🦄","🐢","🦉","🐺","🐧","🐬"] },
+  { label: "Symbols",  emojis: ["❤️","💛","💚","💙","💜","🖤","✨","💫","⚡","🌀","💯","🔥","👑","🎵","🎶","✅"] },
+];
+
 /* ════════════ wrapSelection helper ════════════ */
 function wrapSelection(styleKey, styleVal, editorEl) {
   const sel = window.getSelection();
@@ -351,6 +361,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const dragInfo = useRef(null);
   const [activeHL,  setActiveHL]  = useState(null);
   const [activeTc,  setActiveTc]  = useState(null);
+  const [showStickerPicker, setShowStickerPicker] = useState(false);
   const editorRef = useRef(null);
   const imgRef    = useRef(null);
   const cv        = COVERS[coverIdx];
@@ -391,6 +402,19 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(savedRange.current);
+  };
+
+  const insertSticker = (emoji) => {
+    setShowStickerPicker(false);
+    editorRef.current?.focus();
+    try {
+      document.execCommand("insertText", false, emoji + " ");
+    } catch {
+      // fallback: append to end
+      if (editorRef.current) {
+        editorRef.current.innerHTML += `<span>${emoji}</span>&nbsp;`;
+      }
+    }
   };
 
   const applyHL = (c) => {
@@ -537,7 +561,8 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   };
 
   return (
-    <div style={{ display:"flex",flexDirection:"column",height:"100%",background:pageColor,position:"relative" }}>
+    <div style={{ display:"flex",flexDirection:"column",height:"100%",background:pageColor,position:"relative" }}
+      onClick={() => showStickerPicker && setShowStickerPicker(false)}>
       <style>{`
         .ne-body{outline:none;min-height:100%;caret-color:#7c3aed;overflow:hidden;text-underline-offset:3px;text-decoration-thickness:1.5px}
         .ne-body:empty::before{content:attr(data-placeholder);color:#bbb;pointer-events:none;display:block}
@@ -667,6 +692,60 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
           🖼 {lang==="mn"?"Зураг":"Image"}
         </button>
         <input ref={imgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={addImage}/>
+
+        {/* Sticker button */}
+        <div style={{ position:"relative" }}>
+          <button
+            onClick={() => setShowStickerPicker(v => !v)}
+            style={{
+              padding:"4px 9px", borderRadius:6, fontSize:11, border:"1px solid #e2e8f0",
+              background: showStickerPicker ? "#fef3c7" : "white",
+              color: showStickerPicker ? "#d97706" : "#64748b",
+              cursor:"pointer", fontWeight:600,
+              borderColor: showStickerPicker ? "#fcd34d" : "#e2e8f0",
+            }}>
+            😊 {lang==="mn"?"Стикер":"Sticker"}
+          </button>
+
+          {showStickerPicker && (
+            <div style={{
+              position:"absolute", top:"calc(100% + 6px)", right:0,
+              background:"white", borderRadius:14, boxShadow:"0 12px 40px rgba(0,0,0,0.16)",
+              border:"1px solid #e2e8f0", zIndex:200, width:280, padding:12,
+            }}
+            onClick={e => e.stopPropagation()}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"#64748b", letterSpacing:"0.05em" }}>
+                  {lang==="mn" ? "СТИКЕР СОНГОХ" : "PICK A STICKER"}
+                </span>
+                <button onClick={() => setShowStickerPicker(false)}
+                  style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:16, lineHeight:1 }}>×</button>
+              </div>
+              {STICKER_SETS.map(set => (
+                <div key={set.label} style={{ marginBottom:10 }}>
+                  <p style={{ fontSize:10, color:"#94a3b8", fontWeight:600, marginBottom:5, letterSpacing:"0.05em" }}>
+                    {set.label.toUpperCase()}
+                  </p>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>
+                    {set.emojis.map(emoji => (
+                      <button key={emoji} onClick={() => insertSticker(emoji)}
+                        style={{
+                          width:30, height:30, borderRadius:7, fontSize:17,
+                          border:"1px solid transparent", background:"transparent",
+                          cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                          transition:"all 0.12s",
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background="#f1f5f9"; e.currentTarget.style.borderColor="#e2e8f0"; e.currentTarget.style.transform="scale(1.2)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.borderColor="transparent"; e.currentTarget.style.transform="scale(1)"; }}>
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {drawMode && (

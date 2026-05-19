@@ -25,7 +25,7 @@ function SchoolSchedule({ lang }) {
     return [];
   };
 
-  const [slots, setSlots]         = useState(initSched); // [{subject,start,end,color,col}]
+  const [slots, setSlots]         = useState(initSched); // [{subject,start,end,color,col,emoji}]
   const [collapsed, setCollapsed] = useState(false);
   const [editing, setEditing]     = useState(null); // slot index or "new"
   const [newCol, setNewCol]       = useState(0);
@@ -33,6 +33,8 @@ function SchoolSchedule({ lang }) {
   const [start, setStart]         = useState("09:00");
   const [end, setEnd]             = useState("10:00");
   const [color, setColor]         = useState("#e0e7ff");
+  const [slotEmoji, setSlotEmoji] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [title, setTitle]         = useState(() => {
     try { return localStorage.getItem("sched_title_v4")||"📚 Хичээлийн хуваарь"; } catch{ return "📚 Хичээлийн хуваарь"; }
   });
@@ -48,23 +50,24 @@ function SchoolSchedule({ lang }) {
 
   const openNew = (col) => {
     setNewCol(col); setSubject(""); setStart(`${String(startHour).padStart(2,"0")}:00`);
-    setEnd(`${String(startHour+1).padStart(2,"0")}:00`); setColor("#e0e7ff"); setEditing("new");
+    setEnd(`${String(startHour+1).padStart(2,"0")}:00`); setColor("#e0e7ff"); setSlotEmoji(""); setEditing("new");
   };
 
   const openEdit = (idx) => {
     const s=slots[idx];
     setSubject(s.subject); setStart(s.start); setEnd(s.end); setColor(s.color);
-    setEditing(idx);
+    setSlotEmoji(s.emoji || ""); setEditing(idx);
   };
 
   const saveSlot = () => {
     if(!subject.trim()){ setEditing(null); return; }
     if(editing==="new"){
-      persist([...slots,{subject:subject.trim(),start,end,color,col:newCol}]);
+      persist([...slots,{subject:subject.trim(),start,end,color,col:newCol,emoji:slotEmoji}]);
     } else {
-      persist(slots.map((s,i)=>i!==editing?s:{...s,subject:subject.trim(),start,end,color}));
+      persist(slots.map((s,i)=>i!==editing?s:{...s,subject:subject.trim(),start,end,color,emoji:slotEmoji}));
     }
     setEditing(null);
+    setShowEmojiPicker(false);
   };
 
   const deleteSlot = (idx) => persist(slots.filter((_,i)=>i!==idx));
@@ -110,7 +113,7 @@ function SchoolSchedule({ lang }) {
           {editing!==null && (
             <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"center",
               justifyContent:"center",background:"rgba(0,0,0,0.3)"}}
-              onClick={()=>setEditing(null)}>
+              onClick={()=>{ setEditing(null); setShowEmojiPicker(false); }}>
               <div onClick={e=>e.stopPropagation()}
                 style={{background:"white",borderRadius:14,padding:20,width:280,
                   boxShadow:"0 8px 32px rgba(0,0,0,0.18)"}}>
@@ -144,6 +147,64 @@ function SchoolSchedule({ lang }) {
                         border:color===c?"2.5px solid #7c3aed":"2px solid transparent",boxSizing:"border-box"}}/>
                   ))}
                 </div>
+
+                {/* ── Sticker picker ── */}
+                <div style={{marginBottom:14}}>
+                  <div style={{fontSize:10,color:"#9b948a",marginBottom:5,fontWeight:600}}>
+                    {lang==="mn" ? "СТИКЕР" : "STICKER"}
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <button
+                      type="button"
+                      onClick={() => setShowEmojiPicker(v => !v)}
+                      style={{
+                        width:36, height:36, borderRadius:8,
+                        border: showEmojiPicker ? "2px solid #7c3aed" : "1px solid #e0dbd5",
+                        background: showEmojiPicker ? "#f5f0ff" : "white",
+                        fontSize:20, cursor:"pointer",
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                      }}>
+                      {slotEmoji || "➕"}
+                    </button>
+                    {slotEmoji && (
+                      <button type="button" onClick={() => setSlotEmoji("")}
+                        style={{fontSize:11,color:"#9b948a",background:"none",border:"none",cursor:"pointer"}}>
+                        {lang==="mn" ? "Арилгах" : "Clear"}
+                      </button>
+                    )}
+                  </div>
+
+                  {showEmojiPicker && (
+                    <div style={{
+                      marginTop:8, background:"#f8f7f5", borderRadius:10, padding:10,
+                      border:"1px solid #e0dbd5", maxHeight:160, overflowY:"auto",
+                    }}>
+                      {[
+                        ["📚","📝","✏️","📖","🔬","🎨","🎵","🏃","💡","🧪","🖥️","📐","🔭","🎯","🏆","📌"],
+                        ["😊","🎉","🌸","⭐","❤️","🔥","💯","✅","⚡","🌈","🎈","💫","🦋","🌺","🍀","🎭"],
+                      ].map((row, ri) => (
+                        <div key={ri} style={{display:"flex",flexWrap:"wrap",gap:2,marginBottom:ri===0?4:0}}>
+                          {row.map(emoji => (
+                            <button key={emoji} type="button"
+                              onClick={() => { setSlotEmoji(emoji); setShowEmojiPicker(false); }}
+                              style={{
+                                width:28, height:28, borderRadius:6, fontSize:16,
+                                border: slotEmoji===emoji ? "2px solid #7c3aed" : "1px solid transparent",
+                                background: slotEmoji===emoji ? "#f5f0ff" : "transparent",
+                                cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                                transition:"all 0.1s",
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background="#ede9fe"}
+                              onMouseLeave={e => e.currentTarget.style.background = slotEmoji===emoji ? "#f5f0ff" : "transparent"}>
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div style={{display:"flex",gap:8}}>
                   <button onClick={saveSlot}
                     style={{flex:1,padding:"8px",borderRadius:8,border:"none",
@@ -218,7 +279,9 @@ function SchoolSchedule({ lang }) {
                       onMouseEnter={e=>e.currentTarget.style.filter="brightness(0.92)"}
                       onMouseLeave={e=>e.currentTarget.style.filter="none"}>
                       <div style={{fontSize:11,fontWeight:700,color:"#1e293b",lineHeight:1.3,
-                        whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                        whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",
+                        display:"flex",alignItems:"center",gap:3}}>
+                        {s.emoji && <span style={{fontSize:12}}>{s.emoji}</span>}
                         {s.subject}
                       </div>
                       {h>30&&<div style={{fontSize:9,color:"#475569",marginTop:1}}>
