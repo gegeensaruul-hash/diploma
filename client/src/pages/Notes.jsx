@@ -186,9 +186,9 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         }
       `}</style>
       
-      <div className="bg-slate-900 w-full max-w-6xl h-[92vh] rounded-[40px] overflow-hidden flex flex-col shadow-2xl border border-white/10 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-slate-900 w-full max-w-6xl h-[92vh] rounded-[40px] shadow-2xl border border-white/10 relative flex flex-col overflow-visible" onClick={e => e.stopPropagation()}>
         {/* Editor Header */}
-        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-[100]">
+        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-[110] rounded-t-[40px]">
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Journal Title..." className="bg-transparent border-none text-2xl font-black text-white outline-none w-2/3 placeholder:text-white/20" />
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-white/50 hover:text-white transition-all"><MdClose size={24}/></button>
@@ -199,7 +199,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         </div>
 
         {/* Toolbar */}
-        <div className="px-6 py-3 border-b border-white/5 flex items-center gap-4 bg-slate-900/50 overflow-x-auto z-[90]">
+        <div className="px-6 py-3 border-b border-white/5 flex items-center gap-4 bg-slate-900/50 z-[100] relative overflow-visible">
           <div className="flex items-center bg-black/20 rounded-xl p-1">
             <button onClick={() => document.execCommand('bold')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatBold size={20}/></button>
             <button onClick={() => document.execCommand('italic')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatItalic size={20}/></button>
@@ -213,7 +213,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
               <MdEmojiEmotions size={20}/> Stickers
             </button>
             {showStickerPicker && (
-              <div className="absolute top-full left-0 mt-3 p-4 bg-slate-800 border border-white/10 rounded-3xl shadow-2xl z-[100] grid grid-cols-5 gap-3 w-64" onClick={e => e.stopPropagation()}>
+              <div className="absolute top-full left-0 mt-3 p-4 bg-slate-800 border border-white/10 rounded-3xl shadow-2xl z-[200] grid grid-cols-5 gap-3 w-64" onClick={e => e.stopPropagation()}>
                 {NOTE_STICKERS.map(s => (
                   <button key={s} onClick={() => addSticker(s)} className="text-3xl hover:scale-125 transition-transform active:scale-95">{s}</button>
                 ))}
@@ -228,7 +228,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         </div>
 
         {/* Notebook Body */}
-        <div className="flex-1 relative overflow-hidden bg-slate-950 flex">
+        <div className="flex-1 relative bg-slate-950 flex overflow-hidden rounded-b-[40px]">
           {/* Side binding effect */}
           <div className="w-16 h-full bg-slate-900 border-r border-white/10 flex flex-col items-center gap-12 pt-12 shadow-2xl z-10">
             {Array.from({length: 15}).map((_, i) => (
