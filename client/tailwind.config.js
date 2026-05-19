@@ -5,8 +5,14 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-        heading: ['Outfit', 'sans-serif'],
+        sans: [
+          '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"',
+          '"Inter"', 'system-ui', 'sans-serif'
+        ],
+        heading: [
+          '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"',
+          '"Inter"', 'system-ui', 'sans-serif'
+        ],
       },
     },
   },
