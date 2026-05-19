@@ -12,7 +12,7 @@ const VB_FONTS = [
 ];
 const NOTE_COLORS = ["#fffde7","#fce4ec","#e8eaf6","#e0f7fa","#f3e5f5","#e8f5e9","#fff3e0","#e3f2fd","#fafafa","#fff8e1"];
 const PIN_COLORS  = ["#e05252","#5272e0","#52c052","#e0c052","#a052e0","#e07852","#52b8e0","#e05288"];
-const VB_STICKERS = ["🌟","💪","✨","🎯","🌸","💫","🔥","🌈","💎","🦋","🌺","⭐","🏆","💡","🌙","❤️","🎀","🍀","🌻","🦄","🎵","☁️","🌊","🍓","🫐","🐝","🌷","🧸","🎪","🎨","🦊","🐱","🌍","🍭","🎸","🏄"];
+const VB_STICKERS = ["FOCUS","GROW","WIN","PLAN","MOVE","BUILD","SAVE","LEARN","HEALTH","IDEA","CALM","NEXT"];
 
 function getStore(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));}catch{return d;}}
 function setStore(k,v){localStorage.setItem(k,JSON.stringify(v));}
@@ -154,27 +154,30 @@ export default function VisionBoardPage() {
   const clearAll = () => { saveItems([]); setSelected(null); setEditingId(null); };
 
   return (
-    <div style={{display:"flex",flexDirection:"column",height:"100%",gap:10,fontFamily:"DM Sans"}}>
+    <div className="vb-page" style={{display:"flex",flexDirection:"column",height:"100%",gap:12,fontFamily:"DM Sans",background:"linear-gradient(180deg,#f8fafc,#f4f7fb)",borderRadius:18,padding:14}}>
       <style>{`
-        @`}</style>
+        .vb-page button,.vb-page label,.vb-page select{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+        .vb-page button:hover,.vb-page label:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,23,42,.10)}
+        .vb-item{transition:filter .18s ease,box-shadow .18s ease,transform .18s ease}
+      `}</style>
 
       {/* Header */}
       <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",flexShrink:0}}>
         <h2 style={{fontSize:22,fontWeight:700,color:"#3d3830",margin:0,fontFamily:"DM Sans"}}>
-          🎯 Vision Board
+          Vision Board
         </h2>
         <div style={{flex:1}}/>
 
         {/* Toolbar buttons */}
         <button onClick={addNote} title={lang==="mn"?"Карт нэмэх":"Add note"}
           style={{fontSize:12,background:"#fffde7",border:"1px solid #fcd34d",borderRadius:8,padding:"5px 12px",cursor:"pointer",color:"#78350f",fontWeight:700,boxShadow:"1px 2px 4px rgba(0,0,0,0.1)"}}>
-          📝 {lang==="mn"?"Карт":"Note"}
+          {lang==="mn"?"Карт":"Note"}
         </button>
 
         <div style={{position:"relative"}}>
           <button onClick={()=>setShowStickerPicker(v=>!v)}
             style={{fontSize:12,background:"#fce4ec",border:"1px solid #f9a8d4",borderRadius:8,padding:"5px 12px",cursor:"pointer",color:"#9d174d",fontWeight:700,boxShadow:"1px 2px 4px rgba(0,0,0,0.1)"}}>
-            🎀 Sticker
+            Sticker
           </button>
           {showStickerPicker && (
             <div style={{position:"absolute",top:"calc(100% + 6px)",right:0,zIndex:200,
@@ -182,7 +185,7 @@ export default function VisionBoardPage() {
               border:"1px solid #e2e8f0",padding:10,width:260,display:"flex",flexWrap:"wrap",gap:4}}>
               {VB_STICKERS.map(s=>(
                 <button key={s} onClick={()=>addSticker(s)}
-                  style={{fontSize:24,background:"none",border:"none",cursor:"pointer",padding:"4px 5px",borderRadius:6,transition:"background .1s"}}
+                  style={{fontSize:11,fontWeight:800,background:"#f8fafc",border:"1px solid #e2e8f0",cursor:"pointer",padding:"6px 8px",borderRadius:8,transition:"background .1s"}}
                   onMouseEnter={e=>e.currentTarget.style.background="#f1f5f9"}
                   onMouseLeave={e=>e.currentTarget.style.background="none"}>
                   {s}
@@ -193,7 +196,7 @@ export default function VisionBoardPage() {
         </div>
 
         <label style={{fontSize:12,background:"#e0f2fe",border:"1px solid #7dd3fc",borderRadius:8,padding:"5px 12px",cursor:"pointer",color:"#075985",fontWeight:700,boxShadow:"1px 2px 4px rgba(0,0,0,0.1)"}}>
-          🖼 {lang==="mn"?"Зураг":"Image"}
+          {lang==="mn"?"Зураг":"Image"}
           <input type="file" accept="image/*" style={{display:"none"}} onChange={addImage}/>
         </label>
 
@@ -207,7 +210,7 @@ export default function VisionBoardPage() {
         {selected && (
           <button onClick={()=>del(selected)}
             style={{fontSize:12,background:"#fde2e2",border:"1px solid #fca5a5",borderRadius:8,padding:"5px 10px",cursor:"pointer",color:"#991b1b",fontWeight:700}}>
-            🗑
+            Delete
           </button>
         )}
 
@@ -260,7 +263,7 @@ export default function VisionBoardPage() {
                 filter:isSel?"drop-shadow(0 0 8px rgba(99,102,241,0.9))":"drop-shadow(1px 3px 4px rgba(0,0,0,0.35))",
                 transition:"filter .15s",
               }}>
-              {item.emoji}
+              {String(item.emoji || "").length > 2 ? item.emoji : "MARK"}
             </div>
           );
 
@@ -345,7 +348,7 @@ export default function VisionBoardPage() {
         {items.length===0 && (
           <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
             color:"rgba(92,58,30,0.45)",fontSize:16,fontFamily:"DM Sans",textAlign:"center",pointerEvents:"none",gap:8}}>
-            <span style={{fontSize:48}}>🎯</span>
+            <span style={{width:54,height:54,borderRadius:18,background:"rgba(92,58,30,.12)",boxShadow:"inset 0 0 0 1px rgba(92,58,30,.16)"}} />
             <span>{lang==="mn"?"Карт, sticker, зураг нэмж эхлэх":"Add notes, stickers & images to get started"}</span>
           </div>
         )}

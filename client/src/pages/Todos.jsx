@@ -119,8 +119,8 @@ export default function Todos() {
         .todo-page table thead tr{background:#f8fafc!important}
         .todo-page table th{padding:12px 16px!important;font-size:11px!important;font-weight:900!important;color:#64748b!important;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid #e8edf3!important}
         .todo-page table td{padding:14px 16px!important;vertical-align:middle}
-        .todo-page tbody tr{transition:background .15s,transform .15s}
-        .todo-page tbody tr:hover{background:#fbfdff!important}
+        .todo-page tbody tr{transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+        .todo-page tbody tr:hover{background:#fbfdff!important;transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,23,42,.05)}
         .todo-page .bg-white.rounded-xl{border-radius:18px!important;border:1px solid #e8edf3;box-shadow:0 10px 30px rgba(15,23,42,.06)!important}
         .todo-page .overflow-hidden{overflow-x:auto!important}
         .todo-page .rounded-full{border:1px solid rgba(15,23,42,.08);font-weight:800}
@@ -133,6 +133,7 @@ export default function Todos() {
           .todo-page{padding:12px;border-radius:14px}
           .todo-page > .flex:first-of-type{align-items:flex-start!important;gap:12px}
           .todo-page h2{font-size:22px!important}
+          .todo-page table{min-width:760px}
         }
       `}</style>
       {/* Header */}
@@ -155,7 +156,7 @@ export default function Todos() {
         </div>
       ) : todos.length === 0 ? (
         <div className="text-center py-16 text-slate-400 bg-white rounded-xl shadow-sm">
-          <p className="text-4xl mb-3">📭</p>
+          <div style={{width:44,height:44,borderRadius:14,background:"#f1f5f9",margin:"0 auto 14px",boxShadow:"inset 0 0 0 1px #e2e8f0"}} />
           <p className="text-lg font-medium">{lang === "mn" ? "Todo байхгүй байна" : "No todos yet"}</p>
           <p className="text-sm mt-1">{lang === "mn" ? "Шинэ todo нэмнэ үү" : "Add a new todo"}</p>
         </div>

@@ -10,7 +10,7 @@ const thisYear = now.getFullYear();
 const thisMonth = now.getMonth();
 
 // ── Category icons ────────────────────────────────────────
-const CAT_ICONS = { Groceries:"🛒", Rent:"🏠", Restaurant:"🍽️", Activities:"🎯", Transport:"🚌", Shopping:"🛍️", Essentials:"⭐", Subscriptions:"🔄", Other:"📦" };
+const CAT_ICONS = { Groceries:"G", Rent:"R", Restaurant:"F", Activities:"A", Transport:"T", Shopping:"S", Essentials:"E", Subscriptions:"S", Other:"O" };
 
 // ── Color palette (from image — sage green) ───────────────
 const C = {
@@ -32,7 +32,7 @@ function SectionHeader({ title, icon, onAdd }) {
   return (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
       <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-        <span style={{ fontSize:16 }}>{icon}</span>
+        <span style={{ width:8,height:24,borderRadius:99,background:C.green,display:"inline-block" }}/>
         <span style={{ fontSize:16, fontWeight:700, color:C.text }}>{title}</span>
       </div>
       {onAdd && (
@@ -44,7 +44,7 @@ function SectionHeader({ title, icon, onAdd }) {
 
 function Card({ children, style }) {
   return (
-    <div style={{ background:C.card, borderRadius:12, padding:16, border:`1px solid ${C.border}`, ...style }}>
+    <div className="fin-card" style={{ background:C.card, borderRadius:16, padding:16, border:`1px solid ${C.border}`, boxShadow:"0 10px 30px rgba(15,23,42,0.06)", ...style }}>
       {children}
     </div>
   );
@@ -63,14 +63,14 @@ export default function Finance() {
   // Budget categories
   const t = { finDesc:"Description", finBudget:"Monthly Budget", finAccounts:"Accounts", finSubs:"Subscriptions", finGoals:"Goals", finNotes:"Notes", finSummary:"Summary", finEdit:"Edit", finExpense:"Expense", finIncome:"Income", finNew:"+ New", finActive:"Active", finPaused:"Paused", finThisYear:"This Year" };
   const [budgets, setBudgets] = useState(() => store("fin_budgets", [
-    { id:1, name:"Groceries",     icon:"🛒", limit:300, spent:250 },
-    { id:2, name:"Rent",          icon:"🏠", limit:700, spent:650 },
-    { id:3, name:"Restaurant",    icon:"🍽️", limit:100, spent:25  },
-    { id:4, name:"Activities",    icon:"🎯", limit:200, spent:50  },
-    { id:5, name:"Transport",     icon:"🚌", limit:200, spent:50  },
-    { id:6, name:"Shopping",      icon:"🛍️", limit:150, spent:0   },
-    { id:7, name:"Essentials",    icon:"⭐", limit:300, spent:75  },
-    { id:8, name:"Subscriptions", icon:"🔄", limit:50,  spent:20  },
+    { id:1, name:"Groceries",     icon:"G", limit:300, spent:250 },
+    { id:2, name:"Rent",          icon:"R", limit:700, spent:650 },
+    { id:3, name:"Restaurant",    icon:"F", limit:100, spent:25  },
+    { id:4, name:"Activities",    icon:"A", limit:200, spent:50  },
+    { id:5, name:"Transport",     icon:"T", limit:200, spent:50  },
+    { id:6, name:"Shopping",      icon:"S", limit:150, spent:0   },
+    { id:7, name:"Essentials",    icon:"E", limit:300, spent:75  },
+    { id:8, name:"Subscriptions", icon:"S", limit:50,  spent:20  },
   ]));
 
   // Expenses
@@ -88,9 +88,9 @@ export default function Finance() {
 
   // Accounts
   const [accounts, setAccounts] = useState(() => store("fin_accounts", [
-    { id:1, name:"Checking Account", balance:8670,   icon:"🏛️" },
-    { id:2, name:"Savings",          balance:10000,  icon:"💰" },
-    { id:3, name:"Credit Card",      balance:-733,   icon:"💳" },
+    { id:1, name:"Checking Account", balance:8670,   icon:"C" },
+    { id:2, name:"Savings",          balance:10000,  icon:"S" },
+    { id:3, name:"Credit Card",      balance:-733,   icon:"D" },
   ]));
 
   // Subscriptions
@@ -190,7 +190,20 @@ export default function Finance() {
   };
 
   return (
-    <div style={{ background:C.bg, fontFamily:"DM Sans", margin:"0 -24px", paddingBottom:48 }}>
+    <div className="fin-page" style={{ background:C.bg, fontFamily:"DM Sans", margin:"0 -24px", paddingBottom:48 }}>
+      <style>{`
+        .fin-page{background:linear-gradient(180deg,#f8fafc,#f4f7fb)!important}
+        .fin-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+        .fin-card:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(15,23,42,.09)!important;border-color:#d7e2dc!important}
+        .fin-page button,.fin-page input,.fin-page select,.fin-page textarea{transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+        .fin-page button:hover{transform:translateY(-1px)}
+        .fin-initial{width:24px;height:24px;border-radius:8px;background:#e8efe9;color:#315c40;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900}
+        @media (max-width:760px){
+          .fin-page{margin:0!important}
+          .fin-page [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+          .fin-page [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important}
+        }
+      `}</style>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet"/>
 
       {/* Hero banner */}
@@ -301,7 +314,7 @@ export default function Finance() {
               </button>
               <button onClick={deleteItem}
                 style={{padding:"9px 14px",borderRadius:8,border:`1px solid ${C.border}`,
-                  background:"#fff1f2",color:C.red,fontSize:13,cursor:"pointer"}}>🗑</button>
+                  background:"#fff1f2",color:C.red,fontSize:13,cursor:"pointer"}}>Delete</button>
               <button onClick={()=>setEditModal(null)}
                 style={{padding:"9px 14px",borderRadius:8,border:`1px solid ${C.border}`,
                   background:"white",fontSize:13,cursor:"pointer"}}>✕</button>
@@ -350,7 +363,7 @@ export default function Finance() {
 
           {/* Monthly Budget */}
           <Card>
-            <SectionHeader title={t.finBudget} icon="📊"/>
+            <SectionHeader title={t.finBudget}/>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
               {budgets.map(b => {
                 const pct = b.limit > 0 ? Math.round(b.spent / b.limit * 100) : 0;
@@ -361,7 +374,7 @@ export default function Finance() {
                     onMouseEnter={e=>e.currentTarget.style.filter="brightness(0.96)"}
                     onMouseLeave={e=>e.currentTarget.style.filter="none"}>
                     <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
-                      <span style={{ fontSize:14 }}>{b.icon}</span>
+                      <span className="fin-initial">{String(b.name || "B").slice(0,1).toUpperCase()}</span>
                       <span style={{ fontSize:11, fontWeight:700, color:C.text }}>{b.name}</span>
                     </div>
                     <div style={{ fontSize:13, fontWeight:700, color: over ? C.red : C.text }}>{fmt(b.spent)}</div>
@@ -370,7 +383,7 @@ export default function Finance() {
                   </div>
                 );
               })}
-              <div onClick={() => { const n = prompt("Category name:"); if(!n) return; const nb=[...budgets,{id:Date.now(),name:n,icon:"📦",limit:+(prompt("Monthly limit:")||0),spent:0}]; persist("fin_budgets",setBudgets,nb); }}
+              <div onClick={() => { const n = prompt("Category name:"); if(!n) return; const nb=[...budgets,{id:Date.now(),name:n,icon:n.slice(0,1).toUpperCase(),limit:+(prompt("Monthly limit:")||0),spent:0}]; persist("fin_budgets",setBudgets,nb); }}
                 style={{ border:`1.5px dashed ${C.border}`, borderRadius:10, padding:"10px 12px", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", color:C.muted, fontSize:12 }}>{t.finNew}</div>
             </div>
           </Card>
@@ -380,22 +393,22 @@ export default function Finance() {
 
             {/* Accounts */}
             <Card>
-              <SectionHeader title={t.finAccounts} icon="🏛️"/>
+              <SectionHeader title={t.finAccounts}/>
               {accounts.map(a => (
                 <div key={a.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
                   padding:"8px 10px", borderRadius:8, marginBottom:6, background:C.greenLight }}>
                   <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                    <span style={{ fontSize:16 }}>{a.icon}</span>
+                    <span className="fin-initial">{String(a.name || "A").slice(0,1).toUpperCase()}</span>
                     <span style={{ fontSize:13, fontWeight:500 }}>{a.name}</span>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <span style={{ fontSize:14, fontWeight:700, color: a.balance < 0 ? C.red : C.text }}>{fmt(a.balance)}</span>
                     <button onClick={()=>openEdit("account",a,accounts.findIndex(x=>x.id===a.id))}
-                      style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:13,padding:"2px 4px"}}>✏️</button>
+                      style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12,padding:"2px 4px"}}>Edit</button>
                   </div>
                 </div>
               ))}
-              <div onClick={()=>{ const n=prompt("Account name:"); if(!n) return; const b=+(prompt("Balance:")||0); const na=[...accounts,{id:Date.now(),name:n,balance:b,icon:"💰"}]; persist("fin_accounts",setAccounts,na); }}
+              <div onClick={()=>{ const n=prompt("Account name:"); if(!n) return; const b=+(prompt("Balance:")||0); const na=[...accounts,{id:Date.now(),name:n,balance:b,icon:n.slice(0,1).toUpperCase()}]; persist("fin_accounts",setAccounts,na); }}
                 style={{ textAlign:"center", fontSize:12, color:C.muted, cursor:"pointer", marginTop:4, padding:"6px", borderRadius:8, border:`1px dashed ${C.border}` }}>
                 + New account
               </div>
@@ -403,7 +416,7 @@ export default function Finance() {
 
             {/* Subscriptions */}
             <Card>
-              <SectionHeader title={t.finSubs} icon="🔄"/>
+              <SectionHeader title={t.finSubs}/>
               {subs.map(s => (
                 <div key={s.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
                   padding:"8px 10px", borderRadius:8, marginBottom:6, background:C.greenLight }}>
@@ -418,7 +431,7 @@ export default function Finance() {
                     <button onClick={()=>{ const ns=subs.map(x=>x.id===s.id?{...x,active:!x.active}:x); persist("fin_subs",setSubs,ns); }}
                       style={{ background:"none", border:"none", cursor:"pointer", fontSize:11, color:C.muted }}>Toggle</button>
                     <button onClick={()=>openEdit("sub",s,subs.findIndex(x=>x.id===s.id))}
-                      style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:13}}>✏️</button>
+                      style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>Edit</button>
                   </div>
                 </div>
               ))}
@@ -430,20 +443,20 @@ export default function Finance() {
 
             {/* Goals */}
             <Card>
-              <SectionHeader title={t.finGoals} icon="🎯"/>
+              <SectionHeader title={t.finGoals}/>
               {goals.map(g => {
                 const pct = g.target > 0 ? Math.round(g.saved / g.target * 100) : 0;
                 return (
                   <div key={g.id} style={{ marginBottom:12 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                      <span style={{ fontSize:13, fontWeight:600 }}>🏷️ {g.name}</span>
+                      <span style={{ fontSize:13, fontWeight:600 }}>{g.name}</span>
                       <span style={{ fontSize:12, color:C.muted }}>{fmt(g.saved)} / {fmt(g.target)}</span>
                     </div>
                     <ProgressBar pct={pct}/>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:3}}>
                       <span style={{ fontSize:10, color:C.muted }}>{pct}%</span>
                       <button onClick={()=>openEdit("goal",g,goals.findIndex(x=>x.id===g.id))}
-                        style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>✏️</button>
+                        style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>Edit</button>
                     </div>
                   </div>
                 );
@@ -461,7 +474,7 @@ export default function Finance() {
 
           {/* Expenses */}
           <Card>
-            <SectionHeader title="Expenses" icon="💸"/>
+            <SectionHeader title="Expenses"/>
             <div style={{ display:"flex", gap:6, marginBottom:12 }}>
               {["week","month","year"].map(t=>(
                 <button key={t} onClick={()=>setActiveExpTab(t)}
@@ -480,7 +493,7 @@ export default function Finance() {
               <div key={e.id} style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:4,
                 padding:"7px 0", borderTop:`1px solid ${C.border}`, alignItems:"center" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                  <span style={{ fontSize:14 }}>{CAT_ICONS[e.category]||"📦"}</span>
+                  <span className="fin-initial">{CAT_ICONS[e.category]||"O"}</span>
                   <span style={{ fontSize:12, fontWeight:500 }}>{e.name}</span>
                 </div>
                 <span style={{ fontSize:11, color:C.muted }}>{e.date}</span>
@@ -488,9 +501,9 @@ export default function Finance() {
                 <span style={{ fontSize:10, color:C.muted }}>{e.category}</span>
               <div style={{display:"flex",gap:4}}>
                 <button onClick={()=>openEdit("expense",e,expenses.findIndex(x=>x.id===e.id))}
-                  style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>✏️</button>
+                  style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>Edit</button>
                 <button onClick={()=>{ if(confirm("Устгах уу?")) persist("fin_expenses",setExpenses,expenses.filter(x=>x.id!==e.id)); }}
-                  style={{background:"none",border:"none",cursor:"pointer",color:C.red,fontSize:12}}>🗑</button>
+                  style={{background:"none",border:"none",cursor:"pointer",color:C.red,fontSize:12}}>Delete</button>
               </div>
               </div>
             ))}
@@ -501,7 +514,7 @@ export default function Finance() {
 
           {/* Incomes */}
           <Card>
-            <SectionHeader title="Incomes" icon="💵"/>
+            <SectionHeader title="Incomes"/>
             <div style={{ display:"flex", gap:6, marginBottom:12 }}>
               {["month","year"].map(t=>(
                 <button key={t} onClick={()=>{}}
@@ -526,15 +539,15 @@ export default function Finance() {
               <div key={i.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center",
                 padding:"8px 10px", borderRadius:8, background:C.greenLight, marginBottom:6 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span style={{ fontSize:14 }}>💼</span>
+                  <span className="fin-initial">I</span>
                   <span style={{ fontSize:13, fontWeight:500 }}>{i.type}</span>
                 </div>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <span style={{ fontSize:14, fontWeight:700, color:C.green }}>{fmt(i.amount)}</span>
                   <button onClick={()=>openEdit("income",i,incomes.findIndex(x=>x.id===i.id))}
-                    style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>✏️</button>
+                    style={{background:"none",border:"none",cursor:"pointer",color:C.muted,fontSize:12}}>Edit</button>
                   <button onClick={()=>{ if(confirm("Устгах уу?")) persist("fin_incomes",setIncomes,incomes.filter(x=>x.id!==i.id)); }}
-                    style={{background:"none",border:"none",cursor:"pointer",color:C.red,fontSize:12}}>🗑</button>
+                    style={{background:"none",border:"none",cursor:"pointer",color:C.red,fontSize:12}}>Delete</button>
                 </div>
               </div>
             ))}
@@ -543,7 +556,7 @@ export default function Finance() {
 
         {/* Notes */}
         <Card style={{ marginTop:16 }}>
-          <SectionHeader title={t.finNotes} icon="📝"/>
+          <SectionHeader title={t.finNotes}/>
           <textarea value={notes} onChange={e=>{setNotes(e.target.value);save("fin_notes",e.target.value);}}
             placeholder="Тэмдэглэл..."
             style={{ width:"100%", minHeight:80, border:`1px solid ${C.border}`, borderRadius:8,
@@ -553,7 +566,7 @@ export default function Finance() {
 
         {/* Summary */}
         <Card style={{ marginTop:16 }}>
-          <SectionHeader title={t.finSummary} icon="📈"/>
+          <SectionHeader title={t.finSummary}/>
           <div style={{ display:"flex", gap:6, marginBottom:16, flexWrap:"wrap" }}>
             {["year","Q1","Q2","Q3","Q4"].map(t=>(
               <button key={t} onClick={()=>setSummaryView(t)}
@@ -576,7 +589,6 @@ export default function Finance() {
               .map((m,i)=>(
               <div key={i} style={{ padding:"12px", borderRadius:10, background:C.greenLight }}>
                 <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
-                  <span style={{ fontSize:12 }}>🕐</span>
                   <span style={{ fontSize:12, fontWeight:700, color:C.text }}>{m.month}</span>
                 </div>
                 <div style={{ fontSize:10, color:C.muted }}>Total Incomes</div>

@@ -64,11 +64,11 @@ function FloatingLetter({ capsule, onClick }) {
         <path d={`M${W-6} 6 L${W*0.62} ${H*0.5} L${W-6} ${H-6}`} fill="none" stroke={es.border} strokeWidth="1" opacity="0.3"/>
         <rect x={W-34} y="12" width="24" height="28" rx="3" fill="white" stroke={es.border} strokeWidth="1"/>
         <rect x={W-33} y="13" width="22" height="26" rx="2" fill={es.bg} stroke={es.border} strokeWidth="0.5" strokeDasharray="2,1"/>
-        <text x={W-22} y="30" textAnchor="middle" fontSize="13">✈️</text>
+        <circle cx={W-22} cy="26" r="8" fill="white" opacity="0.7"/>
         <rect x="12" y={H*0.52} width="42" height="3" rx="1.5" fill={es.border} opacity="0.3"/>
         <rect x="12" y={H*0.52+7} width="34" height="3" rx="1.5" fill={es.border} opacity="0.3"/>
         <rect x="12" y={H*0.52+14} width="38" height="3" rx="1.5" fill={es.border} opacity="0.3"/>
-        <text x={W-46} y={H-12} textAnchor="middle" fontSize="12">{isOpen?"💌":"🔒"}</text>
+        <circle cx={W-46} cy={H-16} r="4" fill={isOpen ? es.flap : es.border} opacity="0.75"/>
       </svg>
       <div style={{ marginTop:4, background:"rgba(255,255,255,0.88)", borderRadius:8, padding:"3px 8px", backdropFilter:"blur(4px)" }}>
         <div style={{ fontSize:11, fontWeight:600, color:"#1e293b", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
@@ -106,7 +106,7 @@ export default function FutureCapsulePage() {
     const c = {
       uid: Date.now(), colorIdx: mood,
       title: title.trim() || "Миний захидал",
-      text, mood:"💌", email,
+      text, mood:"", email,
       createdAt: Date.now(),
       openAt: new Date(openDate).getTime(),
       emailSent: false,
@@ -128,7 +128,7 @@ export default function FutureCapsulePage() {
       const res = await fetch("/api/capsule/send-email", {
         method:"POST", credentials:"include",
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ to:capsule.email, subject:`💌 Future Capsule: ${capsule.title}`, title:capsule.title, text:capsule.text, mood:capsule.mood, createdAt:fmt(capsule.createdAt) }),
+        body: JSON.stringify({ to:capsule.email, subject:`Future Capsule: ${capsule.title}`, title:capsule.title, text:capsule.text, mood:capsule.mood, createdAt:fmt(capsule.createdAt) }),
       });
       if (res.ok) {
         const u = capsules.map(c=>c.uid===capsule.uid?{...c,emailSent:true}:c);
@@ -143,11 +143,16 @@ export default function FutureCapsulePage() {
   const inp = { width:"100%", boxSizing:"border-box", padding:"9px 12px", borderRadius:10, border:"1.5px solid #e2e8f0", fontSize:13, outline:"none" };
 
   return (
-    <div style={{ display:"flex", flexDirection:"column", height:"calc(100vh - 56px)", background:"linear-gradient(160deg,#eef2ff,#f8faff,#fce7f3)", overflow:"hidden" }}>
+    <div className="capsule-page" style={{ display:"flex", flexDirection:"column", height:"calc(100vh - 56px)", background:"linear-gradient(160deg,#f8fafc,#f4f7fb)", overflow:"hidden" }}>
+      <style>{`
+        .capsule-page button,.capsule-page input,.capsule-page textarea{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+        .capsule-page button:hover{transform:translateY(-1px)}
+        .capsule-page .env-body{transition:filter .25s ease,transform .25s ease}
+      `}</style>
       {/* Header */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 24px", flexShrink:0, background:"rgba(255,255,255,0.7)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(255,255,255,0.9)" }}>
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <span style={{ fontSize:24 }}>💌</span>
+          <span style={{ width:12,height:32,borderRadius:99,background:"linear-gradient(180deg,#7c3aed,#db2777)",display:"inline-block" }}/>
           <div>
             <div style={{ fontSize:17, fontWeight:700, color:"#1e293b" }}>Future Capsule</div>
             <div style={{ fontSize:11, color:"#94a3b8" }}>{capsules.length} захидал · Ирээдүйн өөртөө</div>
@@ -162,7 +167,7 @@ export default function FutureCapsulePage() {
       <div ref={boardRef} style={{ flex:1, position:"relative", overflow:"hidden" }}>
         {capsules.length===0 && (
           <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, pointerEvents:"none" }}>
-            <span style={{ fontSize:56, opacity:0.3 }}>💌</span>
+            <span style={{ width:54,height:54,borderRadius:18,background:"rgba(148,163,184,.16)",boxShadow:"inset 0 0 0 1px rgba(148,163,184,.22)" }}/>
             <p style={{ color:"#94a3b8", fontSize:14, margin:0 }}>Одоохондоо захидал байхгүй</p>
           </div>
         )}
@@ -176,7 +181,7 @@ export default function FutureCapsulePage() {
         <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.4)", backdropFilter:"blur(6px)", display:"flex", alignItems:"center", justifyContent:"center" }} onClick={()=>setShowForm(false)}>
           <div style={{ background:"white", borderRadius:24, padding:28, width:460, maxHeight:"88vh", overflow:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.2)" }} onClick={e=>e.stopPropagation()}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-              <h2 style={{ fontSize:17, fontWeight:700, color:"#1e293b", margin:0 }}>✍️ Захидал бичих</h2>
+              <h2 style={{ fontSize:17, fontWeight:700, color:"#1e293b", margin:0 }}>Захидал бичих</h2>
               <button onClick={()=>setShowForm(false)} style={{ background:"#f1f5f9", border:"none", borderRadius:8, width:30, height:30, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}><MdClose size={16} color="#64748b"/></button>
             </div>
             <label style={{ fontSize:11, fontWeight:600, color:"#94a3b8", display:"block", marginBottom:5 }}>ГАРЧИГ</label>
@@ -220,7 +225,7 @@ export default function FutureCapsulePage() {
         <div style={{ position:"fixed", inset:0, zIndex:300, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={()=>setSelected(null)}>
           <div style={{ background:"white", borderRadius:24, padding:28, width:400, boxShadow:"0 24px 80px rgba(0,0,0,0.22)" }} onClick={e=>e.stopPropagation()}>
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
-              <div style={{ width:42, height:42, borderRadius:12, background:"linear-gradient(135deg,#7c3aed,#db2877)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>💌</div>
+              <div style={{ width:42, height:42, borderRadius:12, background:"linear-gradient(135deg,#7c3aed,#db2877)" }}/>
               <div style={{ flex:1 }}>
                 <div style={{ fontSize:15, fontWeight:700, color:"#1e293b" }}>{selected.title}</div>
                 <div style={{ fontSize:11, color:"#94a3b8" }}>{fmt(selected.createdAt)} бичсэн</div>
@@ -237,7 +242,7 @@ export default function FutureCapsulePage() {
                 <div style={{ display:"flex", gap:8 }}>
                   {selected.email&&(
                     <button onClick={()=>sendEmail(selected)} disabled={sending||selected.emailSent} style={{ flex:1, padding:"9px", borderRadius:10, border:"none", cursor:"pointer", background:selected.emailSent?"#f0fdf4":"linear-gradient(135deg,#7c3aed,#db2877)", color:selected.emailSent?"#16a34a":"white", fontSize:12, fontWeight:600, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-                      {selected.emailSent?"✅ Илгээгдсэн":sending?"Илгээж байна...":"📧 Gmail рүү илгээх"}
+                      {selected.emailSent?"Илгээгдсэн":sending?"Илгээж байна...":"Gmail рүү илгээх"}
                     </button>
                   )}
                   <button onClick={()=>del(selected.uid)} style={{ padding:"9px 14px", borderRadius:10, border:"none", background:"#fff1f2", color:"#f43f5e", cursor:"pointer", display:"flex", alignItems:"center", gap:4, fontSize:12, fontWeight:600 }}>
@@ -247,10 +252,10 @@ export default function FutureCapsulePage() {
               </>
             ):(
               <div style={{ background:"#f8fafc", borderRadius:12, padding:20, textAlign:"center", color:"#94a3b8" }}>
-                <div style={{ fontSize:32, marginBottom:8 }}>🔒</div>
+                <div style={{ width:42,height:42,borderRadius:14,background:"#e2e8f0",margin:"0 auto 8px" }}/>
                 <div style={{ fontSize:14, fontWeight:600, color:"#475569", marginBottom:4 }}>Ирээдүйн захиа (битүүмжилсэн)</div>
                 <div style={{ fontSize:12, marginBottom:4 }}>Нээгдэх: {fmt(selected.openAt)}</div>
-                <div style={{ fontSize:12, color:"#fbbf24" }}>Одоохондоо уншиж болохгүй 🌙</div>
+                <div style={{ fontSize:12, color:"#f59e0b" }}>Одоохондоо уншиж болохгүй</div>
                 {daysLeft(selected)&&<div style={{ marginTop:8, fontSize:11 }}>{daysLeft(selected)}</div>}
               </div>
             )}
