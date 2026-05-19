@@ -12,7 +12,8 @@ export default function Users() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/users", { credentials: "include" });
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const res = await fetch(`${API_BASE}/users`, { credentials: "include" });
       const data = await res.json();
       setUsers(data.users || []);
     } catch { toast.error("Алдаа гарлаа"); }
@@ -23,7 +24,8 @@ export default function Users() {
 
   const handleToggle = async (id) => {
     try {
-      const res = await fetch(`/api/users/${id}/toggle`, { method: "PUT", credentials: "include" });
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const res = await fetch(`${API_BASE}/users/${id}/toggle`, { method: "PUT", credentials: "include" });
       const data = await res.json();
       toast.success(data.message);
       fetchUsers();
@@ -33,7 +35,8 @@ export default function Users() {
   const handleDelete = async (id) => {
     if (!confirm("Хэрэглэгчийг устгах уу?")) return;
     try {
-      await fetch(`/api/users/${id}`, { method: "DELETE", credentials: "include" });
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      await fetch(`${API_BASE}/users/${id}`, { method: "DELETE", credentials: "include" });
       toast.success("Устгагдлаа");
       fetchUsers();
     } catch { toast.error("Алдаа гарлаа"); }

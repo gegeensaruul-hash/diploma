@@ -131,7 +131,8 @@ export default function Login() {
     const verifySession = async () => {
       if (!user) { setChecking(false); return; }
       try {
-        const res = await fetch("/api/auth/me", { credentials: "include" });
+        const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+        const res = await fetch(`${API_BASE}/auth/me`, { credentials: "include" });
         if (res.ok) { navigate("/dashboard"); }
         else { dispatch(clearCredentials()); setChecking(false); }
       } catch { dispatch(clearCredentials()); setChecking(false); }

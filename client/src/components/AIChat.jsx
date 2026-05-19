@@ -66,7 +66,8 @@ export default function AIChat({ onClose }) {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/ai/chat", {
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const response = await fetch(`${API_BASE}/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

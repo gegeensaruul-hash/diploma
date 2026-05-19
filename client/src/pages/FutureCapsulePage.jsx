@@ -126,7 +126,8 @@ export default function FutureCapsulePage() {
     if (!capsule.email) return;
     setSending(true);
     try {
-      const res = await fetch("/api/capsule/send-email", {
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const res = await fetch(`${API_BASE}/capsule/send-email`, {
         method:"POST", credentials:"include",
         headers:{"Content-Type":"application/json"},
         body: JSON.stringify({ to:capsule.email, subject:`Future Capsule: ${capsule.title}`, title:capsule.title, text:capsule.text, mood:capsule.mood, createdAt:fmt(capsule.createdAt) }),

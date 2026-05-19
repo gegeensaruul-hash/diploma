@@ -15,7 +15,8 @@ export default function Billing() {
   const handleUpgrade = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/payments/qpay/invoice", {
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const res = await fetch(`${API_BASE}/payments/qpay/invoice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 15000, description: "Pro Subscription - Lifetime" })
@@ -38,7 +39,8 @@ export default function Billing() {
     if (!invoice) return;
     try {
       setChecking(true);
-      const res = await fetch(`/api/payments/qpay/mock-pay/${invoice.id}`, { method: "POST" });
+      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const res = await fetch(`${API_BASE}/payments/qpay/mock-pay/${invoice.id}`, { method: "POST" });
       const data = await res.json();
       if (data.status && data.paid) {
         toast.success("Төлбөр амжилттай төлөгдлөө!");
@@ -61,7 +63,8 @@ export default function Billing() {
     if (invoice && !user.isPro) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/payments/qpay/check/${invoice.id}`, { method: "POST" });
+          const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+          const res = await fetch(`${API_BASE}/payments/qpay/check/${invoice.id}`, { method: "POST" });
           const data = await res.json();
           if (data.status && data.paid) {
             toast.success("Төлбөр амжилттай төлөгдлөө!");
