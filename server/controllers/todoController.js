@@ -33,13 +33,16 @@ export const getTodos = asyncHandler(async (req, res) => {
 // GET /api/todos/stats
 export const getStats = asyncHandler(async (req, res) => {
   const userId = req.user.userId;
-  const [todo, in_progress, completed, total] = await Promise.all([
+  const [todo, in_progress, completed, total, high, medium, low] = await Promise.all([
     Todo.count({ where: { userId, status: "todo", isTrashed: false } }),
     Todo.count({ where: { userId, status: "in_progress", isTrashed: false } }),
     Todo.count({ where: { userId, status: "completed", isTrashed: false } }),
     Todo.count({ where: { userId, isTrashed: false } }),
+    Todo.count({ where: { userId, priority: "high", isTrashed: false } }),
+    Todo.count({ where: { userId, priority: "medium", isTrashed: false } }),
+    Todo.count({ where: { userId, priority: "low", isTrashed: false } }),
   ]);
-  res.json({ status: true, stats: { todo, in_progress, completed, total } });
+  res.json({ status: true, stats: { todo, in_progress, completed, total, high, medium, low } });
 });
 
 // GET /api/todos/trash

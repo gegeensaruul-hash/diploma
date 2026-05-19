@@ -1,3 +1,4 @@
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import express from "express";
@@ -20,7 +21,10 @@ const startServer = async () => {
 
   // isActive=NULL байгаа хэрэглэгчдийг автоматаар засна
   try {
-    await sequelize.query("UPDATE Users SET isActive = 1 WHERE isActive IS NULL");
+    // MySQL uses Users, Postgres might need "Users" or users
+    await sequelize.query('UPDATE "Users" SET "isActive" = true WHERE "isActive" IS NULL').catch(() => 
+      sequelize.query('UPDATE Users SET isActive = 1 WHERE isActive IS NULL')
+    );
     console.log("✅ User isActive values ensured");
   } catch (err) {
     console.log("ℹ️ isActive fix skipped:", err.message);
@@ -30,22 +34,21 @@ const startServer = async () => {
   const httpServer = createServer(app);
   const port = process.env.PORT || 5000;
 
-  // Manual CORS — set headers on every request before anything else
-  app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-      res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-    }
-    if (req.method === "OPTIONS") return res.status(204).end();
-    next();
-  });
+  // CORS configuration
+  app.use(cors({
+    origin: (origin, callback) => {
+      // Allow all origins in dev, or specific ones in prod
+      callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  }));
 
   const io = new Server(httpServer, {
     cors: { origin: true, credentials: true },
   });
+
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
   app.use(cookieParser());
@@ -55,17 +58,25 @@ const startServer = async () => {
   app.use(routeNotFound);
   app.use(errorHandler);
 
-  // Socket.io auth middleware
+  // Socket.io auth middleware — more robust cookie parsing
   io.use((socket, next) => {
-    const cookie = socket.handshake.headers?.cookie || "";
-    const token = cookie.split(";").find((c) => c.trim().startsWith("token="))?.split("=")[1];
-    if (!token) return next(new Error("Нэвтрэх шаардлагатай"));
     try {
+      const cookieHeader = socket.handshake.headers?.cookie || "";
+      // Use regex to find the token cookie value
+      const match = cookieHeader.match(/(?:^|; )token=([^;]*)/);
+      const token = match ? match[1] : null;
+
+      if (!token) {
+        console.log("❌ Socket Auth: No token found");
+        return next(new Error("Authentication error: Login required"));
+      }
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       socket.userId = decoded.userId;
       next();
-    } catch {
-      next(new Error("Token хүчингүй"));
+    } catch (err) {
+      console.log("❌ Socket Auth: Invalid token", err.message);
+      next(new Error("Authentication error: Invalid token"));
     }
   });
 

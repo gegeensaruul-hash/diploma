@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
   MdDashboard, MdOutlineChecklist, MdNote, MdCalendarMonth,
-  MdPeople, MdLogout, MdSettings, MdClose, MdExpandMore, MdExpandLess, MdMenu,
+  MdPeople, MdLogout, MdSettings, MdClose, MdExpandMore, MdExpandLess,
   MdDashboardCustomize, MdAdd, MdMailOutline, MdAccountBalanceWallet,
 } from "react-icons/md";
 import { clearCredentials } from "../redux/slices/authSlice";
@@ -17,7 +17,6 @@ import { getUserStore, setUserStore } from "../utils/userStorage";
 
 // App.jsx-ийн session cache-г reset хийх helper
 function resetSessionCache() {
-  // Module-level хувьсагчид шууд хандах боломжгүй тул custom event ашиглана
   window.dispatchEvent(new CustomEvent("session-invalidate"));
 }
 
@@ -59,7 +58,6 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
 
       <div
         onClick={()=>{
-          // Нуугдсан board байвал дахин харуулах, үгүй бол шинэ нэмэх
           const hiddenBoard = vbBoards.find(b => b.hidden);
           let updated, targetId;
           if (hiddenBoard) {
@@ -94,7 +92,6 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
         </div>
       </div>
 
-      {/* Future Capsule карт */}
       <div
         onClick={()=>{
           const hiddenFc = fcBoards.find(b => b.hidden);
@@ -130,7 +127,6 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
         </div>
       </div>
 
-      {/* Finance карт */}
       <div
         onClick={()=>{ setShowFinance&&setShowFinance(true); setShowVBPopup(false); navigate("/finance"); }}
         style={{
@@ -176,7 +172,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
     return getUserStore("sidebar_show_finance", false);
   });
 
-  // Accordion: open if currently on a todos sub-route
   const isTodosActive = location.pathname.startsWith("/todos");
   const [todosOpen, setTodosOpen] = useState(isTodosActive);
   const [showAddWidget, setShowAddWidget] = useState(false);
@@ -203,8 +198,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
     } catch { toast.error("Гарахад алдаа гарлаа"); }
   };
 
-
-
   const colorIdx = (user?.name?.charCodeAt(0) || 0) % AVATAR_COLORS.length;
   const [c1, c2] = AVATAR_COLORS[colorIdx];
   const bg = theme.sidebar;
@@ -218,7 +211,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
     <aside className="w-52 flex flex-col h-full overflow-hidden" style={{ background: bg }}>
       <style>{`.group:hover .vb-del { display:flex!important; }`}</style>
 
-      {/* Cover */}
       <div className="relative flex-shrink-0">
         <div className="w-full overflow-hidden" style={{ height: 96 }}>
           {user?.coverImage ? (
@@ -232,9 +224,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
           )}
         </div>
 
-
-
-        {/* Avatar */}
         <div className="absolute left-4 z-10" style={{ bottom: -28 }}>
           <NavLink to="/profile">
             <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white"
@@ -251,20 +240,22 @@ export default function Sidebar({ onClose, onMenuToggle }) {
         </div>
       </div>
 
-      {/* Name */}
       <div className="flex-shrink-0 pt-9 pb-3 px-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[15px] font-bold text-white truncate leading-tight">{user?.name}</p>
+          <div className="flex items-center gap-2 min-w-0">
+            <p className="text-[15px] font-bold text-white truncate leading-tight">{user?.name}</p>
+            <span className="flex-shrink-0 px-1.5 py-0.5 rounded text-[9px] font-black tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg">PRO</span>
+          </div>
           <div style={{ display:"flex", alignItems:"center", gap:6, position:"relative" }}>
             <button
               ref={plusBtnRef}
               onClick={() => setShowVBPopup(v => !v)}
-              title="Vision Board нэмэх"
+              title="Нэмэх"
               style={{
                 width:22, height:22, borderRadius:6,
                 background:"rgba(255,255,255,0.15)",
                 border:"1px solid rgba(255,255,255,0.25)",
-                display:"flex", alignItems:"center", justifyContent:"center",
+                display:"flex", alignItems:"center", justifySelf:"center", justifyContent:"center",
                 cursor:"pointer", color:"white", flexShrink:0,
                 transition:"background .15s",
               }}
@@ -276,7 +267,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
               <MdSettings size={15} />
             </NavLink>
 
-            {/* Vision Board Popup — portal ашиглан body-д render */}
             {showVBPopup && createPortal(
               <>
                 <div style={{ position:"fixed", inset:0, zIndex:199 }} onClick={()=>setShowVBPopup(false)}/>
@@ -299,19 +289,14 @@ export default function Sidebar({ onClose, onMenuToggle }) {
 
       <div className="mx-3 flex-shrink-0" style={{ height: 1, background: "rgba(255,255,255,0.1)" }} />
 
-      {/* Nav */}
       <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
-
-        {/* Dashboard */}
         {topLinks.map(({ to, label, icon }) => (
           <NavLink key={to} to={to} className={({ isActive }) => linkClass(isActive)}>
             {icon}{label}
           </NavLink>
         ))}
 
-        {/* All Todos — accordion */}
         <div>
-          {/* Header row — clickable toggle */}
           <button
             onClick={() => setTodosOpen((v) => !v)}
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -325,7 +310,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
               : <MdExpandMore size={16} className="opacity-60" />}
           </button>
 
-          {/* Sub-links */}
           <div style={{
             maxHeight: todosOpen ? 200 : 0,
             overflow: "hidden",
@@ -342,18 +326,15 @@ export default function Sidebar({ onClose, onMenuToggle }) {
           </div>
         </div>
 
-        {/* Notes, Calendar */}
         {bottomLinks.map(({ to, label, icon }) => (
           <NavLink key={to} to={to} className={({ isActive }) => linkClass(isActive)}>
             {icon}{label}
           </NavLink>
         ))}
-        {/* Future Capsules — popup-аар нэмэгдсэн */}
+
         {fcBoards.filter(b => !b.hidden).map((board) => (
-          <div key={board.id} className="group flex items-center rounded-lg"
-            style={{ position:"relative" }}>
-            <NavLink to="/futurecapsule" className={({ isActive }) => linkClass(isActive)}
-              style={{ flex:1 }}>
+          <div key={board.id} className="group flex items-center rounded-lg" style={{ position:"relative" }}>
+            <NavLink to="/futurecapsule" className={({ isActive }) => linkClass(isActive)} style={{ flex:1 }}>
               <MdMailOutline size={19}/>{board.label}
             </NavLink>
             <button
@@ -375,17 +356,13 @@ export default function Sidebar({ onClose, onMenuToggle }) {
             >×</button>
           </div>
         ))}
-        {/* Vision Boards — popup-аар нэмэгдсэн */}
         {vbBoards.filter(b => !b.hidden).map((board) => (
-          <div key={board.id} className="group flex items-center rounded-lg"
-            style={{ position:"relative" }}>
-            <NavLink to={`/visionboard/${board.id}`} className={({ isActive }) => linkClass(isActive)}
-              style={{ flex:1 }}>
+          <div key={board.id} className="group flex items-center rounded-lg" style={{ position:"relative" }}>
+            <NavLink to={`/visionboard/${board.id}`} className={({ isActive }) => linkClass(isActive)} style={{ flex:1 }}>
               <MdDashboardCustomize size={19} />{board.label}
             </NavLink>
             <button
               onClick={() => {
-                // Data-г устгахгүй, зөвхөн sidebar-аас нуух
                 const updated = vbBoards.map(b => b.id === board.id ? {...b, hidden: true} : b);
                 setVbBoards(updated);
                 setUserStore("sidebar_vb_boards", updated);
@@ -403,7 +380,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
             >×</button>
           </div>
         ))}
-        {/* Finance */}
         {showFinance && (
           <div style={{ position:"relative" }} className="group flex items-center rounded-lg">
             <NavLink to="/finance" className={({ isActive }) => linkClass(isActive)} style={{ flex:1 }}>
@@ -423,7 +399,6 @@ export default function Sidebar({ onClose, onMenuToggle }) {
             >×</button>
           </div>
         )}
-        {/* Admin */}
         {user?.role === "admin" && (
           <NavLink to="/users" className={({ isActive }) => linkClass(isActive)}>
             <MdPeople size={19} />{t.users}
@@ -431,14 +406,12 @@ export default function Sidebar({ onClose, onMenuToggle }) {
         )}
       </nav>
 
-      {/* Widgets */}
       <div style={{ overflowY:"auto", flexShrink:0, maxHeight:320 }}>
         <WidgetPanel />
       </div>
 
       <div className="mx-3 flex-shrink-0" style={{ height: 1, background: "rgba(255,255,255,0.1)" }} />
 
-      {/* Logout */}
       <div className="flex-shrink-0 p-3">
         <button type="button" onClick={handleLogout}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/40 hover:text-red-400 hover:bg-white/5 transition-colors">
@@ -459,4 +432,3 @@ export default function Sidebar({ onClose, onMenuToggle }) {
     </aside>
   );
 }
-function widget_added_msg(w){ return w.name + " нэмэгдлээ ✓"; }

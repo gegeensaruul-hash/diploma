@@ -45,18 +45,18 @@ function StatCard({ label, count, icon, accent, to, sublabel }) {
 }
 
 function PriorityBar({ high = 0, medium = 0, low = 0, lang }) {
-  const total = high + medium + low || 1;
+  const total = (high + medium + low) || 1;
   return (
     <div>
       <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8, fontWeight: 600 }}>
         {lang === "mn" ? "Чухлын хуваарилалт" : "Priority breakdown"}
       </div>
       <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", height: 10, gap: 2 }}>
-        {high > 0 && <div style={{ flex: high / total, background: "#ef4444", borderRadius: 4 }} title={`High: ${high}`} />}
-        {medium > 0 && <div style={{ flex: medium / total, background: "#f59e0b", borderRadius: 4 }} title={`Medium: ${medium}`} />}
-        {low > 0 && <div style={{ flex: low / total, background: "#22c55e", borderRadius: 4 }} title={`Low: ${low}`} />}
+        {high > 0 && <div style={{ width: `${(high / total) * 100}%`, background: "#ef4444", borderRadius: 4 }} title={`High: ${high}`} />}
+        {medium > 0 && <div style={{ width: `${(medium / total) * 100}%`, background: "#f59e0b", borderRadius: 4 }} title={`Medium: ${medium}`} />}
+        {low > 0 && <div style={{ width: `${(low / total) * 100}%`, background: "#22c55e", borderRadius: 4 }} title={`Low: ${low}`} />}
       </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
         {[["#ef4444", lang === "mn" ? "Өндөр" : "High", high], ["#f59e0b", lang === "mn" ? "Дунд" : "Med", medium], ["#22c55e", lang === "mn" ? "Бага" : "Low", low]].map(([c, l, v]) => (
           <div key={l} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "#64748b" }}>
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: c, flexShrink: 0 }} />{l}: <b style={{ color: "#334155" }}>{v}</b>
@@ -123,10 +123,6 @@ export default function Dashboard() {
           .dash-panel-grid{grid-template-columns:1fr!important;gap:10px!important}
           .dash-table-scroll{overflow-x:auto!important}
           .dash-table-head,.dash-table-row{grid-template-columns:180px 86px 104px 78px!important;min-width:448px}
-        }
-        @media (max-width: 460px){
-          .dash-stat-grid{grid-template-columns:1fr!important}
-          .dash-wrap h2{font-size:20px!important}
         }
       `}</style>
 
@@ -209,7 +205,6 @@ export default function Dashboard() {
         </div>
 
         <div className="dash-table-scroll">
-        {/* Table header */}
         <div className="dash-table-head" style={{ padding: "10px 20px", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
           {[
             { f: "title",     l: lang === "mn" ? "Гарчиг"    : "Title" },
@@ -240,7 +235,6 @@ export default function Dashboard() {
                 onMouseEnter={(e) => e.currentTarget.style.background = "#fafafa"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
               >
-                {/* Title */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                   <span style={{ width: 7, height: 7, borderRadius: "50%", background: STATUS_COLOR[todo.status], flexShrink: 0 }} />
                   <span style={{
@@ -249,7 +243,6 @@ export default function Dashboard() {
                     textDecoration: todo.status === "completed" ? "line-through" : "none",
                   }}>{todo.title}</span>
                 </div>
-                {/* Priority */}
                 <span style={{
                   fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20,
                   background: PRIORITY_COLOR[todo.priority] + "18",
@@ -258,11 +251,9 @@ export default function Dashboard() {
                 }}>
                   {priorityLabel[todo.priority]}
                 </span>
-                {/* Status */}
                 <span style={{ fontSize: 12, color: STATUS_COLOR[todo.status], fontWeight: 500 }}>
                   {statusLabel[todo.status]}
                 </span>
-                {/* Date */}
                 <span style={{ fontSize: 11, color: "#94a3b8" }}>
                   {todo.createdAt ? new Date(todo.createdAt).toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { month: "short", day: "numeric" }) : "—"}
                 </span>
@@ -272,7 +263,6 @@ export default function Dashboard() {
         )}
         </div>
       </div>
-
     </div>
   );
 }

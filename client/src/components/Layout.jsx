@@ -44,55 +44,61 @@ export default function Layout() {
       </div>
 
       {/* Chat panel */}
-      <div className={`flex-shrink-0 border-l border-slate-200 bg-white flex flex-col transition-all duration-300 ${
-        chatOpen ? "w-80" : "w-0 overflow-hidden border-l-0"
-      }`}>
-        {chatOpen && (
-          <>
-            {/* Tab switcher */}
-            <div style={{
-              display: "flex", borderBottom: "1px solid #e2e8f0",
-              flexShrink: 0, background: "white",
-            }}>
-              <button
-                onClick={() => setChatTab("ai")}
-                style={{
-                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-                  gap: 6, padding: "10px 0", fontSize: 12, fontWeight: 600,
-                  border: "none", cursor: "pointer", transition: "all .15s",
-                  background: chatTab === "ai" ? `${theme.accent}12` : "white",
-                  color: chatTab === "ai" ? theme.accent : "#94a3b8",
-                  borderBottom: chatTab === "ai" ? `2px solid ${theme.accent}` : "2px solid transparent",
-                }}
-              >
-                <MdAutoAwesome size={15} />
-                AI Assistant
-              </button>
-              <button
-                onClick={() => setChatTab("group")}
-                style={{
-                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-                  gap: 6, padding: "10px 0", fontSize: 12, fontWeight: 600,
-                  border: "none", cursor: "pointer", transition: "all .15s",
-                  background: chatTab === "group" ? `${theme.accent}12` : "white",
-                  color: chatTab === "group" ? theme.accent : "#94a3b8",
-                  borderBottom: chatTab === "group" ? `2px solid ${theme.accent}` : "2px solid transparent",
-                }}
-              >
-                <MdChat size={15} />
-                {lang === "mn" ? "Групп" : "Group"}
-              </button>
-            </div>
+      <div 
+        style={{
+          width: chatOpen ? 320 : 0,
+          transition: "width 0.3s cubic-bezier(0.4,0,0.2,1)",
+          overflow: "hidden",
+          borderLeft: chatOpen ? "1px solid var(--border)" : "none",
+          background: "var(--bg-card)",
+          zIndex: 40,
+        }}
+        className="flex flex-col shadow-2xl"
+      >
+        <div style={{ width: 320, height: "100%", display: "flex", flexDirection: "column" }}>
+          {/* Tab switcher */}
+          <div style={{
+            display: "flex", borderBottom: "1px solid var(--border)",
+            flexShrink: 0, background: "var(--bg-card)",
+          }}>
+            <button
+              onClick={() => setChatTab("ai")}
+              style={{
+                flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+                gap: 6, padding: "12px 0", fontSize: 12, fontWeight: 700,
+                border: "none", cursor: "pointer", transition: "all .2s",
+                background: chatTab === "ai" ? `${theme.accent}15` : "transparent",
+                color: chatTab === "ai" ? theme.accent : "var(--text3)",
+                borderBottom: chatTab === "ai" ? `3px solid ${theme.accent}` : "3px solid transparent",
+              }}
+            >
+              <MdAutoAwesome size={15} />
+              AI Assistant
+            </button>
+            <button
+              onClick={() => setChatTab("group")}
+              style={{
+                flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+                gap: 6, padding: "12px 0", fontSize: 12, fontWeight: 700,
+                border: "none", cursor: "pointer", transition: "all .2s",
+                background: chatTab === "group" ? `${theme.accent}15` : "transparent",
+                color: chatTab === "group" ? theme.accent : "var(--text3)",
+                borderBottom: chatTab === "group" ? `3px solid ${theme.accent}` : "3px solid transparent",
+              }}
+            >
+              <MdChat size={15} />
+              {lang === "mn" ? "Групп" : "Group"}
+            </button>
+          </div>
 
-            {/* Tab content */}
-            <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-              {chatTab === "ai"
-                ? <AIChat onClose={() => setChatOpen(false)} />
-                : <GroupChat onClose={() => setChatOpen(false)} />
-              }
-            </div>
-          </>
-        )}
+          {/* Tab content */}
+          <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            {chatTab === "ai"
+              ? <AIChat onClose={() => setChatOpen(false)} />
+              : <GroupChat onClose={() => setChatOpen(false)} />
+            }
+          </div>
+        </div>
       </div>
     </div>
   );
