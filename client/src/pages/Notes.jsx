@@ -417,6 +417,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const imgRef    = useRef(null);
   const cv        = COVERS[coverIdx];
   const fontObj   = FONTS.find(f=>f.id===font) || FONTS[0];
+  const selectedFloat = useMemo(
+    () => floatStickers.find(item => item.id === selectedFloatId),
+    [floatStickers, selectedFloatId]
+  );
+  const mediaCount = floatStickers.length + (drawing ? 1 : 0);
 
   useEffect(() => {
     if (editorRef.current && note.html) editorRef.current.innerHTML = note.html;
@@ -695,7 +700,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const BtnFmt = ({ cmd, label, style={} }) => {
     const active = fmtState[cmd];
     return (
-      <button onMouseDown={e=>applyFmt(e, cmd)}
+      <button className="ne-control" onMouseDown={e=>applyFmt(e, cmd)}
         style={{ width:26,height:26,borderRadius:5,fontSize:12,
           border: active ? "1.5px solid #7c3aed" : "1px solid #e2e8f0",
           background: active ? "#ede9fe" : "white",
@@ -715,12 +720,18 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         .ne-body ol{list-style:decimal;padding-left:22px}
         .ne-body span[data-imgid]{transition:opacity .15s}
         .ne-body span[data-imgid]:hover img{box-shadow:0 0 0 2.5px #7c3aed,0 4px 16px rgba(0,0,0,0.18)!important}
+        .ne-control{transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease,background .14s ease}
+        .ne-control:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,0.1)}
+        .ne-swatch:hover{transform:scale(1.14)}
         .float-sticker{will-change:transform}
         .float-sticker:hover{z-index:99!important}
         .float-sticker:hover .float-sticker-del{display:flex!important}
         .float-sticker.is-selected{z-index:100!important}
         .float-sticker.is-selected .float-sticker-del{display:flex!important}
+        .float-sticker.is-selected img{box-shadow:0 10px 26px rgba(15,23,42,0.24),0 0 0 2px rgba(255,255,255,0.92)!important}
         .float-sticker:active{cursor:grabbing!important}
+        .float-sticker-toolbar button:hover{background:#ede9fe!important;color:#6d28d9!important}
+        .float-sticker-handle:hover{transform:scale(1.08)}
       `}</style>
 
       {/* cover bar */}
@@ -730,7 +741,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         {coverImg && <div style={{ position:"absolute",inset:0,background:"rgba(0,0,0,0.32)",borderRadius:0 }}/>}
         <div style={{ position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:5,flexWrap:"wrap",width:"100%" }}>
         {COVERS.map((c,i)=>(
-          <button key={c.id} onClick={()=>setCoverIdx(i)}
+          <button key={c.id} className="ne-control" onClick={()=>setCoverIdx(i)}
             style={{ width:16,height:20,borderRadius:3,flexShrink:0,cursor:"pointer",
               background:`linear-gradient(135deg,${c.bg},${c.bg2})`,
               border:coverIdx===i?"2.5px solid white":"1.5px solid rgba(0,0,0,0.18)",
@@ -738,9 +749,9 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         ))}
         <div style={{ width:1,height:16,background:"rgba(255,255,255,0.35)",margin:"0 3px" }}/>
         {PAGE_COLORS.map(c=>(
-          <button key={c} onClick={()=>setPageColor(c)}
+          <button key={c} className="ne-swatch" onClick={()=>setPageColor(c)}
             style={{ width:13,height:13,borderRadius:"50%",flexShrink:0,cursor:"pointer",background:c,
-              border:pageColor===c?"2px solid #475569":"1px solid rgba(0,0,0,0.2)" }}/>
+              border:pageColor===c?"2px solid #475569":"1px solid rgba(0,0,0,0.2)",transition:"transform .14s ease" }}/>
         ))}
         <div style={{ width:1,height:16,background:"rgba(255,255,255,0.35)",margin:"0 3px" }}/>
         {[
@@ -749,7 +760,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
           { id:"dots",   label:"⁘" },
           { id:"none",   label:"□" },
         ].map(p=>(
-          <button key={p.id} onClick={()=>setPagePattern(p.id)}
+          <button key={p.id} className="ne-control" onClick={()=>setPagePattern(p.id)}
             title={p.id}
             style={{ width:20,height:20,borderRadius:4,flexShrink:0,cursor:"pointer",fontSize:12,
               fontWeight:700,border:pagePattern===p.id?"2px solid white":"1px solid rgba(255,255,255,0.4)",
@@ -757,13 +768,13 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
               color:"white",display:"flex",alignItems:"center",justifyContent:"center" }}>{p.label}</button>
         ))}
         <div style={{ flex:1 }}/>
-        <button onClick={()=>coverImgRef.current?.click()}
+        <button className="ne-control" onClick={()=>coverImgRef.current?.click()}
           style={{ background:"rgba(255,255,255,0.25)",border:"1px solid rgba(255,255,255,0.5)",borderRadius:6,
             padding:"3px 9px",color:"white",cursor:"pointer",fontSize:12,fontWeight:600 }}>
           🖼 Cover
         </button>
         {coverImg && (
-          <button onClick={()=>{
+          <button className="ne-control" onClick={()=>{
             setCoverImg(null);
             const html=editorRef.current?.innerHTML||"", plain=editorRef.current?.innerText||"";
             onSave({ ...note, title, html, plainText:plain.slice(0,120), coverIdx, pageColor, font,
@@ -793,7 +804,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         flexWrap:"wrap",backdropFilter:"blur(8px)",
         position:"relative", zIndex:20 }}>
         {/* subject picker */}
-        <select value={subjectId||""} onChange={e=>setSubjectId(e.target.value||null)}
+        <select className="ne-control" value={subjectId||""} onChange={e=>setSubjectId(e.target.value||null)}
           style={{ fontSize:11,border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 6px",
             background:"white",cursor:"pointer",color:"#334155",maxWidth:110 }}>
           <option value="">📁 Subject</option>
@@ -802,7 +813,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         </select>
         <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
         {/* font */}
-        <select value={font} onChange={e=>setFont(e.target.value)}
+        <select className="ne-control" value={font} onChange={e=>setFont(e.target.value)}
           style={{ fontSize:11,border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 6px",
             background:"white",cursor:"pointer",color:"#334155",maxWidth:90,fontFamily:fontObj.style }}>
           {FONTS.map(f=><option key={f.id} value={f.id} style={{ fontFamily:f.style }}>{f.label}</option>)}
@@ -813,32 +824,32 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         <BtnFmt cmd="underline"     label="U" style={{ textDecoration:"underline" }}/>
         <BtnFmt cmd="strikeThrough" label="S" style={{ textDecoration:"line-through" }}/>
         <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
-        <button onMouseDown={e=>{ e.preventDefault(); document.execCommand("insertUnorderedList",false,null); editorRef.current?.focus(); }}
+        <button className="ne-control" onMouseDown={e=>{ e.preventDefault(); document.execCommand("insertUnorderedList",false,null); editorRef.current?.focus(); }}
           style={{ width:26,height:26,borderRadius:5,fontSize:14,border:"1px solid #e2e8f0",background:"white",cursor:"pointer",color:"#475569",display:"flex",alignItems:"center",justifyContent:"center" }}>•≡</button>
-        <button onMouseDown={e=>{ e.preventDefault(); document.execCommand("insertOrderedList",false,null); editorRef.current?.focus(); }}
+        <button className="ne-control" onMouseDown={e=>{ e.preventDefault(); document.execCommand("insertOrderedList",false,null); editorRef.current?.focus(); }}
           style={{ width:26,height:26,borderRadius:5,fontSize:10,fontWeight:700,border:"1px solid #e2e8f0",background:"white",cursor:"pointer",color:"#475569",display:"flex",alignItems:"center",justifyContent:"center" }}>1.</button>
         <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
         <span style={{ fontSize:10,color:"#94a3b8",fontWeight:700 }}>HL</span>
         {HIGHLIGHTS.map(c=>(
-          <button key={c}
+          <button key={c} className="ne-swatch"
             onMouseDown={e=>{ saveSelection(); e.preventDefault(); }}
             onMouseUp={e=>{ e.preventDefault(); applyHL(c); }}
             style={{ width:18,height:18,borderRadius:3,flexShrink:0,cursor:"pointer",background:c,
               border:activeHL===c?"2.5px solid #475569":"1.5px solid rgba(0,0,0,0.15)" }}/>
         ))}
-        <button
+        <button className="ne-control"
           onMouseDown={e=>{ saveSelection(); e.preventDefault(); }}
           onMouseUp={e=>{ e.preventDefault(); restoreSelection(); wrapSelection("backgroundColor","transparent",editorRef.current); editorRef.current?.focus(); }}
           style={{ width:18,height:18,borderRadius:3,border:"1.5px solid #e2e8f0",background:"white",cursor:"pointer",
             fontSize:10,color:"#94a3b8",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900 }}>✕</button>
 
         <div style={{ flex:1 }}/>
-        <button onClick={()=>setDrawMode(true)}
+        <button className="ne-control" onClick={()=>setDrawMode(true)}
           style={{ padding:"4px 9px",borderRadius:6,fontSize:11,border:"1px solid #e2e8f0",
             background:drawing?"#7c3aed":"white",color:drawing?"white":"#64748b",cursor:"pointer",fontWeight:600 }}>
           ✏️ {lang==="mn"?"Зурах":"Draw"}
         </button>
-        <button onClick={()=>imgRef.current?.click()}
+        <button className="ne-control" onClick={()=>imgRef.current?.click()}
           style={{ padding:"4px 9px",borderRadius:6,fontSize:11,border:"1px solid #e2e8f0",
             background:"white",color:"#64748b",cursor:"pointer",fontWeight:600 }}>
           🖼 {lang==="mn"?"Зураг":"Image"}
@@ -848,6 +859,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         {/* Sticker button */}
         <div style={{ position:"relative" }}>
           <button ref={stickerBtnRef}
+            className="ne-control"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => {
               e.preventDefault();
@@ -921,6 +933,14 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             document.body
           )}
         </div>
+        {mediaCount > 0 && (
+          <span style={{ display:"flex",alignItems:"center",gap:5,
+            padding:"4px 8px",borderRadius:999,background:"rgba(124,58,237,0.09)",
+            border:"1px solid rgba(124,58,237,0.18)",color:"#6d28d9",
+            fontSize:11,fontWeight:800,whiteSpace:"nowrap" }}>
+            {mediaCount} media
+          </span>
+        )}
       </div>
 
       {drawMode && (
@@ -1018,24 +1038,29 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             )}
             {selectedFloatId === s.id && (
               <div
-                className="float-sticker-del"
+                className="float-sticker-del float-sticker-toolbar"
                 onPointerDown={e => e.stopPropagation()}
                 onMouseDown={e => e.stopPropagation()}
-                style={{ position:"absolute",top:-34,left:"50%",transform:"translateX(-50%)",
-                  display:"flex",alignItems:"center",gap:4,padding:"3px 5px",borderRadius:9,
-                  background:"rgba(15,23,42,0.92)",boxShadow:"0 4px 14px rgba(0,0,0,0.25)",
-                  zIndex:12 }}>
+                style={{ position:"absolute",top:-38,left:"50%",transform:"translateX(-50%)",
+                  display:"flex",alignItems:"center",gap:5,padding:"4px 6px",borderRadius:10,
+                  background:"rgba(15,23,42,0.94)",boxShadow:"0 8px 24px rgba(0,0,0,0.28)",
+                  zIndex:12,backdropFilter:"blur(8px)" }}>
+                <span style={{ color:"white",fontSize:10,fontWeight:800,padding:"0 4px",whiteSpace:"nowrap",
+                  opacity:.9 }}>
+                  {selectedFloat?.imgSrc ? "Image" : "Sticker"} {Math.round(s.size)}px
+                </span>
                 {[
                   { label:"-", title:"Smaller", action:()=>nudgeSelectedFloat(item=>({ size:item.size-12 })) },
                   { label:"+", title:"Bigger", action:()=>nudgeSelectedFloat(item=>({ size:item.size+12 })) },
                   { label:"↺", title:"Rotate left", action:()=>nudgeSelectedFloat(item=>({ rot:(item.rot||0)-10 })) },
                   { label:"↻", title:"Rotate right", action:()=>nudgeSelectedFloat(item=>({ rot:(item.rot||0)+10 })) },
+                  { label:"0", title:"Reset rotation", action:()=>nudgeSelectedFloat({ rot:0 }) },
                 ].map(btn => (
                   <button key={btn.title} title={btn.title}
                     onPointerDown={e => e.stopPropagation()}
                     onClick={e => { e.stopPropagation(); btn.action(); }}
-                    style={{ width:22,height:22,borderRadius:6,border:"none",background:"white",
-                      color:"#334155",fontSize:13,fontWeight:800,cursor:"pointer",
+                    style={{ width:24,height:24,borderRadius:7,border:"none",background:"white",
+                      color:"#334155",fontSize:12,fontWeight:900,cursor:"pointer",
                       display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1 }}>
                     {btn.label}
                   </button>
@@ -1048,18 +1073,22 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
               onPointerDown={e => e.stopPropagation()}
               onMouseDown={e => e.stopPropagation()}
               onClick={e => { e.preventDefault(); e.stopPropagation(); deleteFloatSticker(s.id); }}
-              style={{ position:"absolute",top:-9,right:-9,width:22,height:22,borderRadius:"50%",
-                background:"#ef4444",border:"2.5px solid white",color:"white",fontSize:13,
+              title="Delete"
+              style={{ position:"absolute",top:-12,right:-12,width:26,height:26,borderRadius:"50%",
+                background:"#ef4444",border:"2.5px solid white",color:"white",fontSize:15,
                 cursor:"pointer",display:"none",alignItems:"center",justifyContent:"center",
-                boxShadow:"0 2px 6px rgba(0,0,0,0.3)",fontWeight:900,lineHeight:1,zIndex:10 }}>
+                boxShadow:"0 6px 14px rgba(0,0,0,0.28)",fontWeight:900,lineHeight:1,zIndex:13 }}>
               ×
             </button>
             {/* resize handle — bottom-right */}
             <div
-              className="float-sticker-del"
-              style={{ position:"absolute",bottom:-6,right:-6,width:16,height:16,borderRadius:4,
-                background:"white",border:"2px solid #94a3b8",cursor:"se-resize",
-                display:"none",zIndex:10,touchAction:"none" }}
+              className="float-sticker-del float-sticker-handle"
+              title="Resize"
+              style={{ position:"absolute",bottom:-8,right:-8,width:20,height:20,borderRadius:6,
+                background:"linear-gradient(135deg,#ffffff 0%,#ffffff 52%,#c4b5fd 53%,#7c3aed 100%)",
+                border:"2px solid white",cursor:"se-resize",
+                display:"none",zIndex:12,touchAction:"none",boxShadow:"0 4px 12px rgba(0,0,0,0.24)",
+                transition:"transform .14s ease" }}
               onPointerDown={e => startStickerResize(e, s)}
               onPointerMove={onStickerPointerMove}
               onPointerUp={endStickerPointer}
@@ -1067,13 +1096,14 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             />
             {/* rotate handle — top-center */}
             <div
-              className="float-sticker-del"
+              className="float-sticker-del float-sticker-handle"
               title="Эргүүлэх"
-              style={{ position:"absolute",top:2,left:"50%",transform:"translateX(-50%)",
-                width:22,height:22,borderRadius:"50%",
+              style={{ position:"absolute",top:-2,left:"50%",transform:"translateX(-50%)",
+                width:24,height:24,borderRadius:"50%",
                 background:"white",border:"2px solid #7c3aed",cursor:"grab",
-                display:"none",zIndex:10,
-                alignItems:"center",justifyContent:"center",fontSize:13,touchAction:"none" }}
+                display:"none",zIndex:12,boxShadow:"0 4px 12px rgba(0,0,0,0.22)",
+                alignItems:"center",justifyContent:"center",fontSize:13,touchAction:"none",
+                color:"#6d28d9",fontWeight:900 }}
               onPointerDown={e => startStickerRotate(e, s)}
               onPointerMove={onStickerPointerMove}
               onPointerUp={endStickerPointer}
@@ -1085,16 +1115,18 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
       </div>
 
       <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
-        padding:"8px 14px",background:"rgba(255,255,255,0.85)",borderTop:"1px solid rgba(0,0,0,0.07)",backdropFilter:"blur(8px)" }}>
+        padding:"10px 14px",background:"rgba(255,255,255,0.9)",borderTop:"1px solid rgba(0,0,0,0.07)",
+        backdropFilter:"blur(10px)",boxShadow:"0 -8px 24px rgba(15,23,42,0.05)" }}>
         {note.id ? (
-          <button onClick={()=>{ onDelete(note.id); onClose(); }}
-            style={{ background:"none",border:"none",cursor:"pointer",color:"#ef4444",fontSize:12,fontWeight:600 }}>
+          <button className="ne-control" onClick={()=>{ onDelete(note.id); onClose(); }}
+            style={{ background:"#fff1f2",border:"1px solid #fecdd3",borderRadius:9,
+              padding:"7px 12px",cursor:"pointer",color:"#e11d48",fontSize:12,fontWeight:800 }}>
             🗑 {lang==="mn"?"Устгах":"Delete"}
           </button>
         ) : <div/>}
-        <button onClick={handleSave}
-          style={{ background:theme.accent,color:"white",border:"none",padding:"8px 24px",
-            borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer",boxShadow:`0 2px 12px ${theme.accent}44` }}>
+        <button className="ne-control" onClick={handleSave}
+          style={{ background:theme.accent,color:"white",border:"none",padding:"10px 28px",
+            borderRadius:11,fontSize:13,fontWeight:800,cursor:"pointer",boxShadow:`0 8px 20px ${theme.accent}42` }}>
           💾 {lang==="mn"?"Хадгалах":"Save"}
         </button>
       </div>
