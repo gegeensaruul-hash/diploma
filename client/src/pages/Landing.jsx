@@ -2,15 +2,21 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+import {
+  MdOutlineCheckCircle, MdOutlineCalendarMonth, MdOutlineDashboardCustomize,
+  MdOutlineNoteAlt, MdAutoAwesome, MdOutlineChat,
+  MdOutlineAccountBalanceWallet, MdOutlineMailOutline,
+} from "react-icons/md";
+
 const FEATURES = [
-  { icon: "✓", title: "Ухаалаг Todo", en: "Smart Todos", desc: "Ангилал, тэргүүлэх дарааллаар зохион байгуулж дэвшлээ хянаарай.", enDesc: "Organize by category and priority. Track your progress effortlessly." },
-  { icon: "◈", title: "Хуанли", en: "Calendar", desc: "Бүх ажлаа хуанли дээр харж цаг хугацааг зөв хуваарилаарай.", enDesc: "Visualize all tasks on a calendar and plan your time with precision." },
-  { icon: "🎯", title: "Vision Board", en: "Vision Board", desc: "Зорилго мөрөөдлөө зурган хавтан дээр цуглуулж өдөр бүр сэдэлжүүл.", enDesc: "Pin your goals on a visual board. Stay inspired every single day." },
-  { icon: "✍", title: "Тэмдэглэл", en: "Notes", desc: "Санаа төлөвлөгөөгөө хурдан бичиж хадгалаарай.", enDesc: "Capture ideas and plans instantly. Rich note-taking built right in." },
-  { icon: "⬡", title: "AI Туслах", en: "AI Assistant", desc: "Groq AI-аар асуулт асуу зөвлөгөө ав — апп доторхоос.", enDesc: "Ask Groq AI anything right inside the app. Built-in intelligence." },
-  { icon: "◎", title: "Групп Чат", en: "Group Chat", desc: "Багийнхантайгаа шууд харилцаж хамтран ажиллаарай.", enDesc: "Collaborate with your team in real-time. Built-in group chat." },
-  { icon: "💰", title: "Санхүү", en: "Finance", desc: "Орлого зарлагаа хянаж төсвөө зөв удирдаарай.", enDesc: "Track income and expenses. Manage your budget with ease." },
-  { icon: "⏳", title: "Ирээдүйн хайрцаг", en: "Future Capsule", desc: "Өөртөө захиа бичиж ирээдүйд нээх хайрцагт хийгээрэй.", enDesc: "Write letters to your future self. Open them when the time is right." },
+  { icon: <MdOutlineCheckCircle />, title: "Ухаалаг Todo", en: "Smart Todos", desc: "Ангилал, тэргүүлэх дарааллаар зохион байгуулж дэвшлээ хянаарай.", enDesc: "Organize by category and priority. Track your progress effortlessly." },
+  { icon: <MdOutlineCalendarMonth />, title: "Хуанли", en: "Calendar", desc: "Бүх ажлаа хуанли дээр харж цаг хугацааг зөв хуваарилаарай.", enDesc: "Visualize all tasks on a calendar and plan your time with precision." },
+  { icon: <MdOutlineDashboardCustomize />, title: "Vision Board", en: "Vision Board", desc: "Зорилго мөрөөдлөө зурган хавтан дээр цуглуулж өдөр бүр сэдэлжүүл.", enDesc: "Pin your goals on a visual board. Stay inspired every single day." },
+  { icon: <MdOutlineNoteAlt />, title: "Тэмдэглэл", en: "Notes", desc: "Санаа төлөвлөгөөгөө хурдан бичиж хадгалаарай.", enDesc: "Capture ideas and plans instantly. Rich note-taking built right in." },
+  { icon: <MdAutoAwesome />, title: "AI Туслах", en: "AI Assistant", desc: "Groq AI-аар асуулт асуу зөвлөгөө ав — апп доторхоос.", enDesc: "Ask Groq AI anything right inside the app. Built-in intelligence." },
+  { icon: <MdOutlineChat />, title: "Групп Чат", en: "Group Chat", desc: "Багийнхантайгаа шууд харилцаж хамтран ажиллаарай.", enDesc: "Collaborate with your team in real-time. Built-in group chat." },
+  { icon: <MdOutlineAccountBalanceWallet />, title: "Санхүү", en: "Finance", desc: "Орлого зарлагаа хянаж төсвөө зөв удирдаарай.", enDesc: "Track income and expenses. Manage your budget with ease." },
+  { icon: <MdOutlineMailOutline />, title: "Ирээдүйн хайрцаг", en: "Future Capsule", desc: "Өөртөө захиа бичиж ирээдүйд нээх хайрцагт хийгээрэй.", enDesc: "Write letters to your future self. Open them when the time is right." },
 ];
 
 const STATS = [
@@ -688,7 +694,7 @@ export default function Landing() {
           {FEATURES.map((f, i) => (
             <div className="ln-feat" key={i}>
               <div className="ln-feat-num">0{i+1}</div>
-              <span className="ln-feat-icon">{f.icon}</span>
+              <span className="ln-feat-icon" style={{ color: "#f5c842" }}>{f.icon}</span>
               <div className="ln-feat-title">{mn ? f.title : f.en}</div>
               <div className="ln-feat-desc">{mn ? f.desc : f.enDesc}</div>
             </div>

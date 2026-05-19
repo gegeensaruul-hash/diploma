@@ -120,23 +120,27 @@ function IllustrationPanel({ mn }) {
       </div>
 
       {/* Text */}
-      <div style={{textAlign:"center",position:"relative",zIndex:1}}>
+      <div style={{textAlign:"center",position:"relative",zIndex:1, padding: "0 20px"}}>
         <p style={{
-          fontSize:22, color:"white", fontFamily:"'Playfair Display',serif",
-          fontWeight:700, lineHeight:1.35, margin:0, marginBottom:10,
+          fontSize:26, color:"white", fontFamily:"'Playfair Display',serif",
+          fontWeight:900, lineHeight:1.2, margin:0, marginBottom:12,
+          letterSpacing: "-0.5px"
         }}>
-          {mn ? "Ажлаа хялбархан зохион байгуул" : "Organize your work effortlessly"}
+          {mn ? "Бүтээмжтэй ажиллах" : "Work Productively"}
+          <br/>
+          <span style={{color: "#f5c842", fontStyle: "italic"}}>{mn ? "таны орон зай" : "your inner space"}</span>
         </p>
         <p style={{
-          fontSize:13.5, color:"rgba(255,255,255,0.5)",
+          fontSize:14, color:"rgba(255,255,255,0.6)",
           fontFamily:"'DM Sans',sans-serif", lineHeight:1.6,
+          maxWidth: 280, margin: "0 auto"
         }}>
-          {mn ? "TodoApp-тай хамт — Groq AI-р тэтгэгдсэн" : "with TodoApp — Powered by Groq AI"}
+          {mn ? "Бүх ажлаа нэг дороос удирдах ухаалаг туслах" : "The smart assistant to manage everything in one place"}
         </p>
         {/* Dots */}
-        <div style={{display:"flex",gap:7,justifyContent:"center",marginTop:18}}>
+        <div style={{display:"flex",gap:7,justifyContent:"center",marginTop:24}}>
           <div style={{width:8,height:8,borderRadius:4,background:"rgba(255,255,255,0.2)"}}/>
-          <div style={{width:22,height:8,borderRadius:4,background:"#10b981"}}/>
+          <div style={{width:24,height:8,borderRadius:4,background:"#f5c842"}}/>
           <div style={{width:8,height:8,borderRadius:4,background:"rgba(255,255,255,0.2)"}}/>
         </div>
       </div>
@@ -391,8 +395,8 @@ export default function Login() {
 
               <button type="submit" disabled={isLoading} className="li-btn"
                 style={{
-                  background:"#111827",color:"white",border:"none",borderRadius:12,
-                  padding:"14px 0",fontSize:15,fontWeight:700,
+                  background:"#f5c842",color:"#111",border:"none",borderRadius:12,
+                  padding:"14px 0",fontSize:15,fontWeight:800,
                   fontFamily:"'DM Sans',sans-serif",
                   cursor:isLoading?"not-allowed":"pointer",
                   opacity:isLoading?0.65:1,letterSpacing:0.3,
@@ -473,8 +477,8 @@ export default function Login() {
               </div>
               <button type="submit" disabled={isLoading} className="li-btn"
                 style={{
-                  background:"#111827",color:"white",border:"none",borderRadius:12,
-                  padding:"14px 0",fontSize:15,fontWeight:700,
+                  background:"#f5c842",color:"#111",border:"none",borderRadius:12,
+                  padding:"14px 0",fontSize:15,fontWeight:800,
                   fontFamily:"'DM Sans',sans-serif",
                   cursor:isLoading?"not-allowed":"pointer",
                   opacity:isLoading?0.65:1,letterSpacing:0.3,marginTop:4,
