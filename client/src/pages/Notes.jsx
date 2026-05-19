@@ -305,7 +305,7 @@ export default function Notes() {
   });
 
   return (
-    <div className="h-full flex bg-slate-950 text-stone-900 dark:text-white overflow-hidden">
+    <div className="h-full flex bg-transparent text-stone-900 dark:text-white overflow-hidden animate-in">
       <style>{`
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         [contenteditable]:empty:before { content: attr(data-placeholder); color: #94a3b8; cursor: text; }

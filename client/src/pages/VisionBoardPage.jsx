@@ -144,7 +144,7 @@ export default function VisionBoardPage() {
   }, [selected, editingId]);
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-slate-950 relative">
+    <div className="h-full flex flex-col overflow-hidden bg-slate-950 relative animate-in">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Indie+Flower&family=Pacifico&family=Satisfy&display=swap');
         .vb-toolbar { 

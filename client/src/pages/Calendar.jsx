@@ -94,7 +94,7 @@ export default function Calendar() {
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <div className="flex flex-col h-full bg-[#020617] text-slate-200 overflow-hidden">
+    <div className="flex flex-col h-full bg-transparent text-stone-900 dark:text-white overflow-hidden animate-in">
       <style>{`
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; min-height: 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .cal-cell { border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; position: relative; min-height: 100px; }
