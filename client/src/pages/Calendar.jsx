@@ -59,7 +59,8 @@ export default function Calendar() {
   const getEvents = (d) => {
     const manual = events[key(d)] || [];
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    const dbTodos = (todos?.data || todos).filter(t => t.dueDate?.startsWith(dateStr));
+    const todosList = Array.isArray(todos) ? todos : (todos?.todos || []);
+    const dbTodos = todosList.filter(t => t.dueDate?.startsWith(dateStr));
     return [
       ...manual.map(e => ({ ...e, type: "manual" })),
       ...dbTodos.map(t => ({ text: t.title, color: t.priority === "high" ? 5 : 0, type: "todo", status: t.status }))
@@ -169,7 +170,7 @@ export default function Calendar() {
                           key={idx} 
                           onClick={(e) => { e.stopPropagation(); if(ev.type === "manual") setModal({ day: d, idx }); }}
                           className="cal-event"
-                          style={{ background: NOTE_COLORS[ev.color].bg, color: NOTE_COLORS[ev.color].text, borderColor: NOTE_COLORS[ev.color].border }}
+                          style={{ background: NOTE_COLORS[ev.color]?.bg || "rgba(255,255,255,0.1)", color: NOTE_COLORS[ev.color]?.text || "#fff", borderColor: NOTE_COLORS[ev.color]?.border || "transparent" }}
                         >
                           {ev.type === "todo" && <span className="mr-1">{ev.status === "completed" ? "✓" : "○"}</span>}
                           {ev.text}
@@ -312,9 +313,9 @@ function Timetable({ lang }) {
                       style={{ 
                         top: top + 48, // 48px header
                         height, 
-                        background: NOTE_COLORS[s.color].bg, 
-                        borderColor: NOTE_COLORS[s.color].text,
-                        color: NOTE_COLORS[s.color].text
+                        background: NOTE_COLORS[s.color]?.bg || "rgba(255,255,255,0.1)", 
+                        borderColor: NOTE_COLORS[s.color]?.text || "#fff",
+                        color: NOTE_COLORS[s.color]?.text || "#fff"
                       }}
                     >
                       <div className="text-xs font-black leading-tight uppercase tracking-tight">{s.subject}</div>
