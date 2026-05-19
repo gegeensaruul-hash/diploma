@@ -864,6 +864,8 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
               transition:"box-shadow 0.15s",
               zIndex:50,
               borderRadius: s.imgSrc ? 10 : 0,
+              paddingTop:26, marginTop:-26, // hover area дээш өргөтгөх
+              boxSizing:"content-box",
             }}
             onMouseDown={e => onStickerMouseDown(e, s.id)}
             onWheel={e => onStickerWheel(e, s.id)}>
@@ -917,11 +919,11 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             <div
               className="float-sticker-del"
               title="Эргүүлэх"
-              style={{ position:"absolute",top:-22,left:"50%",transform:"translateX(-50%)",
-                width:18,height:18,borderRadius:"50%",
+              style={{ position:"absolute",top:2,left:"50%",transform:"translateX(-50%)",
+                width:22,height:22,borderRadius:"50%",
                 background:"white",border:"2px solid #7c3aed",cursor:"grab",
                 display:"none",zIndex:10,
-                alignItems:"center",justifyContent:"center",fontSize:11 }}
+                alignItems:"center",justifyContent:"center",fontSize:13 }}
               onMouseDown={e => {
                 e.stopPropagation(); e.preventDefault();
                 const el = e.currentTarget.parentElement;
