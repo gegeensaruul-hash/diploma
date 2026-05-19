@@ -401,6 +401,9 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
   const [activeHL,  setActiveHL]  = useState(null);
   const [activeTc,  setActiveTc]  = useState(null);
   const [showStickerPicker, setShowStickerPicker] = useState(false);
+  const [floatStickers, setFloatStickers] = useState(note.floatStickers || []);
+  const draggingRef = useRef(null); // { id, startX, startY, origX, origY }
+  const noteAreaRef = useRef(null);
   const editorRef = useRef(null);
   const imgRef    = useRef(null);
   const cv        = COVERS[coverIdx];
@@ -422,7 +425,8 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     const html=editorRef.current?.innerHTML||"", plain=editorRef.current?.innerText||"";
     if (!title.trim()&&!plain.trim()) return toast.error("Гарчиг эсвэл агуулга оруулна уу");
     onSave({ ...note, title, html, plainText:plain.slice(0,120), coverIdx, pageColor, font,
-      subjectId, drawing, images, imgPos, coverImg, pagePattern, hasDrawing:!!drawing, hasImage:images.length>0,
+      subjectId, drawing, images, imgPos, coverImg, pagePattern, floatStickers,
+      hasDrawing:!!drawing, hasImage:images.length>0,
       createdAt:note.createdAt||new Date().toISOString() });
     toast.success("Хадгалагдлаа ✓");
   };
@@ -445,44 +449,48 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
 
   const insertSvgSticker = (svgStr) => {
     setShowStickerPicker(false);
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const img = document.createElement("img");
-    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgStr)}`;
-    img.style.cssText = "width:48px;height:48px;display:inline-block;vertical-align:middle;margin:2px 4px;cursor:default;user-select:none;";
-    img.draggable = false;
-    img.contentEditable = "false";
-
-    // restore saved cursor position, else append to end
-    let range;
-    if (savedRange.current) {
-      // verify saved range is still inside editor
-      try {
-        range = savedRange.current;
-      } catch { range = null; }
-    }
-    if (!range) {
-      range = document.createRange();
-      range.selectNodeContents(editor);
-      range.collapse(false);
-    }
-
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    range.deleteContents();
-    range.insertNode(img);
-
-    // move cursor after the inserted img
-    const r2 = document.createRange();
-    r2.setStartAfter(img);
-    r2.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(r2);
-    editor.focus();
-    savedRange.current = null;
+    // drop near center of note area with slight randomness
+    const area = noteAreaRef.current;
+    const aw = area ? area.offsetWidth  : 500;
+    const ah = area ? area.offsetHeight : 400;
+    const x = aw / 2 - 32 + (Math.random() - 0.5) * 120;
+    const y = ah / 2 - 32 + (Math.random() - 0.5) * 80;
+    setFloatStickers(prev => [...prev, { id: Date.now(), svg: svgStr, x, y, size: 72, rot: (Math.random()-0.5)*16 }]);
   };
+
+  const onStickerMouseDown = (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const sticker = floatStickers.find(s => s.id === id);
+    if (!sticker) return;
+    draggingRef.current = { id, startX: e.clientX, startY: e.clientY, origX: sticker.x, origY: sticker.y };
+
+    const onMove = (me) => {
+      if (!draggingRef.current) return;
+      const dx = me.clientX - draggingRef.current.startX;
+      const dy = me.clientY - draggingRef.current.startY;
+      setFloatStickers(prev => prev.map(s =>
+        s.id === id ? { ...s, x: draggingRef.current.origX + dx, y: draggingRef.current.origY + dy } : s
+      ));
+    };
+    const onUp = () => {
+      draggingRef.current = null;
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
+  const onStickerWheel = (e, id) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -6 : 6;
+    setFloatStickers(prev => prev.map(s =>
+      s.id === id ? { ...s, size: Math.max(32, Math.min(180, s.size + delta)) } : s
+    ));
+  };
+
+  const deleteFloatSticker = (id) => setFloatStickers(prev => prev.filter(s => s.id !== id));
 
   const applyHL = (c) => {
     restoreSelection();
@@ -637,6 +645,9 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         .ne-body ol{list-style:decimal;padding-left:22px}
         .ne-body span[data-imgid]{transition:opacity .15s}
         .ne-body span[data-imgid]:hover img{box-shadow:0 0 0 2.5px #7c3aed,0 4px 16px rgba(0,0,0,0.18)!important}
+        .float-sticker:hover{transform:scale(1.08) rotate(var(--rot,0deg))!important;z-index:99!important}
+        .float-sticker:hover .float-sticker-del{display:flex!important}
+        .float-sticker:active{cursor:grabbing!important}
       `}</style>
 
       {/* cover bar */}
@@ -829,7 +840,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         </div>
       )}
 
-      <div style={{ flex:1,overflowY:"auto",position:"relative",
+      <div ref={noteAreaRef} style={{ flex:1,overflowY:"auto",position:"relative",
           backgroundImage:
             pagePattern==="lines" ? "repeating-linear-gradient(transparent,transparent 31px,#ddd6c0 31px,#ddd6c0 32px)" :
             pagePattern==="grid"  ? "repeating-linear-gradient(transparent,transparent 27px,#ddd6c0 27px,#ddd6c0 28px),repeating-linear-gradient(90deg,transparent,transparent 27px,#ddd6c0 27px,#ddd6c0 28px)" :
@@ -870,6 +881,41 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             }}
             style={{ fontFamily:fontObj.style,fontSize:17,lineHeight:"32px",color:"#2d2a26",textDecorationThickness:"1.5px",textUnderlineOffset:"3px" }}/>
         </div>
+
+        {/* ── Floating draggable stickers layer ── */}
+        {floatStickers.map(s => (
+          <div key={s.id}
+            className="float-sticker"
+            style={{
+              position:"absolute", left:s.x, top:s.y,
+              width:s.size, height:s.size,
+              cursor:"grab", userSelect:"none",
+              transform:`rotate(${s.rot||0}deg)`,
+              transition:"transform 0.1s",
+              zIndex:50,
+            }}
+            onMouseDown={e => onStickerMouseDown(e, s.id)}
+            onWheel={e => onStickerWheel(e, s.id)}>
+            <img
+              src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(s.svg)}`}
+              style={{ width:"100%", height:"100%", display:"block", pointerEvents:"none",
+                filter:"drop-shadow(0 3px 8px rgba(0,0,0,0.22))" }}
+              draggable={false}
+              alt=""
+            />
+            {/* delete on hover */}
+            <button
+              className="float-sticker-del"
+              onMouseDown={e => e.stopPropagation()}
+              onClick={e => { e.stopPropagation(); deleteFloatSticker(s.id); }}
+              style={{ position:"absolute",top:-9,right:-9,width:20,height:20,borderRadius:"50%",
+                background:"#ef4444",border:"2px solid white",color:"white",fontSize:12,
+                cursor:"pointer",display:"none",alignItems:"center",justifyContent:"center",
+                boxShadow:"0 2px 6px rgba(0,0,0,0.3)",fontWeight:900,lineHeight:1,zIndex:10 }}>
+              ×
+            </button>
+          </div>
+        ))}
       </div>
 
       <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
