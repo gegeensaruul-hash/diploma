@@ -43,8 +43,8 @@ export default function Layout() {
           onMenuToggle={toggle}
           sidebarOpen={sidebarOpen}
         />
-        <main className={`flex-1 overflow-y-auto ${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "p-0" : "px-6 pb-6"}`}>
-          <div className={`${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "h-full w-full" : "max-w-7xl mx-auto py-6"}`}>
+        <main className={`flex-1 overflow-y-auto ${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") || location.pathname.startsWith("/notes") ? "p-0" : "px-6 pb-6"}`}>
+          <div className={`${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") || location.pathname.startsWith("/notes") ? "h-full w-full" : "max-w-7xl mx-auto py-6"}`}>
             <Outlet />
           </div>
         </main>
