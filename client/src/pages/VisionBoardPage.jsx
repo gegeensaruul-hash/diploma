@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSettings } from "../context/SettingsContext";
 import { getUserStore, setUserStore } from "../utils/userStorage";
-import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin } from "react-icons/md";
+import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin, MdClose } from "react-icons/md";
 
 const VB_FONTS = [
   {id:"caveat",    label:"Caveat",       css:"'Caveat', cursive"},
@@ -129,6 +129,17 @@ export default function VisionBoardPage() {
 
   const clearAll = () => { if(confirm("Clear everything?")) { saveItems([]); setSelected(null); setEditingId(null); } };
 
+  // Keyboard support for deletion
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (selected && (e.key === "Delete" || e.key === "Backspace") && editingId === null) {
+        del(selected);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selected, editingId]);
+
   return (
     <div className="h-full flex flex-col overflow-hidden bg-slate-950 relative">
       <style>{`
@@ -147,8 +158,8 @@ export default function VisionBoardPage() {
         }
         .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
         .tool-btn.active { background: #6366f1; color: #fff; }
-        .resize-handle { opacity: 0; transition: opacity 0.2s; }
-        .vb-item-container:hover .resize-handle { opacity: 1; }
+        .action-btn { opacity: 0; transition: all 0.2s; }
+        .vb-item-container:hover .action-btn { opacity: 1; }
       `}</style>
 
       {/* Integrated Toolbar */}
@@ -233,10 +244,18 @@ export default function VisionBoardPage() {
                   size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
               )}
 
+              {/* Quick Delete Button (Visible on Hover) */}
+              <button 
+                onClick={(e)=>{e.stopPropagation(); del(item.id);}}
+                className="action-btn absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center z-40 shadow-lg hover:bg-red-600 transition-colors"
+              >
+                <MdClose size={14}/>
+              </button>
+
               {/* Resize Handle (Always visible on hover or if selected) */}
               {(item.type === "image" || item.type === "note") && (
                 <div onMouseDown={e=>onResizeMouseDown(e,item.id)}
-                  className={`resize-handle absolute -right-2 -bottom-2 w-5 h-5 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg flex items-center justify-center ${isSel ? "opacity-100 scale-110" : ""}`}>
+                  className={`action-btn absolute -right-2 -bottom-2 w-6 h-6 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg flex items-center justify-center ${isSel ? "opacity-100 scale-110" : ""}`}>
                   <div className="w-1.5 h-1.5 bg-white rounded-full opacity-50" />
                 </div>
               )}
