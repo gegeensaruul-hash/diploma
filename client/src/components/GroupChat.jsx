@@ -144,15 +144,18 @@ export default function GroupChat({ onClose }) {
             <MdExplore size={20} className="text-indigo-400" />
           )}
           <span className="font-bold text-stone-900 dark:text-white text-sm tracking-tight">
-            {activeRoom ? `# ${activeRoom.name}` : "Global Communities"}
+            {activeRoom ? `# ${activeRoom.name}` : "🔒 Private Communities"}
           </span>
         </div>
         <div className="flex items-center gap-2">
           {activeRoom && (
             <>
-              <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`} title="Invite Person">
-                <MdPersonAdd size={20} />
-              </button>
+              {/* Only creator or admin can invite */}
+              {(activeRoom.createdBy === user?.id || user?.role === "admin") && (
+                <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`} title="Invite Person">
+                  <MdPersonAdd size={20} />
+                </button>
+              )}
               <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`}>
                 <MdPeople size={20} />
               </button>
@@ -211,10 +214,10 @@ export default function GroupChat({ onClose }) {
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
                     {!isMember ? (
-                      <button onClick={(e) => { e.stopPropagation(); handleJoin(room.id); }}
-                        className="text-xs font-black bg-indigo-500 text-stone-900 dark:text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
-                        JOIN
-                      </button>
+                      <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2.5 py-1">
+                        <span className="text-[10px]">🔒</span>
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Invite Only</span>
+                      </div>
                     ) : (
                       <div className="flex gap-2">
                         {(room.createdBy === user?.id || user?.role === "admin") && (

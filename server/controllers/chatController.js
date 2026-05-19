@@ -42,16 +42,9 @@ export const createRoom = asyncHandler(async (req, res) => {
   res.status(201).json({ status: true, room: full });
 });
 
-// POST /api/chat/rooms/:id/join — room-д нэгдэх
+// POST /api/chat/rooms/:id/join — DISABLED: invite-only rooms
 export const joinRoom = asyncHandler(async (req, res) => {
-  const room = await ChatRoom.findByPk(req.params.id);
-  if (!room) return res.status(404).json({ status: false, message: "Room олдсонгүй" });
-
-  const exists = await RoomMember.findOne({ where: { roomId: room.id, userId: req.user.userId } });
-  if (exists) return res.status(400).json({ status: false, message: "Аль хэдийн member байна" });
-
-  await RoomMember.create({ roomId: room.id, userId: req.user.userId });
-  res.json({ status: true, message: "Room-д нэгдлээ" });
+  res.status(403).json({ status: false, message: "Энэ room invite-only байна. Admin-аас урилга хүлээнэ үү." });
 });
 
 // POST /api/chat/rooms/:id/leave — room-оос гарах
@@ -93,13 +86,18 @@ export const getMessages = asyncHandler(async (req, res) => {
   res.json({ status: true, messages: rows, total: count, page });
 });
 
-// POST /api/chat/rooms/:id/add — хэрэглэгч нэмэх
+// POST /api/chat/rooms/:id/add — зөвхөн creator эсвэл admin хэрэглэгч нэмж чадна
 export const addMember = asyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ status: false, message: "Имэйл оруулна уу" });
 
   const room = await ChatRoom.findByPk(req.params.id);
   if (!room) return res.status(404).json({ status: false, message: "Room олдсонгүй" });
+
+  // Зөвхөн room үүсгэгч эсвэл admin нэмж чадна
+  if (room.createdBy !== req.user.userId && req.user.role !== "admin") {
+    return res.status(403).json({ status: false, message: "Зөвхөн room creator эсвэл admin урилга илгээж чадна" });
+  }
 
   const targetUser = await User.findOne({ where: { email: email.toLowerCase() } });
   if (!targetUser) return res.status(404).json({ status: false, message: "Хэрэглэгч олдсонгүй" });
@@ -108,5 +106,5 @@ export const addMember = asyncHandler(async (req, res) => {
   if (exists) return res.status(400).json({ status: false, message: "Аль хэдийн member байна" });
 
   await RoomMember.create({ roomId: room.id, userId: targetUser.id });
-  res.json({ status: true, message: `${targetUser.name} нэмэгдлээ` });
+  res.json({ status: true, message: `${targetUser.name} амжилттай нэмэгдлээ ✓` });
 });
