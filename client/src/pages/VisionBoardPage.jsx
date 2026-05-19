@@ -2,17 +2,18 @@ import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSettings } from "../context/SettingsContext";
 import { getUserStore, setUserStore } from "../utils/userStorage";
+import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin } from "react-icons/md";
 
 const VB_FONTS = [
-  {id:"caveat",    label:"Caveat",       css:"DM Sans"},
-  {id:"pacifico",  label:"Pacifico",     css:"DM Sans"},
-  {id:"indie",     label:"Indie Flower", css:"DM Sans"},
-  {id:"satisfy",   label:"Satisfy",      css:"DM Sans"},
-  {id:"nunito",    label:"Nunito",       css:"DM Sans"},
-  {id:"quicksand", label:"Quicksand",    css:"DM Sans"},
+  {id:"caveat",    label:"Caveat",       css:"'Caveat', cursive"},
+  {id:"pacifico",  label:"Pacifico",     css:"'Pacifico', cursive"},
+  {id:"indie",     label:"Indie Flower", css:"'Indie Flower', cursive"},
+  {id:"satisfy",   label:"Satisfy",      css:"'Satisfy', cursive"},
+  {id:"nunito",    label:"Nunito",       css:"'Nunito', sans-serif"},
+  {id:"quicksand", label:"Quicksand",    css:"'Quicksand', sans-serif"},
 ];
 const NOTE_COLORS = ["#fffde7","#fce4ec","#e8eaf6","#e0f7fa","#f3e5f5","#e8f5e9","#fff3e0","#e3f2fd","#fafafa","#fff8e1"];
-const PIN_COLORS  = ["#e05252","#5272e0","#52c052","#e0c052","#a052e0","#e07852","#52b8e0","#e05288"];
+const PIN_COLORS  = ["#ef4444","#3b82f6","#10b981","#f59e0b","#8b5cf6","#f97316","#06b6d4","#ec4899"];
 const VB_STICKERS = ["FOCUS","GROW","WIN","PLAN","MOVE","BUILD","SAVE","LEARN","HEALTH","IDEA","CALM","NEXT"];
 
 const getStore = getUserStore;
@@ -29,7 +30,6 @@ export default function VisionBoardPage() {
   const boardRef = useRef(null);
   const dragRef  = useRef(null);
 
-  // id өөрчлөгдөх бүрт тухайн board-н өгөгдлийг ачаална
   useEffect(() => {
     setItems(getStore(`vb3_items_${id}`, []));
     setSelected(null);
@@ -52,10 +52,10 @@ export default function VisionBoardPage() {
   const addNote = () => {
     const newId = Date.now();
     const rect = boardRef.current?.getBoundingClientRect();
-    const bw = rect?.width || 900, bh = rect?.height || 600;
+    const bw = rect?.width || 1200, bh = rect?.height || 800;
     saveItems([...items, {
-      id: newId, type:"note", x:rnd(bw-160,40), y:rnd(bh-120,40),
-      w:150, text:"", font:"caveat", color: rnd(NOTE_COLORS.length),
+      id: newId, type:"note", x:rnd(bw-200,100), y:rnd(bh-200,100),
+      w:180, text:"", font:"caveat", color: rnd(NOTE_COLORS.length),
       pin: rnd(PIN_COLORS.length), rot: (rnd(21)-10)*0.5,
     }]);
     setSelected(newId); setEditingId(newId);
@@ -64,10 +64,10 @@ export default function VisionBoardPage() {
   const addSticker = (emoji) => {
     const newId = Date.now();
     const rect2 = boardRef.current?.getBoundingClientRect();
-    const bw2 = rect2?.width || 900, bh2 = rect2?.height || 600;
+    const bw2 = rect2?.width || 1200, bh2 = rect2?.height || 800;
     saveItems([...items, {
-      id: newId, type:"sticker", x:rnd(bw2-80,40), y:rnd(bh2-80,40),
-      emoji, size:48, rot: (rnd(21)-10)*0.5,
+      id: newId, type:"sticker", x:rnd(bw2-100,100), y:rnd(bh2-100,100),
+      emoji, size:54, rot: (rnd(21)-10)*0.5,
     }]);
     setSelected(newId); setShowStickerPicker(false);
   };
@@ -78,10 +78,10 @@ export default function VisionBoardPage() {
     reader.onload = ev => {
       const newId = Date.now();
       const rect3 = boardRef.current?.getBoundingClientRect();
-      const bw3 = rect3?.width || 900, bh3 = rect3?.height || 600;
+      const bw3 = rect3?.width || 1200, bh3 = rect3?.height || 800;
       saveItems([...items, {
-        id: newId, type:"image", x:rnd(bw3-180,40), y:rnd(bh3-140,40),
-        w:170, h:130, src:ev.target.result, rot:(rnd(11)-5)*0.5,
+        id: newId, type:"image", x:rnd(bw3-250,100), y:rnd(bh3-200,100),
+        w:220, h:160, src:ev.target.result, rot:(rnd(11)-5)*0.5,
         border:true, pin:rnd(PIN_COLORS.length),
       }]);
       setSelected(newId);
@@ -97,7 +97,7 @@ export default function VisionBoardPage() {
     const item = items.find(i=>i.id===itemId);
     const rect = boardRef.current.getBoundingClientRect();
     dragRef.current = { mode:"drag", id: itemId, ox: e.clientX - rect.left - item.x, oy: e.clientY - rect.top - item.y };
-    e.preventDefault();
+    // e.preventDefault(); // This can break focus on textareas
   };
 
   const onResizeMouseDown = (e, itemId) => {
@@ -108,11 +108,6 @@ export default function VisionBoardPage() {
     dragRef.current = { mode:"resize", id: itemId, startX: e.clientX, startY: e.clientY, startW: item.w||170, startH: item.h||130 };
   };
 
-  const onDoubleClick = (e, itemId) => {
-    e.stopPropagation();
-    setSelected(itemId);
-    setEditingId(itemId);
-  };
   const onMouseMove = (e) => {
     if (!dragRef.current) return;
     if (editingId !== null) { dragRef.current = null; return; }
@@ -121,222 +116,168 @@ export default function VisionBoardPage() {
       const dx = e.clientX - dragRef.current.startX;
       const dy = e.clientY - dragRef.current.startY;
       upd(dragRef.current.id, {
-        w: Math.max(80, dragRef.current.startW + dx),
-        h: Math.max(60, dragRef.current.startH + dy),
+        w: Math.max(100, dragRef.current.startW + dx),
+        h: Math.max(80, dragRef.current.startH + dy),
       });
     } else {
       upd(dragRef.current.id, {
-        x: Math.max(0, Math.min(rect.width-30,  e.clientX - rect.left - dragRef.current.ox)),
-        y: Math.max(0, Math.min(rect.height-20, e.clientY - rect.top  - dragRef.current.oy)),
+        x: e.clientX - rect.left - dragRef.current.ox,
+        y: e.clientY - rect.top  - dragRef.current.oy,
       });
     }
   };
   const onMouseUp = () => { dragRef.current = null; };
 
-  const onTouchStart = (e, itemId) => {
-    setSelected(itemId);
-    const item = items.find(i=>i.id===itemId);
-    const rect = boardRef.current.getBoundingClientRect();
-    const t = e.touches[0];
-    dragRef.current = { id: itemId, ox: t.clientX - rect.left - item.x, oy: t.clientY - rect.top - item.y };
-  };
-  const onTouchMove = (e) => {
-    if (!dragRef.current) return;
-    const rect = boardRef.current.getBoundingClientRect();
-    const t = e.touches[0];
-    upd(dragRef.current.id, {
-      x: Math.max(0, Math.min(rect.width-30,  t.clientX - rect.left - dragRef.current.ox)),
-      y: Math.max(0, Math.min(rect.height-20, t.clientY - rect.top  - dragRef.current.oy)),
-    });
-    e.preventDefault();
-  };
-  const onTouchEnd = () => { dragRef.current = null; };
-
-  const clearAll = () => { saveItems([]); setSelected(null); setEditingId(null); };
+  const clearAll = () => { if(confirm("Clear everything?")) { saveItems([]); setSelected(null); setEditingId(null); } };
 
   return (
-    <div className="vb-page" style={{display:"flex",flexDirection:"column",height:"100%",gap:12,fontFamily:"DM Sans",background:"linear-gradient(180deg,#f8fafc,#f4f7fb)",borderRadius:18,padding:14}}>
+    <div className="h-full flex flex-col overflow-hidden bg-slate-950 relative">
       <style>{`
-        .vb-page button,.vb-page label,.vb-page select{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
-        .vb-page button:hover,.vb-page label:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,23,42,.10)}
-        .vb-item{transition:filter .18s ease,box-shadow .18s ease,transform .18s ease}
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Indie+Flower&family=Pacifico&family=Satisfy&display=swap');
+        .vb-toolbar { 
+          position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+          display: flex; align-items: center; gap: 8px; padding: 8px;
+          background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
+          z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .tool-btn {
+          display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+          border-radius: 10px; border: 1px solid transparent; cursor: pointer;
+          font-size: 13px; font-weight: 700; transition: all 0.2s; color: #f8fafc;
+        }
+        .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+        .tool-btn.active { background: #6366f1; color: #fff; }
       `}</style>
 
-      {/* Header */}
-      <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",flexShrink:0}}>
-        <h2 style={{fontSize:22,fontWeight:700,color:"#3d3830",margin:0,fontFamily:"DM Sans"}}>
-          Vision Board
-        </h2>
-        <div style={{flex:1}}/>
-
-        {/* Toolbar buttons */}
-        <button onClick={addNote} title={lang==="mn"?"Карт нэмэх":"Add note"}
-          style={{fontSize:12,background:"#fffde7",border:"1px solid #fcd34d",borderRadius:8,padding:"5px 12px",cursor:"pointer",color:"#78350f",fontWeight:700,boxShadow:"1px 2px 4px rgba(0,0,0,0.1)"}}>
-          {lang==="mn"?"Карт":"Note"}
-        </button>
-
+      {/* Integrated Toolbar */}
+      <div className="vb-toolbar">
+        <button className="tool-btn" onClick={addNote}><MdStickyNote2 size={18}/> {lang==="mn"?"Карт":"Note"}</button>
         <div style={{position:"relative"}}>
-          <button onClick={()=>setShowStickerPicker(v=>!v)}
-            style={{fontSize:12,background:"#fce4ec",border:"1px solid #f9a8d4",borderRadius:8,padding:"5px 12px",cursor:"pointer",color:"#9d174d",fontWeight:700,boxShadow:"1px 2px 4px rgba(0,0,0,0.1)"}}>
-            Sticker
+          <button className={`tool-btn ${showStickerPicker?"active":""}`} onClick={()=>setShowStickerPicker(v=>!v)}>
+            FOCUS
           </button>
           {showStickerPicker && (
-            <div style={{position:"absolute",top:"calc(100% + 6px)",right:0,zIndex:200,
-              background:"white",borderRadius:12,boxShadow:"0 10px 30px rgba(0,0,0,0.18)",
-              border:"1px solid #e2e8f0",padding:10,width:260,display:"flex",flexWrap:"wrap",gap:4}}>
+            <div style={{position:"absolute",top:"calc(100% + 12px)",left:"50%",transform:"translateX(-50%)",
+              background:"#1e293b",borderRadius:16,boxShadow:"0 20px 40px rgba(0,0,0,0.5)",
+              border:"1px solid rgba(255,255,255,0.1)",padding:12,width:240,display:"flex",flexWrap:"wrap",gap:6}}>
               {VB_STICKERS.map(s=>(
                 <button key={s} onClick={()=>addSticker(s)}
-                  style={{fontSize:11,fontWeight:800,background:"#f8fafc",border:"1px solid #e2e8f0",cursor:"pointer",padding:"6px 8px",borderRadius:8,transition:"background .1s"}}
-                  onMouseEnter={e=>e.currentTarget.style.background="#f1f5f9"}
-                  onMouseLeave={e=>e.currentTarget.style.background="none"}>
+                  className="px-3 py-2 rounded-lg bg-slate-800 text-[10px] font-black text-slate-300 hover:text-white hover:bg-slate-700 border border-white/5 transition-all">
                   {s}
                 </button>
               ))}
             </div>
           )}
         </div>
-
-        <label style={{fontSize:12,background:"#e0f2fe",border:"1px solid #7dd3fc",borderRadius:8,padding:"5px 12px",cursor:"pointer",color:"#075985",fontWeight:700,boxShadow:"1px 2px 4px rgba(0,0,0,0.1)"}}>
-          {lang==="mn"?"Зураг":"Image"}
+        <label className="tool-btn">
+          <MdImage size={18}/> {lang==="mn"?"Зураг":"Image"}
           <input type="file" accept="image/*" style={{display:"none"}} onChange={addImage}/>
         </label>
+        
+        <div className="w-px h-6 bg-white/10 mx-1" />
 
         {selItem?.type==="note" && (
           <select value={selItem.font} onChange={e=>upd(selected,{font:e.target.value})}
-            style={{fontSize:12,border:"1px solid #e2e8f0",borderRadius:8,padding:"5px 8px",background:"white",cursor:"pointer",fontFamily:VB_FONTS.find(f=>f.id===selItem.font)?.css}}>
-            {VB_FONTS.map(f=><option key={f.id} value={f.id} style={{fontFamily:f.css}}>{f.label}</option>)}
+            className="bg-slate-800 border-none rounded-lg px-2 py-1.5 text-xs text-white outline-none">
+            {VB_FONTS.map(f=><option key={f.id} value={f.id}>{f.label}</option>)}
           </select>
         )}
 
         {selected && (
-          <button onClick={()=>del(selected)}
-            style={{fontSize:12,background:"#fde2e2",border:"1px solid #fca5a5",borderRadius:8,padding:"5px 10px",cursor:"pointer",color:"#991b1b",fontWeight:700}}>
-            Delete
+          <button className="tool-btn hover:text-red-400" onClick={()=>del(selected)}>
+            <MdDelete size={18}/>
           </button>
         )}
-
-        {items.length > 0 && (
-          <button onClick={clearAll}
-            style={{fontSize:12,background:"#f1f5f9",border:"1px solid #e2e8f0",borderRadius:8,padding:"5px 10px",cursor:"pointer",color:"#64748b",fontWeight:600}}>
-            {lang==="mn"?"Цэвэрлэх":"Clear all"}
-          </button>
-        )}
+        <button className="tool-btn text-slate-500 hover:text-white" onClick={clearAll}>
+          <MdCleaningServices size={18}/>
+        </button>
       </div>
 
-      {/* Cork Board — full remaining height */}
+      {/* The Board — No border, fills the screen */}
       <div
         ref={boardRef}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onClick={(e)=>{
-          if (editingId !== null) return; // editing горимд board click-г үл тоох
-          setSelected(null);setShowStickerPicker(false);
-        }}
+        onClick={()=> { if(!dragRef.current) { setSelected(null); setShowStickerPicker(false); } }}
         style={{
           flex:1, position:"relative", overflow:"hidden",
-          borderRadius:14, border:"10px solid #a07850",
-          backgroundColor:"#c8a97e",
-          backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.8 0.6 0.3 0 0.1 0.6 0.45 0.2 0 0.05 0.3 0.25 0.1 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          boxShadow:"inset 0 0 60px rgba(80,40,5,0.3), 0 6px 24px rgba(0,0,0,0.25)",
-          cursor:"default", userSelect:"none", minHeight:400,
+          backgroundColor:"#a07850",
+          backgroundImage:`url("https://www.transparenttextures.com/patterns/cork-board.png")`,
+          backgroundSize: "400px",
+          boxShadow:"inset 0 0 100px rgba(0,0,0,0.4)",
+          cursor:"default", userSelect:"none",
         }}>
 
-        {/* Cork grain overlay */}
-        <div style={{position:"absolute",inset:0,pointerEvents:"none",
-          background:"repeating-linear-gradient(43deg,rgba(190,140,80,0.06) 0,rgba(190,140,80,0.06) 1px,transparent 1px,transparent 9px),repeating-linear-gradient(-41deg,rgba(140,90,40,0.05) 0,rgba(140,90,40,0.05) 1px,transparent 1px,transparent 9px)"}}/>
+        {/* Shadow Overlay */}
+        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.5)]" />
 
-        {/* Items */}
         {items.map(item => {
           const isSel = selected===item.id;
+          const rotate = `rotate(${item.rot||0}deg)`;
 
           if (item.type==="sticker") return (
             <div key={item.id}
               onMouseDown={e=>onMouseDown(e,item.id)}
-              onTouchStart={e=>onTouchStart(e,item.id)}
               style={{
                 position:"absolute", left:item.x, top:item.y,
-                fontSize:item.size||48, lineHeight:1,
-                transform:`rotate(${item.rot||0}deg)`,
-                cursor:"grab", zIndex:isSel?20:5,
-                filter:isSel?"drop-shadow(0 0 8px rgba(99,102,241,0.9))":"drop-shadow(1px 3px 4px rgba(0,0,0,0.35))",
-                transition:"filter .15s",
+                fontSize:item.size||48, fontWeight:900, color:"#fff",
+                transform:rotate, cursor:"grab", zIndex:isSel?20:5,
+                textShadow:"0 4px 10px rgba(0,0,0,0.5)",
+                filter:isSel?"drop-shadow(0 0 10px #6366f1)":"none",
+                userSelect:"none",
               }}>
-              {String(item.emoji || "").length > 2 ? item.emoji : "MARK"}
+              {item.emoji}
             </div>
           );
 
           if (item.type==="image") return (
             <div key={item.id}
               onMouseDown={e=>onMouseDown(e,item.id)}
-              onTouchStart={e=>onTouchStart(e,item.id)}
               style={{
                 position:"absolute", left:item.x, top:item.y,
                 width:item.w, height:item.h,
-                transform:`rotate(${item.rot||0}deg)`,
-                cursor:"grab", zIndex:isSel?20:5,
-                boxShadow:isSel?"0 0 0 3px #6366f1, 4px 6px 16px rgba(0,0,0,0.35)":"4px 6px 16px rgba(0,0,0,0.35)",
-                borderRadius:4, border:item.border?"5px solid white":"none",
+                transform:rotate, cursor:"grab", zIndex:isSel?20:5,
+                boxShadow:isSel?"0 0 0 4px #6366f1, 0 10px 30px rgba(0,0,0,0.5)":"0 8px 24px rgba(0,0,0,0.4)",
+                background:"#fff", padding:item.border?6:0, borderRadius:2,
               }}>
-              <div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",
-                width:16,height:16,borderRadius:"50%",background:PIN_COLORS[item.pin%PIN_COLORS.length],
-                boxShadow:"0 2px 6px rgba(0,0,0,0.45)",border:"2px solid rgba(255,255,255,0.7)",zIndex:2}}/>
-              <img src={item.src} alt="" style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:1,display:"block"}}/>
-              {/* Resize handle — баруун доод булан */}
+              <MdPushPin className="absolute -top-3 left-1/2 -translate-x-1/2 z-10" 
+                size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+              <img src={item.src} alt="" className="w-full h-full object-cover rounded-[1px]" />
               {isSel && (
-                <div
-                  onMouseDown={e=>onResizeMouseDown(e,item.id)}
-                  style={{
-                    position:"absolute", right:-6, bottom:-6,
-                    width:16, height:16, borderRadius:"50%",
-                    background:"#6366f1", border:"2px solid white",
-                    cursor:"nwse-resize", zIndex:30,
-                    boxShadow:"0 2px 6px rgba(0,0,0,0.4)",
-                  }}
-                />
+                <div onMouseDown={e=>onResizeMouseDown(e,item.id)}
+                  className="absolute -right-2 -bottom-2 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg" />
               )}
             </div>
           );
 
           if (item.type==="note") {
-            const fontCss = VB_FONTS.find(f=>f.id===item.font)?.css||VB_FONTS[0].css;
+            const fontCss = VB_FONTS.find(f=>f.id===item.font)?.css;
             return (
               <div key={item.id}
                 onMouseDown={e=>onMouseDown(e,item.id)}
-                onDoubleClick={e=>onDoubleClick(e,item.id)}
-                onTouchStart={e=>onTouchStart(e,item.id)}
+                onDoubleClick={(e)=>{e.stopPropagation(); setEditingId(item.id);}}
                 style={{
                   position:"absolute", left:item.x, top:item.y,
-                  width:item.w||150, minHeight:90,
+                  width:item.w||180, minHeight:100,
                   background:NOTE_COLORS[item.color%NOTE_COLORS.length],
-                  transform:`rotate(${item.rot||0}deg)`,
-                  cursor:editingId===item.id?"text":"grab", zIndex:isSel?20:5,
-                  boxShadow:isSel?"0 0 0 3px #6366f1, 4px 6px 18px rgba(0,0,0,0.28)":"3px 5px 14px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.7)",
-                  borderRadius:4, padding:"18px 12px 12px",
-                  transition:"box-shadow .12s",
+                  transform:rotate, cursor:editingId===item.id?"text":"grab", zIndex:isSel?20:5,
+                  boxShadow:isSel?"0 0 0 4px #6366f1, 0 10px 30px rgba(0,0,0,0.3)":"0 6px 16px rgba(0,0,0,0.2)",
+                  borderRadius:2, padding:"24px 16px 16px",
                 }}>
-                <div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",
-                  width:16,height:16,borderRadius:"50%",background:PIN_COLORS[item.pin%PIN_COLORS.length],
-                  boxShadow:"0 2px 6px rgba(0,0,0,0.45)",border:"2px solid rgba(255,255,255,0.7)",zIndex:2}}/>
+                <MdPushPin className="absolute -top-3 left-1/2 -translate-x-1/2 z-10" 
+                  size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
                 {editingId===item.id ? (
                   <textarea autoFocus
                     value={item.text}
-                    onChange={e=>{e.stopPropagation();upd(item.id,{text:e.target.value});}}
-                    onClick={e=>e.stopPropagation()}
-                    onMouseDown={e=>{e.stopPropagation(); dragRef.current=null;}}
-                    onDoubleClick={e=>e.stopPropagation()}
-                    onBlur={()=>setTimeout(()=>setEditingId(null),200)}
-                    style={{width:"100%",minHeight:70,resize:"both",border:"none",outline:"none",
-                      background:"transparent",fontSize:15,fontFamily:fontCss,
-                      color:"#2d1a05",lineHeight:1.5,boxSizing:"border-box"}}/>
+                    onChange={e=>upd(item.id,{text:e.target.value})}
+                    onBlur={()=>setEditingId(null)}
+                    className="w-full h-full border-none outline-none bg-transparent overflow-hidden"
+                    style={{fontSize:18, fontFamily:fontCss, color:"#1e293b", resize:"none", minHeight:80}}/>
                 ) : (
-                  <div style={{fontSize:15,fontFamily:fontCss,color:"#2d1a05",
-                    lineHeight:1.5,wordBreak:"break-word",minHeight:60,whiteSpace:"pre-wrap"}}>
-                    {item.text || <span style={{opacity:0.3,fontSize:12,fontStyle:"italic"}}>
-                      {lang==="mn"?"2x дарж бичих...":"Dbl-click to edit..."}
-                    </span>}
+                  <div style={{fontSize:18, fontFamily:fontCss, color:"#1e293b", lineHeight:1.4, whiteSpace:"pre-wrap"}}>
+                    {item.text || <span className="opacity-20 italic text-sm">{lang==="mn"?"Бичих...":"Edit..."}</span>}
                   </div>
                 )}
               </div>
@@ -345,12 +286,10 @@ export default function VisionBoardPage() {
           return null;
         })}
 
-        {/* Empty hint */}
         {items.length===0 && (
-          <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-            color:"rgba(92,58,30,0.45)",fontSize:16,fontFamily:"DM Sans",textAlign:"center",pointerEvents:"none",gap:8}}>
-            <span style={{width:54,height:54,borderRadius:18,background:"rgba(92,58,30,.12)",boxShadow:"inset 0 0 0 1px rgba(92,58,30,.16)"}} />
-            <span>{lang==="mn"?"Карт, sticker, зураг нэмж эхлэх":"Add notes, stickers & images to get started"}</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-20">
+            <MdAdd size={80} className="text-white mb-4" />
+            <p className="text-xl font-bold text-white uppercase tracking-widest">Start your vision</p>
           </div>
         )}
       </div>

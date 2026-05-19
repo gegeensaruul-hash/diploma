@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import GroupChat from "./GroupChat";
@@ -12,6 +12,7 @@ export default function Layout() {
   const [chatTab, setChatTab] = useState("ai"); // "ai" | "group"
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { lang, theme } = useSettings();
+  const location = useLocation();
   const toggle = () => setSidebarOpen(v => !v);
 
   return (
@@ -39,8 +40,8 @@ export default function Layout() {
           onMenuToggle={toggle}
           sidebarOpen={sidebarOpen}
         />
-        <main className="flex-1 overflow-y-auto px-6 pb-6 bg-[#020617]">
-          <div className="max-w-7xl mx-auto py-6">
+        <main className={`flex-1 overflow-y-auto bg-[#020617] ${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "p-0" : "px-6 pb-6"}`}>
+          <div className={`${location.pathname.startsWith("/visionboard") || location.pathname.startsWith("/futurecapsule") ? "h-full w-full" : "max-w-7xl mx-auto py-6"}`}>
             <Outlet />
           </div>
         </main>
