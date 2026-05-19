@@ -58,7 +58,9 @@ export default function VisionBoardPage() {
       w:180, h:120, text:"", font:"caveat", color: rnd(NOTE_COLORS.length),
       pin: rnd(PIN_COLORS.length), rot: (rnd(21)-10)*0.5,
     }]);
-    setSelected(newId); setEditingId(newId);
+    setSelected(newId);
+    // Use timeout to ensure state updates before setting focus
+    setTimeout(() => setEditingId(newId), 50);
   };
 
   const addSticker = (emoji) => {
@@ -90,13 +92,23 @@ export default function VisionBoardPage() {
     e.target.value = "";
   };
 
-  const onMouseDown = (e, itemId) => {
+  const onItemMouseDown = (e, itemId) => {
+    // If we're clicking a button or textarea, don't start dragging
+    if (e.target.closest('button') || e.target.tagName === 'TEXTAREA' || e.target.closest('.resize-handle')) {
+      return;
+    }
+    
     e.stopPropagation();
-    if (editingId === itemId) return;
     setSelected(itemId);
     const item = items.find(i=>i.id===itemId);
     const rect = boardRef.current.getBoundingClientRect();
-    dragRef.current = { mode:"drag", id: itemId, ox: e.clientX - rect.left - item.x, oy: e.clientY - rect.top - item.y };
+    dragRef.current = { 
+      mode:"drag", 
+      id: itemId, 
+      ox: e.clientX - rect.left - item.x, 
+      oy: e.clientY - rect.top - item.y,
+      moved: false 
+    };
   };
 
   const onResizeMouseDown = (e, itemId) => {
@@ -109,7 +121,8 @@ export default function VisionBoardPage() {
 
   const onMouseMove = (e) => {
     if (!dragRef.current) return;
-    if (editingId !== null) { dragRef.current = null; return; }
+    if (editingId !== null && dragRef.current.mode !== "resize") return;
+    
     const rect = boardRef.current.getBoundingClientRect();
     if (dragRef.current.mode === "resize") {
       const dx = e.clientX - dragRef.current.startX;
@@ -119,12 +132,14 @@ export default function VisionBoardPage() {
         h: Math.max(80, dragRef.current.startH + dy),
       });
     } else {
+      dragRef.current.moved = true;
       upd(dragRef.current.id, {
         x: e.clientX - rect.left - dragRef.current.ox,
         y: e.clientY - rect.top  - dragRef.current.oy,
       });
     }
   };
+
   const onMouseUp = () => { dragRef.current = null; };
 
   const clearAll = () => { if(confirm("Clear everything?")) { saveItems([]); setSelected(null); setEditingId(null); } };
@@ -155,15 +170,16 @@ export default function VisionBoardPage() {
           display: flex; align-items: center; gap: 6px; padding: 8px 14px;
           border-radius: 10px; border: 1px solid transparent; cursor: pointer;
           font-size: 13px; font-weight: 700; transition: all 0.2s; color: #f8fafc;
+          background: transparent;
         }
         .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
         .tool-btn.active { background: #6366f1; color: #fff; }
-        .action-btn { opacity: 0; transition: all 0.2s; }
-        .vb-item-container:hover .action-btn { opacity: 1; }
+        .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
+        .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
       `}</style>
 
       {/* Integrated Toolbar */}
-      <div className="vb-toolbar">
+      <div className="vb-toolbar" onMouseDown={e => e.stopPropagation()}>
         <button className="tool-btn" onClick={addNote}><MdStickyNote2 size={18}/> {lang==="mn"?"Карт":"Note"}</button>
         <div style={{position:"relative"}}>
           <button className={`tool-btn ${showStickerPicker?"active":""}`} onClick={()=>setShowStickerPicker(v=>!v)}>
@@ -191,7 +207,7 @@ export default function VisionBoardPage() {
 
         {selItem?.type==="note" && (
           <select value={selItem.font} onChange={e=>upd(selected,{font:e.target.value})}
-            className="bg-slate-800 border-none rounded-lg px-2 py-1.5 text-xs text-white outline-none">
+            className="bg-slate-800 border-none rounded-lg px-2 py-1.5 text-xs text-white outline-none cursor-pointer hover:bg-slate-700">
             {VB_FONTS.map(f=><option key={f.id} value={f.id}>{f.label}</option>)}
           </select>
         )}
@@ -211,7 +227,13 @@ export default function VisionBoardPage() {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
-        onClick={()=> { if(!dragRef.current) { setSelected(null); setShowStickerPicker(false); } }}
+        onClick={(e)=> { 
+          if(e.target === boardRef.current || e.target.classList.contains('shadow-overlay')) {
+            setSelected(null); 
+            setEditingId(null);
+            setShowStickerPicker(false); 
+          }
+        }}
         style={{
           flex:1, position:"relative", overflow:"hidden",
           backgroundColor:"#a07850",
@@ -221,39 +243,49 @@ export default function VisionBoardPage() {
           cursor:"default", userSelect:"none",
         }}>
 
-        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.5)]" />
+        <div className="shadow-overlay absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.5)]" />
 
         {items.map(item => {
           const isSel = selected===item.id;
+          const isEdit = editingId===item.id;
           const rotate = `rotate(${item.rot||0}deg)`;
 
           return (
             <div key={item.id}
-              onMouseDown={e=>onMouseDown(e,item.id)}
+              onMouseDown={e=>onItemMouseDown(e,item.id)}
+              onDoubleClick={(e)=>{
+                if(item.type==='note') {
+                  e.stopPropagation();
+                  setEditingId(item.id);
+                }
+              }}
               className="vb-item-container"
               style={{
                 position:"absolute", left:item.x, top:item.y,
                 width:item.w, height:item.h,
-                transform:rotate, cursor:editingId===item.id?"text":"grab", zIndex:isSel?20:5,
+                transform:rotate, 
+                cursor: isEdit ? "text" : "grab", 
+                zIndex:isSel?20:5,
                 transition: "box-shadow 0.2s, transform 0.1s",
               }}>
               
-              {/* Common Elements (Pins) */}
               {(item.type === "image" || item.type === "note") && (
                 <MdPushPin className="absolute -top-3 left-1/2 -translate-x-1/2 z-10" 
                   size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
               )}
 
               {/* Quick Delete Button (Visible on Hover) */}
-              <button 
-                onClick={(e)=>{e.stopPropagation(); del(item.id);}}
-                className="action-btn absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center z-40 shadow-lg hover:bg-red-600 transition-colors"
-              >
-                <MdClose size={14}/>
-              </button>
+              {!isEdit && (
+                <button 
+                  onClick={(e)=>{e.stopPropagation(); del(item.id);}}
+                  className="action-btn absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center z-40 shadow-lg hover:bg-red-600 transition-colors"
+                >
+                  <MdClose size={14}/>
+                </button>
+              )}
 
-              {/* Resize Handle (Always visible on hover or if selected) */}
-              {(item.type === "image" || item.type === "note") && (
+              {/* Resize Handle */}
+              {(item.type === "image" || item.type === "note") && !isEdit && (
                 <div onMouseDown={e=>onResizeMouseDown(e,item.id)}
                   className={`action-btn absolute -right-2 -bottom-2 w-6 h-6 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg flex items-center justify-center ${isSel ? "opacity-100 scale-110" : ""}`}>
                   <div className="w-1.5 h-1.5 bg-white rounded-full opacity-50" />
@@ -275,16 +307,16 @@ export default function VisionBoardPage() {
                 </div>
               ) : item.type === "note" ? (
                 <div className={`w-full h-full shadow-xl rounded-[2px] p-6 pt-8 ${isSel ? "ring-2 ring-indigo-500" : ""}`} style={{ background: NOTE_COLORS[item.color%NOTE_COLORS.length] }}>
-                  {editingId===item.id ? (
+                  {isEdit ? (
                     <textarea autoFocus
                       value={item.text}
                       onChange={e=>upd(item.id,{text:e.target.value})}
                       onBlur={()=>setEditingId(null)}
+                      onKeyDown={e => { if(e.key === 'Escape') setEditingId(null); }}
                       className="w-full h-full border-none outline-none bg-transparent overflow-hidden"
                       style={{fontSize:18, fontFamily:VB_FONTS.find(f=>f.id===item.font)?.css, color:"#1e293b", resize:"none"}}/>
                   ) : (
-                    <div onDoubleClick={(e)=>{e.stopPropagation(); setEditingId(item.id);}} 
-                      style={{fontSize:18, fontFamily:VB_FONTS.find(f=>f.id===item.font)?.css, color:"#1e293b", lineHeight:1.4, whiteSpace:"pre-wrap"}}>
+                    <div style={{fontSize:18, fontFamily:VB_FONTS.find(f=>f.id===item.font)?.css, color:"#1e293b", lineHeight:1.4, whiteSpace:"pre-wrap"}}>
                       {item.text || <span className="opacity-20 italic text-sm">{lang==="mn"?"Бичих...":"Edit..."}</span>}
                     </div>
                   )}
