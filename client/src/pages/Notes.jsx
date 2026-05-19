@@ -894,31 +894,52 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                 boxShadow:"0 2px 6px rgba(0,0,0,0.3)",fontWeight:900,lineHeight:1,zIndex:10 }}>
               ×
             </button>
-            {/* resize handle */}
+            {/* resize handle — bottom-right */}
             <div
               className="float-sticker-del"
               style={{ position:"absolute",bottom:-6,right:-6,width:16,height:16,borderRadius:4,
                 background:"white",border:"2px solid #94a3b8",cursor:"se-resize",
                 display:"none",zIndex:10 }}
               onMouseDown={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                const startX = e.clientX;
-                const startSize = s.size;
+                e.stopPropagation(); e.preventDefault();
+                const startX = e.clientX, startSize = s.size;
                 const onMove = (me) => {
-                  const delta = me.clientX - startX;
+                  const d = me.clientX - startX;
                   setFloatStickers(prev => prev.map(x =>
-                    x.id === s.id ? { ...x, size: Math.max(40, Math.min(480, startSize + delta)) } : x
+                    x.id === s.id ? { ...x, size: Math.max(40, Math.min(480, startSize + d)) } : x
                   ));
                 };
-                const onUp = () => {
-                  window.removeEventListener("mousemove", onMove);
-                  window.removeEventListener("mouseup", onUp);
-                };
-                window.addEventListener("mousemove", onMove);
-                window.addEventListener("mouseup", onUp);
+                const onUp = () => { window.removeEventListener("mousemove",onMove); window.removeEventListener("mouseup",onUp); };
+                window.addEventListener("mousemove",onMove); window.addEventListener("mouseup",onUp);
               }}
             />
+            {/* rotate handle — top-center */}
+            <div
+              className="float-sticker-del"
+              title="Эргүүлэх"
+              style={{ position:"absolute",top:-22,left:"50%",transform:"translateX(-50%)",
+                width:18,height:18,borderRadius:"50%",
+                background:"white",border:"2px solid #7c3aed",cursor:"grab",
+                display:"none",zIndex:10,
+                alignItems:"center",justifyContent:"center",fontSize:11 }}
+              onMouseDown={e => {
+                e.stopPropagation(); e.preventDefault();
+                const el = e.currentTarget.parentElement;
+                const rect = el.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const startAngle = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+                const startRot = s.rot || 0;
+                const onMove = (me) => {
+                  const angle = Math.atan2(me.clientY - cy, me.clientX - cx) * 180 / Math.PI;
+                  const rot = startRot + (angle - startAngle);
+                  setFloatStickers(prev => prev.map(x => x.id === s.id ? { ...x, rot } : x));
+                };
+                const onUp = () => { window.removeEventListener("mousemove",onMove); window.removeEventListener("mouseup",onUp); };
+                window.addEventListener("mousemove",onMove); window.addEventListener("mouseup",onUp);
+              }}>
+              ↻
+            </div>
           </div>
         ))}
       </div>
