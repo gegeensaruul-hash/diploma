@@ -1,0 +1,1379 @@
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useSettings } from "../context/SettingsContext";
+import { toast } from "sonner";
+
+/* ─── storage ─── */
+function getNotes()    { try { return JSON.parse(localStorage.getItem("app_notes_v3")    || "[]"); } catch { return []; } }
+function getSubjects() { try { return JSON.parse(localStorage.getItem("app_subjects_v1") || "[]"); } catch { return []; } }
+function saveNotes(n)    { localStorage.setItem("app_notes_v3",    JSON.stringify(n)); }
+function saveSubjects(s) { localStorage.setItem("app_subjects_v1", JSON.stringify(s)); }
+
+/* ─── constants ─── */
+const COVERS = [
+  { id:"kraft",    bg:"#c8a86b", bg2:"#b8945a", spine:"#8b6520", text:"#3d2000", deco:["🌸","🍂","✂️","📎"] },
+  { id:"lavender", bg:"#c8b8e8", bg2:"#b8a0d8", spine:"#7a5ca8", text:"#3a1a6a", deco:["⭐","🌙","💜","✨"] },
+  { id:"ocean",    bg:"#7ab8d4", bg2:"#5aa0c0", spine:"#2a6080", text:"#0a3050", deco:["🐋","🌊","🐚","⭐"] },
+  { id:"peach",    bg:"#e8a878", bg2:"#d89060", spine:"#a05820", text:"#4a1800", deco:["🌺","🍑","🦊","💛"] },
+  { id:"mint",     bg:"#88c8a8", bg2:"#68b090", spine:"#307850", text:"#0a3820", deco:["🌿","🍀","🌱","💚"] },
+  { id:"rose",     bg:"#e89898", bg2:"#d87878", spine:"#a03030", text:"#3a0010", deco:["🌹","💕","🎀","❤️"] },
+];
+const PAGE_COLORS = ["#fef9ef","#fce7f3","#dbeafe","#dcfce7","#ede9fe","#fff7ed","#f0fdf4","#fdf4ff"];
+const FONTS = [
+  { id:"caveat",       label:"Normal",  style:'"DM Sans"' },
+  { id:"patrick",      label:"Light",   style:'"DM Sans"' },
+  { id:"indie",        label:"Medium",  style:'"DM Sans"' },
+  { id:"satisfy",      label:"Bold",    style:'"DM Sans"' },
+  { id:"lato",         label:"Lato",    style:'"DM Sans"' },
+  { id:"merriweather", label:"Serif",   style:'"DM Sans"' },
+];
+const HIGHLIGHTS  = ["#fde68a","#bbf7d0","#bfdbfe","#fecaca","#e9d5ff","#fed7aa"];
+const TEXT_COLORS = ["#1e293b","#dc2626","#2563eb","#16a34a","#7c3aed","#ea580c","#0891b2","#be185d"];
+const DRAW_COLORS = ["#1e293b","#dc2626","#2563eb","#16a34a","#7c3aed","#f59e0b","#ec4899","#06b6d4","#ffffff"];
+
+/* Subject загвар өнгөнүүд — зурагт байгаа шиг зөөлөн өнгөтэй */
+const SUBJECT_THEMES = [
+  { id:"red",    bg:"#fca5a5", text:"#7f1d1d", dot:"#ef4444" },
+  { id:"orange", bg:"#fdba74", text:"#7c2d12", dot:"#f97316" },
+  { id:"yellow", bg:"#fde68a", text:"#78350f", dot:"#f59e0b" },
+  { id:"green",  bg:"#86efac", text:"#14532d", dot:"#22c55e" },
+  { id:"teal",   bg:"#5eead4", text:"#134e4a", dot:"#14b8a6" },
+  { id:"blue",   bg:"#93c5fd", text:"#1e3a8a", dot:"#3b82f6" },
+  { id:"indigo", bg:"#a5b4fc", text:"#312e81", dot:"#6366f1" },
+  { id:"purple", bg:"#d8b4fe", text:"#581c87", dot:"#a855f7" },
+  { id:"pink",   bg:"#f9a8d4", text:"#831843", dot:"#ec4899" },
+  { id:"slate",  bg:"#cbd5e1", text:"#1e293b", dot:"#64748b" },
+];
+
+const SUBJECT_EMOJIS = ["📚","📝","🎨","🎵","💡","🌟","🔬","🏃","🎯","🌺","🎭","✈️","🍕","💻","🧶","📷"];
+
+/* ════════════ wrapSelection helper ════════════ */
+function wrapSelection(styleKey, styleVal, editorEl) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+
+  // ── CLEAR mode: editor дотрх бүх highlight span-г арилгана (сонголт шаардахгүй)
+  if ((styleVal === "transparent" || styleVal === "") && editorEl) {
+    editorEl.querySelectorAll("span").forEach(s => {
+      if (s.style[styleKey]) {
+        s.style[styleKey] = "";
+        if (!s.getAttribute("style") || s.getAttribute("style").replace(/\s|;/g,"") === "") {
+          const p = s.parentNode;
+          while (s.firstChild) p.insertBefore(s.firstChild, s);
+          p.removeChild(s);
+        }
+      }
+    });
+    return;
+  }
+
+  if (sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  try {
+    const frag = range.extractContents();
+    const span = document.createElement("span");
+    span.style[styleKey] = styleVal;
+    span.appendChild(frag);
+    range.insertNode(span);
+    // сонголтыг хадгална — дараагийн highlight ажиллана
+    const r2 = document.createRange();
+    r2.selectNodeContents(span);
+    sel.removeAllRanges();
+    sel.addRange(r2);
+  } catch { /* cross-element range */ }
+}
+
+/* ════════════ DRAWING CANVAS ════════════ */
+/* ── Pencil SVG icons ── */
+const PencilIcon = ({color="#1e293b", tip="round", size=28, active=false, opacity=1}) => {
+  const tipShapes = {
+    round:   <ellipse cx="12" cy="34" rx="3" ry="5" fill={color}/>,
+    flat:    <rect x="9" y="30" width="6" height="8" rx="1" fill={color}/>,
+    chisel:  <polygon points="9,30 15,30 13,38 11,38" fill={color}/>,
+    ink:     <polygon points="12,38 10,30 14,30" fill={color}/>,
+    marker:  <rect x="8" y="28" width="8" height="10" rx="2" fill={color} opacity="0.9"/>,
+    brush:   <ellipse cx="12" cy="35" rx="4" ry="6" fill={color} opacity="0.8"/>,
+  };
+  return (
+    <svg width={size} height={size*1.6} viewBox="0 0 24 42" style={{filter:active?"drop-shadow(0 2px 6px rgba(0,0,0,0.28))":"none",opacity}}>
+      <rect x="9" y="2" width="6" height="6" rx="1" fill="#e8e0d0"/>
+      <rect x="9" y="8" width="6" height="20" rx="1" fill="white" stroke="#d1ccc0" strokeWidth="0.5"/>
+      <rect x="10" y="9" width="1.5" height="18" rx="0.75" fill={color} opacity="0.18"/>
+      <rect x="9" y="26" width="6" height="5" rx="0" fill="#c8b89a"/>
+      {tipShapes[tip]}
+      {active && <rect x="9" y="1" width="6" height="2" rx="1" fill="#7c3aed"/>}
+    </svg>
+  );
+};
+const HighlighterIcon = ({color="#fde047", active=false}) => (
+  <svg width="28" height="44" viewBox="0 0 24 42" style={{filter:active?"drop-shadow(0 2px 6px rgba(0,0,0,0.28))":"none"}}>
+    <rect x="7" y="2" width="10" height="22" rx="2" fill={color} opacity="0.85" stroke="#d1ccc0" strokeWidth="0.5"/>
+    <rect x="8" y="3" width="3" height="20" rx="1" fill="white" opacity="0.35"/>
+    <polygon points="7,24 17,24 15,36 9,36" fill={color} opacity="0.7"/>
+    <rect x="9" y="34" width="6" height="4" rx="1" fill={color}/>
+    {active && <rect x="7" y="1" width="10" height="2" rx="1" fill="#7c3aed"/>}
+  </svg>
+);
+const EraserIcon = ({active=false}) => (
+  <svg width="32" height="32" viewBox="0 0 32 32" style={{filter:active?"drop-shadow(0 2px 6px rgba(0,0,0,0.28))":"none"}}>
+    <rect x="4" y="10" width="24" height="14" rx="3" fill="#f0ebe3" stroke="#d1ccc0" strokeWidth="1"/>
+    <rect x="4" y="10" width="11" height="14" rx="3" fill="#fca5a5"/>
+    <rect x="4" y="20" width="24" height="4" rx="1" fill="#e2ddd6"/>
+    {active && <rect x="4" y="9" width="24" height="2" rx="1" fill="#7c3aed"/>}
+  </svg>
+);
+
+function DrawCanvas({ initialData, onSave, onClose }) {
+  const canvasRef  = useRef(null);  // draw layer
+  const bgRef      = useRef(null);  // background layer (lines)
+  const historyRef = useRef([]);
+  const hIdxRef    = useRef(-1);
+
+  const TOOLS = [
+    { id:"pencil",    label:"Pencil",     tip:"round",  size:2,  opacity:1,    color:"#1e293b" },
+    { id:"pen",       label:"Pen",        tip:"ink",    size:2.5,opacity:1,    color:"#1e293b" },
+    { id:"marker",    label:"Marker",     tip:"chisel", size:5,  opacity:0.95, color:"#1e293b" },
+    { id:"brush",     label:"Brush",      tip:"brush",  size:8,  opacity:0.7,  color:"#1e293b" },
+    { id:"hl_yellow", label:"HL Yellow",  tip:"flat",   size:14, opacity:0.35, color:"#fde047", hl:true },
+    { id:"hl_green",  label:"HL Green",   tip:"flat",   size:14, opacity:0.35, color:"#86efac", hl:true },
+    { id:"hl_pink",   label:"HL Pink",    tip:"flat",   size:14, opacity:0.35, color:"#f9a8d4", hl:true },
+    { id:"eraser",    label:"Eraser",     tip:"flat",   size:18, opacity:1,    color:"#fef9ef", eraser:true },
+  ];
+
+  const [activeTool, setActiveTool] = useState("pen");
+  const [toolColor,  setToolColor]  = useState({});  // per-tool color overrides
+  const [showPicker, setShowPicker] = useState(null); // tool id showing color picker
+  const [penSize,    setPenSize]    = useState(null);
+  const painting = useRef(false);
+  const lastXY   = useRef({x:0,y:0});
+
+  const getTool = (id) => TOOLS.find(t=>t.id===(id||activeTool));
+
+  const drawBg = (ctx,w,h) => {
+    ctx.fillStyle="#fef9ef"; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle="#ddd6c0"; ctx.lineWidth=0.8;
+    for(let y=32;y<h;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    ctx.strokeStyle="#f0a0a0"; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(48,0);ctx.lineTo(48,h);ctx.stroke();
+  };
+
+  const saveHistory = () => {
+    const c=canvasRef.current;
+    historyRef.current=historyRef.current.slice(0,hIdxRef.current+1);
+    historyRef.current.push(c.toDataURL());
+    hIdxRef.current=historyRef.current.length-1;
+  };
+
+  // Merge bg + draw for final save
+  const getMergedDataURL = () => {
+    const bg=bgRef.current, draw=canvasRef.current;
+    const merged=document.createElement("canvas");
+    merged.width=draw.width; merged.height=draw.height;
+    const ctx=merged.getContext("2d");
+    ctx.drawImage(bg,0,0);
+    ctx.drawImage(draw,0,0);
+    return merged.toDataURL();
+  };
+
+  const undo = () => {
+    if(hIdxRef.current<=0) return;
+    hIdxRef.current--;
+    const c=canvasRef.current,ctx=c.getContext("2d");
+    ctx.clearRect(0,0,c.width,c.height);
+    if(historyRef.current[hIdxRef.current]){
+      const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0);
+      img.src=historyRef.current[hIdxRef.current];
+    }
+  };
+
+  useEffect(()=>{
+    // Draw background lines on bg canvas
+    const bg=bgRef.current,bgCtx=bg.getContext("2d");
+    drawBg(bgCtx,bg.width,bg.height);
+    // Draw layer: transparent by default
+    const c=canvasRef.current,ctx=c.getContext("2d");
+    if(initialData){const img=new Image();img.onload=()=>{ctx.drawImage(img,0,0);saveHistory();};img.src=initialData;}
+    else saveHistory();
+  },[]);
+
+  const getXY=(e)=>{
+    const r=canvasRef.current.getBoundingClientRect();
+    const sx=canvasRef.current.width/r.width,sy=canvasRef.current.height/r.height;
+    const s=e.touches?e.touches[0]:e;
+    return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};
+  };
+
+  const onStart=(e)=>{e.preventDefault();painting.current=true;lastXY.current=getXY(e);};
+  const onMove=(e)=>{
+    e.preventDefault();if(!painting.current)return;
+    const tool=getTool();
+    const ctx=canvasRef.current.getContext("2d"),pos=getXY(e);
+    const color=tool.eraser?"#fef9ef":(toolColor[activeTool]||tool.color);
+    const size=penSize??tool.size;
+    ctx.beginPath();ctx.moveTo(lastXY.current.x,lastXY.current.y);ctx.lineTo(pos.x,pos.y);
+    if(tool.eraser){
+      ctx.globalCompositeOperation="destination-out";
+      ctx.globalAlpha=1;
+      ctx.strokeStyle="rgba(0,0,0,1)";
+      ctx.lineWidth=size*2;
+    } else if(tool.hl){
+      ctx.globalCompositeOperation="multiply";
+      ctx.globalAlpha=0.38;
+      ctx.strokeStyle=color;
+      ctx.lineWidth=size;
+    } else {
+      ctx.globalCompositeOperation="source-over";
+      ctx.globalAlpha=tool.opacity;
+      ctx.strokeStyle=color;
+      ctx.lineWidth=size;
+    }
+    ctx.lineCap=tool.id==="marker"?"square":"round";
+    ctx.lineJoin="round";
+    ctx.stroke();
+    ctx.globalAlpha=1;ctx.globalCompositeOperation="source-over";
+    lastXY.current=pos;
+  };
+  const onEnd=()=>{if(painting.current){painting.current=false;saveHistory();}};
+  const clearAll=()=>{
+    const c=canvasRef.current,ctx=c.getContext("2d");
+    ctx.clearRect(0,0,c.width,c.height);
+    saveHistory();
+  };
+
+  const COLORS=["#1e293b","#dc2626","#2563eb","#16a34a","#7c3aed","#ea580c","#0891b2","#be185d","#78716c","#ffffff"];
+
+  const curTool=getTool();
+  const curColor=toolColor[activeTool]||curTool.color;
+
+  return(
+    <div style={{display:"flex",flexDirection:"column",height:"100%",background:"white"}} onClick={()=>showPicker&&setShowPicker(null)}>
+
+      {/* ── Apple-style pencil toolbar ── */}
+      <div style={{display:"flex",alignItems:"flex-end",justifyContent:"center",gap:4,
+        padding:"6px 12px 0",background:"#f8f7f5",borderBottom:"1px solid #e2e8f0",
+        position:"relative",minHeight:72}}>
+
+        {TOOLS.map(t=>{
+          const active=activeTool===t.id;
+          const col=toolColor[t.id]||t.color;
+          return(
+            <div key={t.id} style={{display:"flex",flexDirection:"column",alignItems:"center",
+              cursor:"pointer",transform:active?"translateY(-6px)":"translateY(0)",
+              transition:"transform .18s ease",position:"relative"}}
+              onClick={e=>{
+                e.stopPropagation();
+                if(activeTool===t.id && !t.eraser){setShowPicker(p=>p===t.id?null:t.id);}
+                else{setActiveTool(t.id);setShowPicker(null);}
+              }}>
+              {t.eraser
+                ? <EraserIcon active={active}/>
+                : t.hl
+                  ? <HighlighterIcon color={col} active={active}/>
+                  : <PencilIcon color={col} tip={t.tip} active={active}/>}
+
+              {/* color picker dropdown */}
+              {showPicker===t.id&&(
+                <div style={{position:"absolute",top:"100%",left:"50%",transform:"translateX(-50%)",
+                  background:"white",borderRadius:10,boxShadow:"0 8px 24px rgba(0,0,0,0.18)",
+                  padding:8,display:"flex",flexWrap:"wrap",gap:5,width:120,zIndex:99,marginTop:4}}
+                  onClick={e=>e.stopPropagation()}>
+                  {COLORS.map(c=>(
+                    <div key={c} onClick={()=>{setToolColor(p=>({...p,[t.id]:c}));setShowPicker(null);}}
+                      style={{width:20,height:20,borderRadius:"50%",background:c,cursor:"pointer",
+                        border:col===c?"2.5px solid #7c3aed":"1.5px solid #e2e8f0",
+                        boxShadow:"0 1px 3px rgba(0,0,0,0.15)"}}/>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* divider */}
+        <div style={{width:1,height:40,background:"#e2e8f0",margin:"0 4px",alignSelf:"center"}}/>
+
+        {/* Eraser size / pen size slider */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,paddingBottom:6}}>
+          <input type="range" min={1} max={20} value={penSize??curTool.size}
+            onChange={e=>setPenSize(+e.target.value)}
+            style={{width:60,accentColor:"#7c3aed",writing:"horizontal-tb"}}/>
+          <span style={{fontSize:9,color:"#94a3b8"}}>{penSize??curTool.size}px</span>
+        </div>
+
+        {/* undo */}
+        <button onClick={undo} title="Undo"
+          style={{padding:"5px 8px",borderRadius:8,border:"1px solid #e2e8f0",background:"white",
+            cursor:"pointer",fontSize:16,alignSelf:"center",marginBottom:6}}>↩</button>
+
+        {/* clear */}
+        <button onClick={clearAll}
+          style={{padding:"5px 8px",borderRadius:8,border:"none",background:"#fef2f2",
+            color:"#dc2626",cursor:"pointer",fontSize:12,fontWeight:700,alignSelf:"center",marginBottom:6}}>🗑</button>
+
+        <div style={{flex:1}}/>
+
+        {/* save / close */}
+        <button onClick={()=>onSave(getMergedDataURL())}
+          style={{padding:"6px 14px",borderRadius:8,fontSize:12,fontWeight:700,border:"none",
+            cursor:"pointer",background:"#7c3aed",color:"white",alignSelf:"center",marginBottom:6}}>✓ Хадгалах</button>
+        <button onClick={onClose}
+          style={{padding:"6px 10px",borderRadius:8,fontSize:12,border:"1px solid #e2e8f0",
+            background:"white",cursor:"pointer",color:"#64748b",alignSelf:"center",marginBottom:6}}>✕</button>
+      </div>
+
+      <div style={{flex:1,position:"relative"}}>
+        <canvas ref={bgRef} width={900} height={520}
+          style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}/>
+        <canvas ref={canvasRef} width={900} height={520}
+          style={{position:"absolute",inset:0,width:"100%",height:"100%",
+            cursor:curTool.eraser?"cell":"crosshair",touchAction:"none"}}
+          onMouseDown={onStart} onMouseMove={onMove} onMouseUp={onEnd} onMouseLeave={onEnd}
+          onTouchStart={onStart} onTouchMove={onMove} onTouchEnd={onEnd}/>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════ NOTE EDITOR ════════════ */
+function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
+  const { theme, lang } = useSettings();
+  const [title,     setTitle]     = useState(note.title || "");
+  const [coverIdx,  setCoverIdx]  = useState(note.coverIdx ?? 0);
+  const [pageColor, setPageColor] = useState(note.pageColor || PAGE_COLORS[0]);
+  const [pagePattern, setPagePattern] = useState(note.pagePattern || 'lines');
+  const [font,      setFont]      = useState(note.font || "caveat");
+  const [subjectId, setSubjectId] = useState(note.subjectId || null);
+  const [drawMode,  setDrawMode]  = useState(false);
+  const [drawing,   setDrawing]   = useState(note.drawing || null);
+  const [images,    setImages]    = useState(note.images || []);
+  const [imgPos,    setImgPos]    = useState(note.imgPos || []);
+  const [coverImg,  setCoverImg]  = useState(note.coverImg || null);
+  const coverImgRef = useRef(null);
+  const dragInfo = useRef(null);
+  const [activeHL,  setActiveHL]  = useState(null);
+  const [activeTc,  setActiveTc]  = useState(null);
+  const editorRef = useRef(null);
+  const imgRef    = useRef(null);
+  const cv        = COVERS[coverIdx];
+  const fontObj   = FONTS.find(f=>f.id===font) || FONTS[0];
+
+  useEffect(() => {
+    if (editorRef.current && note.html) editorRef.current.innerHTML = note.html;
+    setTimeout(() => {
+      if (!editorRef.current) return;
+      editorRef.current.focus();
+      const r=document.createRange(); r.selectNodeContents(editorRef.current); r.collapse(false);
+      window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+    }, 80);
+  }, []);
+
+  useEffect(() => { if (editorRef.current) editorRef.current.style.fontFamily=fontObj.style; }, [fontObj.style]);
+
+  const handleSave = () => {
+    const html=editorRef.current?.innerHTML||"", plain=editorRef.current?.innerText||"";
+    if (!title.trim()&&!plain.trim()) return toast.error("Гарчиг эсвэл агуулга оруулна уу");
+    onSave({ ...note, title, html, plainText:plain.slice(0,120), coverIdx, pageColor, font,
+      subjectId, drawing, images, imgPos, coverImg, pagePattern, hasDrawing:!!drawing, hasImage:images.length>0,
+      createdAt:note.createdAt||new Date().toISOString() });
+    toast.success("Хадгалагдлаа ✓");
+  };
+
+  const savedRange = useRef(null);
+
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      savedRange.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const restoreSelection = () => {
+    if (!savedRange.current) return;
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange.current);
+  };
+
+  const applyHL = (c) => {
+    restoreSelection();
+    setActiveHL(c);
+    wrapSelection("backgroundColor", c, editorRef.current);
+    editorRef.current?.focus();
+  };
+  const applyTC = (c) => { setActiveTc(c); wrapSelection("color",c); editorRef.current?.focus(); };
+  const compressImage = (file, maxW=600, maxH=500, quality=0.72) => new Promise(res=>{
+    const rd=new FileReader();
+    rd.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        let {width:w,height:h}=img;
+        const scale=Math.min(1,maxW/w,maxH/h);
+        w=Math.round(w*scale); h=Math.round(h*scale);
+        const cv=document.createElement("canvas");
+        cv.width=w; cv.height=h;
+        cv.getContext("2d").drawImage(img,0,0,w,h);
+        res(cv.toDataURL("image/jpeg",quality));
+      };
+      img.src=ev.target.result;
+    };
+    rd.readAsDataURL(file);
+  });
+
+  const addImage = async (e) => {
+    const file=e.target.files?.[0]; if (!file) return;
+    if (file.size>10*1024*1024) return toast.error("10MB-с бага зураг оруулна уу");
+    e.target.value="";
+    const src = await compressImage(file);
+      const uid="ni-"+Date.now();
+      // Insert floated image inside contentEditable
+      const wrap=document.createElement("span");
+      wrap.contentEditable="false";
+      wrap.dataset.imgid=uid;
+      wrap.style.cssText="float:left;margin:4px 14px 6px 0;position:relative;display:inline-block;cursor:grab;vertical-align:top;";
+      const img=document.createElement("img");
+      img.src=src;
+      img.style.cssText="max-width:180px;max-height:160px;border-radius:8px;object-fit:cover;box-shadow:0 4px 16px rgba(0,0,0,0.18);border:2px solid white;display:block;pointer-events:none;";
+      img.draggable=false;
+      const del=document.createElement("button");
+      del.innerHTML="×";
+      del.style.cssText="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#e05252;border:2px solid white;color:white;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.25);z-index:5;";
+      del.onmousedown=ev=>ev.stopPropagation();
+      del.onclick=()=>{ wrap.remove(); };
+      wrap.appendChild(img);
+      wrap.appendChild(del);
+
+      // Drag to switch float side
+      wrap.onmousedown=(ev)=>{
+        if(ev.target===del) return;
+        ev.preventDefault();
+        const startX=ev.clientX;
+        let moved=false;
+        const onMove=(mv)=>{
+          if(Math.abs(mv.clientX-startX)>30){
+            moved=true;
+            wrap.style.float=mv.clientX>startX?"right":"left";
+            wrap.style.margin=mv.clientX>startX?"0 0 8px 14px":"0 14px 8px 0";
+          }
+        };
+        const onUp=()=>{
+          wrap.style.cursor="grab";
+          wrap.style.opacity="1";
+          window.removeEventListener("mousemove",onMove);
+          window.removeEventListener("mouseup",onUp);
+        };
+        wrap.style.cursor="grabbing";
+        wrap.style.opacity="0.8";
+        window.addEventListener("mousemove",onMove);
+        window.addEventListener("mouseup",onUp);
+      };
+
+      const editor=editorRef.current;
+      if(editor){
+        editor.focus();
+        const sel=window.getSelection();
+        if(sel&&sel.rangeCount){
+          const r=sel.getRangeAt(0);
+          r.collapse(true);
+          r.insertNode(wrap);
+          // move cursor after wrap
+          const r2=document.createRange();
+          r2.setStartAfter(wrap);
+          r2.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(r2);
+        } else {
+          editor.insertBefore(wrap,editor.firstChild);
+        }
+      }
+  };
+  const [fmtState, setFmtState] = useState({ bold:false, italic:false, underline:false, strikeThrough:false });
+
+  const updateFmtState = () => {
+    setFmtState({
+      bold: document.queryCommandState("bold"),
+      italic: document.queryCommandState("italic"),
+      underline: document.queryCommandState("underline"),
+      strikeThrough: document.queryCommandState("strikeThrough"),
+    });
+  };
+
+  const applyFmt = (e, cmd) => {
+    e.preventDefault();
+    const editor = editorRef.current;
+    if (!editor) return;
+    const sel = window.getSelection();
+    const hasSelection = sel && !sel.isCollapsed;
+    if (!hasSelection) {
+      // сонголт байхгүй бол editor-г focus хийгээд бүх текстийг сонгоно
+      editor.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    document.execCommand(cmd, false, null);
+    if (!hasSelection) {
+      // сонголтыг буцааж арилгана, cursor-г төгсгөлд тавина
+      sel.removeAllRanges();
+      const r2 = document.createRange();
+      r2.selectNodeContents(editor);
+      r2.collapse(false);
+      sel.addRange(r2);
+    }
+    editor.focus();
+    updateFmtState();
+  };
+
+  const BtnFmt = ({ cmd, label, style={} }) => {
+    const active = fmtState[cmd];
+    return (
+      <button onMouseDown={e=>applyFmt(e, cmd)}
+        style={{ width:26,height:26,borderRadius:5,fontSize:12,
+          border: active ? "1.5px solid #7c3aed" : "1px solid #e2e8f0",
+          background: active ? "#ede9fe" : "white",
+          cursor:"pointer", color: active ? "#7c3aed" : "#475569",
+          display:"flex", alignItems:"center", justifyContent:"center",
+          fontWeight:600, ...style }}>{label}</button>
+    );
+  };
+
+  return (
+    <div style={{ display:"flex",flexDirection:"column",height:"100%",background:pageColor,position:"relative" }}>
+      <style>{`
+        .ne-body{outline:none;min-height:100%;caret-color:#7c3aed;overflow:hidden;text-underline-offset:3px;text-decoration-thickness:1.5px}
+        .ne-body:empty::before{content:attr(data-placeholder);color:#bbb;pointer-events:none;display:block}
+        .ne-body ul{list-style:disc;padding-left:22px}
+        .ne-body ol{list-style:decimal;padding-left:22px}
+        .ne-body span[data-imgid]{transition:opacity .15s}
+        .ne-body span[data-imgid]:hover img{box-shadow:0 0 0 2.5px #7c3aed,0 4px 16px rgba(0,0,0,0.18)!important}
+      `}</style>
+
+      {/* cover bar */}
+      <div style={{ display:"flex",alignItems:"center",gap:5,padding:"8px 12px",
+        background: coverImg ? `url(${coverImg}) center/cover` : `linear-gradient(to right,${cv.bg},${cv.bg2})`,
+        flexWrap:"wrap", position:"relative" }}>
+        {coverImg && <div style={{ position:"absolute",inset:0,background:"rgba(0,0,0,0.32)",borderRadius:0 }}/>}
+        <div style={{ position:"relative",zIndex:1,display:"flex",alignItems:"center",gap:5,flexWrap:"wrap",width:"100%" }}>
+        {COVERS.map((c,i)=>(
+          <button key={c.id} onClick={()=>setCoverIdx(i)}
+            style={{ width:16,height:20,borderRadius:3,flexShrink:0,cursor:"pointer",
+              background:`linear-gradient(135deg,${c.bg},${c.bg2})`,
+              border:coverIdx===i?"2.5px solid white":"1.5px solid rgba(0,0,0,0.18)",
+              transform:coverIdx===i?"scale(1.2)":"scale(1)",transition:"transform .1s" }}/>
+        ))}
+        <div style={{ width:1,height:16,background:"rgba(255,255,255,0.35)",margin:"0 3px" }}/>
+        {PAGE_COLORS.map(c=>(
+          <button key={c} onClick={()=>setPageColor(c)}
+            style={{ width:13,height:13,borderRadius:"50%",flexShrink:0,cursor:"pointer",background:c,
+              border:pageColor===c?"2px solid #475569":"1px solid rgba(0,0,0,0.2)" }}/>
+        ))}
+        <div style={{ width:1,height:16,background:"rgba(255,255,255,0.35)",margin:"0 3px" }}/>
+        {[
+          { id:"lines",  label:"≡" },
+          { id:"grid",   label:"⊞" },
+          { id:"dots",   label:"⁘" },
+          { id:"none",   label:"□" },
+        ].map(p=>(
+          <button key={p.id} onClick={()=>setPagePattern(p.id)}
+            title={p.id}
+            style={{ width:20,height:20,borderRadius:4,flexShrink:0,cursor:"pointer",fontSize:12,
+              fontWeight:700,border:pagePattern===p.id?"2px solid white":"1px solid rgba(255,255,255,0.4)",
+              background:pagePattern===p.id?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",
+              color:"white",display:"flex",alignItems:"center",justifyContent:"center" }}>{p.label}</button>
+        ))}
+        <div style={{ flex:1 }}/>
+        <button onClick={()=>coverImgRef.current?.click()}
+          style={{ background:"rgba(255,255,255,0.25)",border:"1px solid rgba(255,255,255,0.5)",borderRadius:6,
+            padding:"3px 9px",color:"white",cursor:"pointer",fontSize:12,fontWeight:600 }}>
+          🖼 Cover
+        </button>
+        {coverImg && (
+          <button onClick={()=>{
+            setCoverImg(null);
+            const html=editorRef.current?.innerHTML||"", plain=editorRef.current?.innerText||"";
+            onSave({ ...note, title, html, plainText:plain.slice(0,120), coverIdx, pageColor, font,
+              subjectId, drawing, images, imgPos, coverImg:null, pagePattern, hasDrawing:!!drawing, hasImage:images.length>0,
+              createdAt:note.createdAt||new Date().toISOString() });
+          }}
+            style={{ background:"rgba(220,38,38,0.7)",border:"none",borderRadius:6,
+              padding:"3px 8px",color:"white",cursor:"pointer",fontSize:11 }}>✕ Cover</button>
+        )}
+        <input ref={coverImgRef} type="file" accept="image/*" style={{ display:"none" }}
+          onChange={async e=>{ const f=e.target.files?.[0]; if(!f) return;
+            e.target.value="";
+            const imgData=await compressImage(f,800,400,0.8);
+            setCoverImg(imgData);
+            const html=editorRef.current?.innerHTML||"", plain=editorRef.current?.innerText||"";
+            onSave({ ...note, title, html, plainText:plain.slice(0,120), coverIdx, pageColor, font,
+              subjectId, drawing, images, imgPos, coverImg:imgData, pagePattern, hasDrawing:!!drawing, hasImage:images.length>0,
+              createdAt:note.createdAt||new Date().toISOString() });
+          }}/>
+        <button onClick={onClose} style={{ background:"rgba(0,0,0,0.18)",border:"none",borderRadius:6,padding:"3px 9px",color:"white",cursor:"pointer",fontSize:13 }}>✕</button>
+        </div>
+      </div>
+
+      {/* toolbar */}
+      <div style={{ display:"flex",alignItems:"center",gap:4,padding:"6px 10px",
+        background:"rgba(255,255,255,0.85)",borderBottom:"1px solid rgba(0,0,0,0.07)",
+        flexWrap:"wrap",backdropFilter:"blur(8px)" }}>
+        {/* subject picker */}
+        <select value={subjectId||""} onChange={e=>setSubjectId(e.target.value||null)}
+          style={{ fontSize:11,border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 6px",
+            background:"white",cursor:"pointer",color:"#334155",maxWidth:110 }}>
+          <option value="">📁 Subject</option>
+          {subjects.map(s=>{ const th=SUBJECT_THEMES.find(t=>t.id===s.themeId)||SUBJECT_THEMES[0];
+            return <option key={s.id} value={s.id}>{s.emoji} {s.name}</option>; })}
+        </select>
+        <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
+        {/* font */}
+        <select value={font} onChange={e=>setFont(e.target.value)}
+          style={{ fontSize:11,border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 6px",
+            background:"white",cursor:"pointer",color:"#334155",maxWidth:90,fontFamily:fontObj.style }}>
+          {FONTS.map(f=><option key={f.id} value={f.id} style={{ fontFamily:f.style }}>{f.label}</option>)}
+        </select>
+        <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
+        <BtnFmt cmd="bold"          label="B" style={{ fontWeight:900 }}/>
+        <BtnFmt cmd="italic"        label="I" style={{ fontStyle:"italic" }}/>
+        <BtnFmt cmd="underline"     label="U" style={{ textDecoration:"underline" }}/>
+        <BtnFmt cmd="strikeThrough" label="S" style={{ textDecoration:"line-through" }}/>
+        <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
+        <button onMouseDown={e=>{ e.preventDefault(); document.execCommand("insertUnorderedList",false,null); editorRef.current?.focus(); }}
+          style={{ width:26,height:26,borderRadius:5,fontSize:14,border:"1px solid #e2e8f0",background:"white",cursor:"pointer",color:"#475569",display:"flex",alignItems:"center",justifyContent:"center" }}>•≡</button>
+        <button onMouseDown={e=>{ e.preventDefault(); document.execCommand("insertOrderedList",false,null); editorRef.current?.focus(); }}
+          style={{ width:26,height:26,borderRadius:5,fontSize:10,fontWeight:700,border:"1px solid #e2e8f0",background:"white",cursor:"pointer",color:"#475569",display:"flex",alignItems:"center",justifyContent:"center" }}>1.</button>
+        <div style={{ width:1,height:22,background:"#e2e8f0" }}/>
+        <span style={{ fontSize:10,color:"#94a3b8",fontWeight:700 }}>HL</span>
+        {HIGHLIGHTS.map(c=>(
+          <button key={c}
+            onMouseDown={e=>{ saveSelection(); e.preventDefault(); }}
+            onMouseUp={e=>{ e.preventDefault(); applyHL(c); }}
+            style={{ width:18,height:18,borderRadius:3,flexShrink:0,cursor:"pointer",background:c,
+              border:activeHL===c?"2.5px solid #475569":"1.5px solid rgba(0,0,0,0.15)" }}/>
+        ))}
+        <button
+          onMouseDown={e=>{ saveSelection(); e.preventDefault(); }}
+          onMouseUp={e=>{ e.preventDefault(); restoreSelection(); wrapSelection("backgroundColor","transparent",editorRef.current); editorRef.current?.focus(); }}
+          style={{ width:18,height:18,borderRadius:3,border:"1.5px solid #e2e8f0",background:"white",cursor:"pointer",
+            fontSize:10,color:"#94a3b8",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900 }}>✕</button>
+
+        <div style={{ flex:1 }}/>
+        <button onClick={()=>setDrawMode(true)}
+          style={{ padding:"4px 9px",borderRadius:6,fontSize:11,border:"1px solid #e2e8f0",
+            background:drawing?"#7c3aed":"white",color:drawing?"white":"#64748b",cursor:"pointer",fontWeight:600 }}>
+          ✏️ {lang==="mn"?"Зурах":"Draw"}
+        </button>
+        <button onClick={()=>imgRef.current?.click()}
+          style={{ padding:"4px 9px",borderRadius:6,fontSize:11,border:"1px solid #e2e8f0",
+            background:"white",color:"#64748b",cursor:"pointer",fontWeight:600 }}>
+          🖼 {lang==="mn"?"Зураг":"Image"}
+        </button>
+        <input ref={imgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={addImage}/>
+      </div>
+
+      {drawMode && (
+        <div style={{ position:"absolute",inset:0,zIndex:100,display:"flex",flexDirection:"column",background:"white" }}>
+          <DrawCanvas initialData={drawing} onSave={d=>{ setDrawing(d); setDrawMode(false); }} onClose={()=>setDrawMode(false)}/>
+        </div>
+      )}
+
+      <div style={{ flex:1,overflowY:"auto",position:"relative",
+          backgroundImage:
+            pagePattern==="lines" ? "repeating-linear-gradient(transparent,transparent 31px,#ddd6c0 31px,#ddd6c0 32px)" :
+            pagePattern==="grid"  ? "repeating-linear-gradient(transparent,transparent 27px,#ddd6c0 27px,#ddd6c0 28px),repeating-linear-gradient(90deg,transparent,transparent 27px,#ddd6c0 27px,#ddd6c0 28px)" :
+            pagePattern==="dots"  ? "radial-gradient(circle,#c8b89a 1px,transparent 1px)" :
+            "none",
+          backgroundSize:
+            pagePattern==="lines" ? "100% 32px" :
+            pagePattern==="grid"  ? "28px 28px" :
+            pagePattern==="dots"  ? "28px 28px" :
+            "auto" }}>
+        <div style={{ position:"sticky",top:0,left:0,right:0,height:0,pointerEvents:"none" }}>
+          <div style={{ position:"absolute",top:0,bottom:-9999,left:52,width:1,
+            background:pagePattern==="none"?"transparent":"rgba(240,100,100,0.4)" }}/>
+        </div>
+        <div style={{ padding:"14px 20px 80px 60px",position:"relative",minHeight:"100%" }}>
+          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Гарчиг..."
+            style={{ display:"block",width:"100%",background:"transparent",border:"none",outline:"none",
+              fontFamily:fontObj.style,fontSize:22,fontWeight:700,color:"#2d2a26",marginBottom:10,
+              borderBottom:"1.5px dashed #c8b89a",paddingBottom:6 }}/>
+          {drawing && !drawMode && (
+            <div style={{ marginBottom:10,position:"relative",display:"inline-block" }}>
+              <img src={drawing} alt="drawing" style={{ maxWidth:"100%",borderRadius:8,boxShadow:"0 2px 12px rgba(0,0,0,0.1)",border:"1px solid #e2e8f0" }}/>
+              <button onClick={()=>setDrawMode(true)} style={{ position:"absolute",top:6,right:56,background:"rgba(0,0,0,0.55)",border:"none",borderRadius:5,color:"white",fontSize:11,padding:"3px 7px",cursor:"pointer" }}>✏️ Засах</button>
+              <button onClick={()=>setDrawing(null)} style={{ position:"absolute",top:6,right:6,background:"rgba(220,38,38,0.7)",border:"none",borderRadius:5,color:"white",fontSize:11,padding:"3px 7px",cursor:"pointer" }}>✕ Устгах</button>
+            </div>
+          )}
+
+          <div ref={editorRef} contentEditable suppressContentEditableWarning
+            data-placeholder="Энд бичих..." className="ne-body"
+            onKeyUp={updateFmtState} onMouseUp={updateFmtState}
+            onClick={e=>{
+              // Delete button inside floated image spans
+              if(e.target.tagName==="BUTTON" && e.target.closest("span[data-imgid]")){
+                e.preventDefault();
+                e.stopPropagation();
+                e.target.closest("span[data-imgid]").remove();
+              }
+            }}
+            style={{ fontFamily:fontObj.style,fontSize:17,lineHeight:"32px",color:"#2d2a26",textDecorationThickness:"1.5px",textUnderlineOffset:"3px" }}/>
+        </div>
+      </div>
+
+      <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
+        padding:"8px 14px",background:"rgba(255,255,255,0.85)",borderTop:"1px solid rgba(0,0,0,0.07)",backdropFilter:"blur(8px)" }}>
+        {note.id ? (
+          <button onClick={()=>{ onDelete(note.id); onClose(); }}
+            style={{ background:"none",border:"none",cursor:"pointer",color:"#ef4444",fontSize:12,fontWeight:600 }}>
+            🗑 {lang==="mn"?"Устгах":"Delete"}
+          </button>
+        ) : <div/>}
+        <button onClick={handleSave}
+          style={{ background:theme.accent,color:"white",border:"none",padding:"8px 24px",
+            borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer",boxShadow:`0 2px 12px ${theme.accent}44` }}>
+          💾 {lang==="mn"?"Хадгалах":"Save"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════ NOTE CARD ════════════ */
+function NoteCard({ note, idx, onClick }) {
+  const cv = COVERS[note.coverIdx ?? (idx % COVERS.length)];
+  return (
+    <div onClick={onClick}
+      style={{
+        cursor:"pointer", borderRadius:14, overflow:"hidden",
+        background:"white", border:"1px solid #e8e3dc",
+        boxShadow:"0 2px 8px rgba(0,0,0,0.06)",
+        transition:"transform .2s ease, box-shadow .2s ease",
+        display:"flex", flexDirection:"column",
+      }}
+      onMouseEnter={e=>{
+        e.currentTarget.style.transform="translateY(-4px)";
+        e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.12)";
+      }}
+      onMouseLeave={e=>{
+        e.currentTarget.style.transform="translateY(0)";
+        e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.06)";
+      }}>
+
+      {/* ── Thumbnail ── */}
+      <div style={{
+        height:110, background:`linear-gradient(135deg,${cv.bg},${cv.bg2})`,
+        display:"flex", alignItems:"center", justifyContent:"center",
+        position:"relative", overflow:"hidden",
+      }}>
+        {note.coverImg ? (
+          <img src={note.coverImg} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
+        ) : note.drawing ? (
+          <img src={note.drawing} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
+        ) : note.images && note.images[0] ? (
+          <img src={note.images[0]} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
+        ) : (
+          <span style={{ fontSize:38, opacity:0.75 }}>{cv.deco[0]||"📝"}</span>
+        )}
+        <div style={{
+          position:"absolute", top:7, left:7,
+          background:"rgba(255,255,255,0.82)", borderRadius:20,
+          padding:"2px 8px", fontSize:11, fontWeight:700,
+          color:cv.spine,
+        }}>
+          {cv.deco[1]||"📌"}
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div style={{ padding:"10px 12px 12px" }}>
+        <p style={{
+          fontSize:13, fontWeight:700, color:"#1e293b",
+          lineHeight:1.4, margin:"0 0 5px",
+          overflow:"hidden", display:"-webkit-box",
+          WebkitLineClamp:2, WebkitBoxOrient:"vertical",
+        }}>
+          {note.title||"Гарчиггүй"}
+        </p>
+        <p style={{
+          fontSize:11, color:"#e07b3a", fontWeight:600,
+          margin:"0 0 4px", fontFamily:"'Courier New',monospace",
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+        }}>
+          {note.subjectId ? `@${note.subjectId}` : "@тэмдэглэл"}
+        </p>
+        <p style={{ fontSize:11, color:"#94a3b8", margin:0 }}>
+          {note.createdAt
+            ? new Date(note.createdAt).toLocaleDateString("mn-MN",{month:"short",day:"numeric",year:"numeric"})
+            : "—"}
+          {note.hasDrawing&&" ✏️"}{note.hasImage&&" 🖼"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════ SUBJECT MODAL ════════════ */
+function SubjectModal({ subject, onSave, onDelete, onClose }) {
+  const [name,    setName]    = useState(subject?.name    || "");
+  const [emoji,   setEmoji]   = useState(subject?.emoji   || "📚");
+  const [themeId, setThemeId] = useState(subject?.themeId || "blue");
+  const [showEmoji, setShowEmoji] = useState(false);
+
+  const handleSave = () => {
+    if (!name.trim()) return toast.error("Нэр оруулна уу");
+    onSave({ ...subject, name:name.trim(), emoji, themeId, id:subject?.id||Date.now() });
+    toast.success(subject?.id ? "Засагдлаа ✓" : "Subject нэмэгдлээ ✓");
+  };
+
+  return (
+    <div style={{ position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",
+      background:"rgba(0,0,0,0.45)",backdropFilter:"blur(6px)" }}
+      onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()}
+        style={{ background:"white",borderRadius:20,padding:28,width:340,
+          boxShadow:"0 24px 80px rgba(0,0,0,0.25)" }}>
+        <h3 style={{ fontSize:18,fontWeight:700,color:"#1e293b",margin:"0 0 20px" }}>
+          {subject?.id ? "Subject засах" : "Subject нэмэх"}
+        </h3>
+
+        {/* emoji + name row */}
+        <div style={{ display:"flex",gap:10,marginBottom:16,position:"relative" }}>
+          <button onClick={()=>setShowEmoji(v=>!v)}
+            style={{ width:44,height:44,borderRadius:10,fontSize:22,border:"1.5px solid #e2e8f0",
+              background:"#f8fafc",cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center" }}>
+            {emoji}
+          </button>
+          <input value={name} onChange={e=>setName(e.target.value)}
+            placeholder="Subject нэр..."
+            style={{ flex:1,border:"1.5px solid #e2e8f0",borderRadius:10,padding:"10px 12px",
+              fontSize:14,outline:"none",color:"#1e293b" }}
+            onFocus={e=>e.target.style.borderColor="#7c3aed"}
+            onBlur={e=>e.target.style.borderColor="#e2e8f0"}/>
+          {showEmoji && (
+            <div style={{ position:"absolute",top:52,left:0,background:"white",borderRadius:14,
+              padding:12,boxShadow:"0 8px 30px rgba(0,0,0,0.15)",border:"1px solid #e2e8f0",
+              display:"grid",gridTemplateColumns:"repeat(8,1fr)",gap:6,zIndex:10,width:260 }}>
+              {SUBJECT_EMOJIS.map(em=>(
+                <button key={em} onClick={()=>{ setEmoji(em); setShowEmoji(false); }}
+                  style={{ width:28,height:28,borderRadius:6,fontSize:16,border:"none",
+                    background:emoji===em?"#ede9fe":"transparent",cursor:"pointer",
+                    display:"flex",alignItems:"center",justifyContent:"center" }}>
+                  {em}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* theme colors */}
+        <p style={{ fontSize:11,fontWeight:700,color:"#94a3b8",marginBottom:10,letterSpacing:1,textTransform:"uppercase" }}>Загвар өнгө</p>
+        <div style={{ display:"flex",flexWrap:"wrap",gap:8,marginBottom:22 }}>
+          {SUBJECT_THEMES.map(th=>(
+            <button key={th.id} onClick={()=>setThemeId(th.id)}
+              style={{ width:32,height:22,borderRadius:8,border:themeId===th.id?"2.5px solid #1e293b":"2px solid transparent",
+                background:th.bg,cursor:"pointer",transition:"transform .1s",
+                transform:themeId===th.id?"scale(1.15)":"scale(1)" }}/>
+          ))}
+        </div>
+
+        {/* preview */}
+        {(() => {
+          const th = SUBJECT_THEMES.find(t=>t.id===themeId)||SUBJECT_THEMES[0];
+          return (
+            <div style={{ background:th.bg,borderRadius:12,padding:"10px 14px",
+              display:"flex",alignItems:"center",gap:10,marginBottom:20 }}>
+              <span style={{ fontSize:20 }}>{emoji}</span>
+              <span style={{ fontWeight:700,color:th.text,fontSize:15 }}>{name||"Subject нэр"}</span>
+            </div>
+          );
+        })()}
+
+        <div style={{ display:"flex",gap:8 }}>
+          {subject?.id && (
+            <button onClick={()=>{ if(window.confirm("Subject устгах уу?")) onDelete(subject.id); }}
+              style={{ padding:"10px 14px",borderRadius:10,border:"1.5px solid #fecaca",
+                background:"#fef2f2",cursor:"pointer",fontSize:13,color:"#ef4444",fontWeight:600 }}>
+              🗑
+            </button>
+          )}
+          <button onClick={onClose}
+            style={{ flex:1,padding:"10px",borderRadius:10,border:"1.5px solid #e2e8f0",
+              background:"white",cursor:"pointer",fontSize:13,color:"#64748b",fontWeight:600 }}>
+            Болих
+          </button>
+          <button onClick={handleSave}
+            style={{ flex:1,padding:"10px",borderRadius:10,border:"none",
+              background:"linear-gradient(135deg,#7c3aed,#4f46e5)",color:"white",
+              cursor:"pointer",fontSize:13,fontWeight:700 }}>
+            {subject?.id?"Хадгалах":"Нэмэх"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════ MAIN NOTES PAGE ════════════ */
+
+/* ════════════════════════════════════════════════════════
+   FocusTimer — баруун талын цагийн panel
+   ════════════════════════════════════════════════════════ */
+function FocusTimer() {
+  const MODES = [
+    { id:"pomodoro", label:"🍅 Pomodoro", mins:25 },
+    { id:"short",    label:"☕ Богино",   mins:5  },
+    { id:"long",     label:"🌙 Урт",      mins:15 },
+    { id:"custom",   label:"⚙️ Тохиргоо", mins:0  },
+  ];
+  const [mode,       setMode]       = useState("pomodoro");
+  const [customMins, setCustomMins] = useState(25);
+  const [running,    setRunning]    = useState(false);
+  const [secondsLeft,setSecondsLeft]= useState(25*60);
+  const [sessions,   setSessions]   = useState(0);
+  const intervalRef  = useRef(null);
+  const [swRunning,  setSwRunning]  = useState(false);
+  const [swMs,       setSwMs]       = useState(0);
+  const [swLaps,     setSwLaps]     = useState([]);
+  const swRef        = useRef(null);
+  const swStartRef   = useRef(0);
+  const startSound   = useRef(null);
+
+  const totalSecs = useMemo(()=>{
+    if(mode==="custom") return customMins*60;
+    return (MODES.find(m=>m.id===mode)?.mins||25)*60;
+  },[mode,customMins]);
+
+  useEffect(()=>{
+    setRunning(false);
+    setSecondsLeft(totalSecs);
+    clearInterval(intervalRef.current);
+  },[mode,customMins]);
+
+  useEffect(()=>{
+    if(running){
+      intervalRef.current=setInterval(()=>{
+        setSecondsLeft(s=>{
+          if(s<=1){
+            clearInterval(intervalRef.current);
+            setRunning(false);
+            setSessions(n=>n+1);
+            setSecondsLeft(totalSecs);
+            // play beep
+            try{
+              const ctx=new AudioContext();
+              const osc=ctx.createOscillator();
+              const gain=ctx.createGain();
+              osc.connect(gain); gain.connect(ctx.destination);
+              osc.frequency.value=880; gain.gain.value=0.3;
+              osc.start(); osc.stop(ctx.currentTime+0.6);
+            }catch(e){}
+            return totalSecs;
+          }
+          return s-1;
+        });
+      },1000);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return ()=>clearInterval(intervalRef.current);
+  },[running,totalSecs]);
+
+  const mins=String(Math.floor(secondsLeft/60)).padStart(2,"0");
+  const secs=String(secondsLeft%60).padStart(2,"0");
+  const progress=(totalSecs-secondsLeft)/totalSecs;
+
+  const r=54, circ=2*Math.PI*r;
+
+  return(
+    <div style={{display:"flex",flexDirection:"column",height:"100%",padding:"18px 14px",gap:14,
+      background:"linear-gradient(160deg,#1e1b2e,#2d1b4e)",color:"white",overflowY:"auto"}}>
+
+      {/* Mode tabs */}
+      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {MODES.map(m=>(
+          <button key={m.id} onClick={()=>setMode(m.id)}
+            style={{padding:"7px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,
+              fontWeight:mode===m.id?700:400,textAlign:"left",
+              background:mode===m.id?"rgba(124,58,237,0.7)":"rgba(255,255,255,0.07)",
+              color:"white",transition:"background .15s"}}>
+            {m.label}{m.id!=="custom"&&<span style={{float:"right",opacity:.6}}>{m.mins}мин</span>}
+          </button>
+        ))}
+        {mode==="custom"&&(
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0"}}>
+            <span style={{fontSize:11,opacity:.7}}>Минут:</span>
+            <input type="number" min={1} max={120} value={customMins}
+              onChange={e=>setCustomMins(Math.max(1,+e.target.value))}
+              style={{width:56,padding:"4px 8px",borderRadius:8,border:"1px solid rgba(255,255,255,0.2)",
+                background:"rgba(255,255,255,0.1)",color:"white",fontSize:13,outline:"none"}}/>
+          </div>
+        )}
+      </div>
+
+      <div style={{width:"100%",height:1,background:"rgba(255,255,255,0.1)"}}/>
+
+      {/* Circle timer */}
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:10}}>
+        <svg width={130} height={130} viewBox="0 0 130 130">
+          <circle cx={65} cy={65} r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={8}/>
+          <circle cx={65} cy={65} r={r} fill="none"
+            stroke={running?"#a78bfa":"#7c3aed"} strokeWidth={8}
+            strokeLinecap="round"
+            strokeDasharray={circ}
+            strokeDashoffset={circ*(1-progress)}
+            transform="rotate(-90 65 65)"
+            style={{transition:"stroke-dashoffset .9s linear,stroke .3s"}}/>
+          <text x={65} y={60} textAnchor="middle" fill="white" fontSize={26} fontWeight={700}
+            fontFamily="monospace">{mins}:{secs}</text>
+          <text x={65} y={80} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={11}>
+            {running?"Ажиллаж байна":"Зогссон"}
+          </text>
+        </svg>
+
+        {/* Controls */}
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>setRunning(r=>!r)}
+            style={{padding:"9px 22px",borderRadius:12,border:"none",cursor:"pointer",
+              background:running?"#ef4444":"#7c3aed",color:"white",fontSize:14,fontWeight:700,
+              boxShadow:"0 4px 14px rgba(124,58,237,0.4)"}}>
+            {running?"⏸ Зогсоох":"▶ Эхлэх"}
+          </button>
+          <button onClick={()=>{setRunning(false);setSecondsLeft(totalSecs);}}
+            style={{padding:"9px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.2)",
+              background:"transparent",color:"white",fontSize:14,cursor:"pointer"}}>↺</button>
+        </div>
+      </div>
+
+      <div style={{width:"100%",height:1,background:"rgba(255,255,255,0.1)"}}/>
+
+      <div style={{width:"100%",height:1,background:"rgba(255,255,255,0.1)"}}/>
+
+      {/* ── Stopwatch ── */}
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:10,opacity:.5,marginBottom:6,letterSpacing:1}}>STOPWATCH</div>
+        {/* Display */}
+        <div style={{fontFamily:"monospace",fontSize:26,fontWeight:800,letterSpacing:2,marginBottom:8,
+          color:swRunning?"#a78bfa":"white"}}>
+          {String(Math.floor(swMs/3600000)).padStart(2,"0")}:{String(Math.floor(swMs/60000)%60).padStart(2,"0")}:{String(Math.floor(swMs/1000)%60).padStart(2,"0")}<span style={{fontSize:14,opacity:.6}}>.{String(Math.floor(swMs/10)%100).padStart(2,"0")}</span>
+        </div>
+        {/* Controls */}
+        <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:8}}>
+          <button onClick={()=>{
+            if(swRunning){
+              clearInterval(swRef.current);
+              setSwMs(m=>m+(Date.now()-swStartRef.current));
+            } else {
+              swStartRef.current=Date.now()-swMs;
+              swRef.current=setInterval(()=>setSwMs(Date.now()-swStartRef.current),50);
+            }
+            setSwRunning(r=>!r);
+          }} style={{padding:"6px 14px",borderRadius:10,border:"none",cursor:"pointer",fontWeight:700,fontSize:12,
+            background:swRunning?"#ef4444":"#7c3aed",color:"white"}}>
+            {swRunning?"⏸ Зогсоох":"▶ Эхлэх"}
+          </button>
+          <button onClick={()=>{
+            if(swRunning){
+              setSwLaps(l=>[...l,swMs+(Date.now()-swStartRef.current)]);
+            } else {
+              clearInterval(swRef.current); setSwMs(0); setSwLaps([]); setSwRunning(false);
+            }
+          }} style={{padding:"6px 12px",borderRadius:10,border:"1px solid rgba(255,255,255,0.2)",
+            cursor:"pointer",fontSize:12,background:"transparent",color:"white"}}>
+            {swRunning?"🚩 Lap":"↺ Reset"}
+          </button>
+        </div>
+        {/* Laps */}
+        {swLaps.length>0&&(
+          <div style={{maxHeight:80,overflowY:"auto",display:"flex",flexDirection:"column",gap:3}}>
+            {swLaps.map((lap,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",
+                padding:"2px 8px",borderRadius:6,background:"rgba(255,255,255,0.07)",fontSize:10}}>
+                <span style={{opacity:.5}}>Lap {i+1}</span>
+                <span style={{fontFamily:"monospace",fontWeight:600}}>
+                  {String(Math.floor(lap/60000)%60).padStart(2,"0")}:{String(Math.floor(lap/1000)%60).padStart(2,"0")}.{String(Math.floor(lap/10)%100).padStart(2,"0")}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Motivational quote */}
+      <div style={{marginTop:"auto",padding:"10px 12px",borderRadius:12,
+        background:"rgba(255,255,255,0.06)",fontSize:11,opacity:.65,lineHeight:1.5,textAlign:"center",
+        fontStyle:"italic"}}>
+        {["Алхам бүр зорилгодоо ойртуулна 🌟",
+          "Анхаарлаа төвлөрүүл, амжилт ирнэ ✨",
+          "Одоо эхэлбэл маргааш баяртай байна 💪",
+          "Тэвчээр бол амжилтын эх 🔥"][sessions%4]}
+      </div>
+    </div>
+  );
+}
+
+export default function Notes() {
+  const { t, theme, lang } = useSettings();
+  const [notes,       setNotes]       = useState(getNotes);
+  const [subjects,    setSubjects]    = useState(getSubjects);
+  const [editing,     setEditing]     = useState(null);
+  const [activeSubj,  setActiveSubj]  = useState("all"); // "all" | "none" | subject.id
+  const [search,      setSearch]      = useState("");
+  const [subjModal,   setSubjModal]   = useState(null); // null | {} | subject
+  const [collapsed,   setCollapsed]   = useState(false);
+  const [timerOpen,   setTimerOpen]   = useState(false);
+
+  useEffect(()=>saveNotes(notes),    [notes]);
+  useEffect(()=>saveSubjects(subjects),[subjects]);
+
+  const openNew = () => { setTimerOpen(true); setEditing({
+    id:null, title:"", html:"", plainText:"",
+    coverIdx:Math.floor(Math.random()*COVERS.length),
+    pageColor:PAGE_COLORS[Math.floor(Math.random()*PAGE_COLORS.length)],
+    font:"caveat", subjectId: activeSubj!=="all"&&activeSubj!=="none" ? activeSubj : null,
+    drawing:null, images:[], hasDrawing:false, hasImage:false, createdAt:new Date().toISOString()
+  }); }
+
+  const handleSave = (updated) => {
+    if (updated.id) setNotes(p=>p.map(n=>n.id===updated.id?updated:n));
+    else setNotes(p=>[{...updated,id:Date.now()},...p]);
+    setEditing(null);
+  };
+  const handleDelete = (id) => { setNotes(p=>p.filter(n=>n.id!==id)); toast.success("Устгагдлаа"); };
+
+  const handleSubjSave = (s) => {
+    if (subjects.find(x=>x.id===s.id)) setSubjects(p=>p.map(x=>x.id===s.id?s:x));
+    else setSubjects(p=>[...p,s]);
+    setSubjModal(null);
+  };
+  const handleSubjDelete = (id) => {
+    setSubjects(p=>p.filter(s=>s.id!==id));
+    setNotes(p=>p.map(n=>n.subjectId===id?{...n,subjectId:null}:n));
+    if (activeSubj===id) setActiveSubj("all");
+    setSubjModal(null);
+    toast.success("Subject устгагдлаа");
+  };
+
+  const filtered = notes.filter(n=>{
+    const matchSearch = n.title?.toLowerCase().includes(search.toLowerCase())||
+                        n.plainText?.toLowerCase().includes(search.toLowerCase());
+    const matchSubj   = activeSubj==="all" ? true
+                      : activeSubj==="none" ? !n.subjectId
+                      : n.subjectId===activeSubj;
+    return matchSearch && matchSubj;
+  });
+
+  const countFor = (sid) => notes.filter(n=>
+    sid==="all"  ? true :
+    sid==="none" ? !n.subjectId :
+    n.subjectId===sid
+  ).length;
+
+  const SideItem = ({ id, label, emoji, count, color, active, onClick, onEdit }) => (
+    <div style={{ position:"relative" }} className="sj-row">
+      <button onClick={onClick}
+        style={{ width:"100%",display:"flex",alignItems:"center",gap:10,
+          padding:"9px 12px",borderRadius:12,border:"none",cursor:"pointer",textAlign:"left",
+          background: active ? (color||"#ede9fe") : "transparent",
+          transition:"background .15s" }}>
+        {emoji && <span style={{ fontSize:16,flexShrink:0 }}>{emoji}</span>}
+        <span style={{ flex:1,fontSize:13,fontWeight:active?700:500,
+          color: active?"#1e293b":"#64748b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>
+          {label}
+        </span>
+        <span style={{ fontSize:11,fontWeight:600,color: active?"#7c3aed":"#94a3b8",
+          background: active?"rgba(124,58,237,0.1)":"rgba(0,0,0,0.05)",
+          borderRadius:20,padding:"1px 7px",flexShrink:0 }}>
+          {count}
+        </span>
+      </button>
+      {onEdit && (
+        <button className="sj-edit" onClick={e=>{ e.stopPropagation(); onEdit(); }}
+          style={{ position:"absolute",right:42,top:"50%",transform:"translateY(-50%)",
+            width:20,height:20,borderRadius:5,background:"rgba(100,116,139,0.1)",
+            border:"none",cursor:"pointer",fontSize:11,color:"#94a3b8",
+            display:"none",alignItems:"center",justifyContent:"center" }}>✎</button>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ display:"flex",height:"calc(100vh - 90px)",gap:0,background:"#f8f6f2",borderRadius:16,overflow:"hidden",boxShadow:"0 2px 20px rgba(0,0,0,0.06)",position:"relative" }}>
+      <style>{`
+        @.nb-row:hover .nb-del { display:flex!important; }
+        .sj-row:hover .sj-edit { display:flex!important; }
+      `}</style>
+
+      {/* ── LEFT SIDEBAR ── */}
+      <div style={{ width:220,flexShrink:0,borderRight:"1px solid #ede8e0",background:"#faf8f5",
+        display:"flex",flexDirection:"column",overflowY:"auto" }}>
+        {/* sidebar header */}
+        <div style={{ padding:"16px 14px 10px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
+          <span style={{ fontFamily:"DM Sans",fontSize:22,fontWeight:700,color:"#3d2b10" }}>
+            📔 {t.notes}
+          </span>
+          <span style={{ background:"rgba(124,58,237,0.1)",color:"#7c3aed",borderRadius:20,
+            padding:"2px 8px",fontSize:11,fontWeight:700 }}>{notes.length}</span>
+        </div>
+
+        {/* search */}
+        <div style={{ padding:"0 10px 10px",position:"relative" }}>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Хайх..."
+            style={{ width:"100%",border:"1px solid #e2e8f0",borderRadius:10,fontSize:12,
+              padding:"7px 10px 7px 28px",background:"white",outline:"none",color:"#1e293b",
+              boxSizing:"border-box" }}/>
+          <span style={{ position:"absolute",left:18,top:"50%",transform:"translateY(-50%)",fontSize:12,color:"#aaa" }}>🔍</span>
+        </div>
+
+        {/* All notes */}
+        <div style={{ padding:"0 8px" }}>
+          <SideItem id="all" label="Бүх тэмдэглэл" emoji="📋"
+            count={countFor("all")} active={activeSubj==="all"}
+            onClick={()=>setActiveSubj("all")}/>
+
+          {/* Subjects section */}
+          <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
+            padding:"10px 4px 4px",marginTop:6 }}>
+            <span style={{ fontSize:10,fontWeight:700,color:"#94a3b8",letterSpacing:1,textTransform:"uppercase" }}>
+              Subjects
+            </span>
+            <button onClick={()=>setSubjModal({})}
+              style={{ width:20,height:20,borderRadius:6,background:"rgba(124,58,237,0.1)",
+                border:"none",cursor:"pointer",color:"#7c3aed",fontSize:16,
+                display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,lineHeight:1 }}>+</button>
+          </div>
+
+          {subjects.length===0 && (
+            <div style={{ padding:"10px 8px" }}>
+              <p style={{ fontSize:11,color:"#c4b5a8",lineHeight:1.5,textAlign:"center" }}>
+                + дарж subject нэмнэ үү
+              </p>
+            </div>
+          )}
+
+          {subjects.map(s=>{
+            const th=SUBJECT_THEMES.find(t=>t.id===s.themeId)||SUBJECT_THEMES[0];
+            return (
+              <SideItem key={s.id} id={s.id} label={s.name} emoji={s.emoji}
+                count={countFor(s.id)} active={activeSubj===s.id}
+                color={th.bg}
+                onClick={()=>setActiveSubj(s.id)}
+                onEdit={()=>setSubjModal(s)}/>
+            );
+          })}
+
+          {/* No subject group */}
+          <div style={{ marginTop:4 }}>
+            <SideItem id="none" label="Subject-гүй" emoji="📁"
+              count={countFor("none")} active={activeSubj==="none"}
+              onClick={()=>setActiveSubj("none")}/>
+          </div>
+        </div>
+
+        <div style={{ flex:1 }}/>
+      </div>
+
+      {/* ── RIGHT CONTENT ── */}
+      <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden" }}>
+        {/* content header */}
+        <div style={{ padding:"14px 20px",borderBottom:"1px solid #ede8e0",
+          display:"flex",alignItems:"center",gap:12,background:"white" }}>
+          {activeSubj==="all" ? (
+            <span style={{ fontSize:15,fontWeight:700,color:"#1e293b" }}>📋 Бүх тэмдэглэл</span>
+          ) : activeSubj==="none" ? (
+            <span style={{ fontSize:15,fontWeight:700,color:"#1e293b" }}>📁 Subject-гүй</span>
+          ) : (()=>{
+            const s=subjects.find(x=>x.id===activeSubj);
+            const th=SUBJECT_THEMES.find(t=>t.id===s?.themeId)||SUBJECT_THEMES[0];
+            return s ? (
+              <div style={{ display:"flex",alignItems:"center",gap:8 }}>
+                <span style={{ fontSize:18 }}>{s.emoji}</span>
+                <span style={{ fontSize:15,fontWeight:700,color:"#1e293b" }}>{s.name}</span>
+                <span style={{ background:th.bg,color:th.text,borderRadius:20,
+                  padding:"2px 9px",fontSize:11,fontWeight:600 }}>{filtered.length}</span>
+              </div>
+            ) : null;
+          })()}
+          <div style={{ flex:1 }}/>
+          <button onClick={openNew}
+            style={{ display:"flex",alignItems:"center",gap:6,
+              padding:"8px 16px",borderRadius:10,border:"none",cursor:"pointer",
+              background:"#7c3aed",color:"white",fontSize:13,fontWeight:700,
+              boxShadow:"0 2px 8px rgba(124,58,237,0.3)",transition:"background .15s" }}
+            onMouseEnter={e=>e.currentTarget.style.background="#6d28d9"}
+            onMouseLeave={e=>e.currentTarget.style.background="#7c3aed"}>
+            <span style={{ fontSize:17,lineHeight:1 }}>+</span>
+            Тэмдэглэл нэмэх
+          </button>
+        </div>
+
+        {/* notes grid */}
+        <div style={{ flex:1,overflowY:"auto",padding:"18px 20px" }}>
+          {filtered.length===0 ? (
+            <div style={{ display:"flex",flexDirection:"column",alignItems:"center",padding:"60px 0",gap:16 }}>
+              <div style={{ fontSize:52 }}>📔</div>
+              <p style={{ color:"#94a3b8",fontSize:14 }}>
+                {lang==="mn"?"Тэмдэглэл байхгүй":"No notes yet"}
+              </p>
+              <button onClick={openNew}
+                style={{ display:"flex",alignItems:"center",gap:6,
+                  padding:"10px 22px",borderRadius:12,border:"none",cursor:"pointer",
+                  background:"#7c3aed",color:"white",fontSize:14,fontWeight:700,
+                  boxShadow:"0 2px 12px rgba(124,58,237,0.35)" }}
+                onMouseEnter={e=>e.currentTarget.style.background="#6d28d9"}
+                onMouseLeave={e=>e.currentTarget.style.background="#7c3aed"}>
+                <span style={{ fontSize:18,lineHeight:1 }}>+</span>
+                Тэмдэглэл нэмэх
+              </button>
+            </div>
+          ) : (
+            <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:16 }}>
+              {filtered.map((note,i)=>(
+                <div key={note.id} className="nb-row" style={{ position:"relative" }}>
+                  <NoteCard note={note} idx={i} onClick={()=>{ setTimerOpen(true); setEditing({...note}); }}/>
+                  <button className="nb-del"
+                    onClick={e=>{ e.stopPropagation(); handleDelete(note.id); }}
+                    style={{ position:"absolute",top:-6,right:-6,zIndex:20,width:18,height:18,
+                      borderRadius:"50%",background:"#e05252",border:"2px solid white",
+                      color:"white",fontSize:11,cursor:"pointer",display:"none",
+                      alignItems:"center",justifyContent:"center",boxShadow:"0 1px 4px rgba(0,0,0,0.3)" }}>×</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* editor modal */}
+      {editing && (
+        <div style={{ position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",
+          background:"rgba(0,0,0,0.45)",backdropFilter:"blur(4px)",padding:16 }}
+          onClick={()=>{ setEditing(null); setTimerOpen(false); }}>
+          <div onClick={e=>e.stopPropagation()}
+            style={{ display:"flex",gap:12,alignItems:"flex-start",
+              width:"100%",maxWidth:timerOpen?1020:760,height:"90vh" }}>
+            {/* Note editor */}
+            <div style={{ flex:1,height:"100%",borderRadius:20,overflow:"hidden",
+              boxShadow:"0 24px 80px rgba(0,0,0,0.35)",display:"flex",flexDirection:"column",position:"relative" }}>
+              <NoteEditor note={editing} subjects={subjects}
+                onSave={handleSave} onClose={()=>{ setEditing(null); setTimerOpen(false); }} onDelete={handleDelete}/>
+            </div>
+
+            {/* Timer panel alongside editor */}
+            <div style={{ width:220,height:"100%",borderRadius:20,overflow:"hidden",
+              boxShadow:"0 24px 80px rgba(0,0,0,0.35)",flexShrink:0,
+              animation:"slideIn .25s ease" }}>
+              <FocusTimer/>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* subject modal */}
+      {subjModal && (
+        <SubjectModal
+          subject={subjModal.id ? subjModal : null}
+          onSave={handleSubjSave}
+          onDelete={handleSubjDelete}
+          onClose={()=>setSubjModal(null)}/>
+      )}
+    </div>
+  );
+}
