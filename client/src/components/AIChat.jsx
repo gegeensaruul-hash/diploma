@@ -49,25 +49,31 @@ export default function AIChat({ onClose }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const bottomRef = useRef(null);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
-  const isAtBottomRef = useRef(true); // track if user is at bottom
+  const isAtBottomRef = useRef(true);
 
-  // Track scroll position — if user scrolls up, don't force-scroll on new messages
+  // Helper: scroll to bottom (used only for AI replies)
+  const scrollToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
+
+  // Track whether user is near the bottom
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    // Consider "at bottom" if within 80px of the bottom
     isAtBottomRef.current = scrollHeight - scrollTop - clientHeight < 80;
   };
 
+  // When AI replies: only scroll if user was already at the bottom
   useEffect(() => {
-    // Only auto-scroll if user is already at the bottom
-    if (isAtBottomRef.current && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (loading) return; // don't scroll while AI is typing
+    if (isAtBottomRef.current) {
+      scrollToBottom();
     }
-  }, [messages, loading]);
+  }, [messages]);
 
   const sendMessage = async (text) => {
     const msgText = (text || input).trim();
@@ -77,6 +83,7 @@ export default function AIChat({ onClose }) {
     const newMessages = [...messages, { role: "user", content: msgText }];
     setMessages(newMessages);
     setLoading(true);
+    // Do NOT force-scroll here — let the user stay where they are
 
     try {
       const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
