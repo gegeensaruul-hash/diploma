@@ -31,21 +31,8 @@ const startServer = async () => {
   const httpServer = createServer(app);
   const port = process.env.PORT || 5000;
 
-  const isAllowedOrigin = (origin) => {
-    if (!origin) return true; // server-to-server / curl
-    const allowed = [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://diploma-beta-brown.vercel.app",
-      process.env.CLIENT_URL,
-    ].filter(Boolean).map((u) => u.replace(/\/$/, "")); // strip trailing slash
-    return allowed.includes(origin.replace(/\/$/, ""));
-  };
-
   const corsOptions = {
-    origin: (origin, callback) => {
-      callback(null, isAllowedOrigin(origin));
-    },
+    origin: true, // reflect request origin — works with credentials
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -56,10 +43,7 @@ const startServer = async () => {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: (origin, callback) => {
-        if (isAllowedOrigin(origin)) callback(null, true);
-        else callback(new Error(`CORS: ${origin} not allowed`));
-      },
+      origin: true,
       credentials: true,
     },
   });
