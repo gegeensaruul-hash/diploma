@@ -38,12 +38,12 @@ export default function TodoModal({ open, onClose, todo }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden" style={{ boxShadow: "0 24px 70px rgba(15,23,42,0.24)" }}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/80">
           <h2 className="text-lg font-bold text-slate-800">{todo ? "Todo засах" : "Шинэ Todo нэмэх"}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 hover:bg-white rounded-lg p-1.5 transition-colors">
             <MdClose size={22} />
           </button>
         </div>
@@ -55,7 +55,7 @@ export default function TodoModal({ open, onClose, todo }) {
             <input
               type="text"
               placeholder="Todo гарчиг..."
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               {...register("title", { required: "Гарчиг шаардлагатай" })}
             />
             {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
@@ -67,7 +67,7 @@ export default function TodoModal({ open, onClose, todo }) {
             <textarea
               rows={3}
               placeholder="Дэлгэрэнгүй тайлбар..."
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+              className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
               {...register("description")}
             />
           </div>
@@ -77,7 +77,7 @@ export default function TodoModal({ open, onClose, todo }) {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Төлөв</label>
               <select
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 {...register("status")}
               >
                 <option value="todo">Хийх</option>
@@ -88,7 +88,7 @@ export default function TodoModal({ open, onClose, todo }) {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Чухал зэрэг</label>
               <select
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 {...register("priority")}
               >
                 <option value="low">Бага</option>
@@ -104,14 +104,14 @@ export default function TodoModal({ open, onClose, todo }) {
               <label className="block text-sm font-medium text-slate-700 mb-1">Дуусах огноо</label>
               <input
                 type="date"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 {...register("dueDate")}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Категори</label>
               <select
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                 {...register("categoryId")}
               >
                 <option value="">— Сонгох —</option>
@@ -127,14 +127,14 @@ export default function TodoModal({ open, onClose, todo }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-300 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50"
+              className="flex-1 py-2.5 border border-slate-300 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50"
             >
               Цуцлах
             </button>
             <button
               type="submit"
               disabled={creating || updating}
-              className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-60"
+              className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-60 shadow-lg shadow-blue-600/20"
             >
               {creating || updating ? "Хадгалж байна..." : todo ? "Хадгалах" : "Нэмэх"}
             </button>

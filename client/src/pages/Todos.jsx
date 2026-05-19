@@ -19,6 +19,18 @@ const statusIcon = {
   completed:   <MdCheckCircle className="text-green-500" size={20} />,
 };
 
+const priorityTone = {
+  high: { bg: "#fff1f2", text: "#be123c", border: "#fecdd3" },
+  medium: { bg: "#fffbeb", text: "#92400e", border: "#fde68a" },
+  low: { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
+};
+
+const statusTone = {
+  todo: { bg: "#f8fafc", text: "#475569", border: "#e2e8f0" },
+  in_progress: { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
+  completed: { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
+};
+
 export default function Todos() {
   const { status } = useParams();
   const { t, theme, lang } = useSettings();
@@ -96,7 +108,33 @@ export default function Todos() {
   const openCreate = ()     => { setEditTodo(null);  setModalOpen(true); };
 
   return (
-    <div className="space-y-6">
+    <div className="todo-page space-y-6">
+      <style>{`
+        .todo-page{background:linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%);border-radius:18px;padding:18px;min-height:calc(100vh - 110px)}
+        .todo-page h2{letter-spacing:0;color:#0f172a}
+        .todo-page > .flex:first-of-type{background:rgba(255,255,255,.72);border:1px solid #e8edf3;border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(15,23,42,.05);backdrop-filter:blur(10px)}
+        .todo-page > .flex:first-of-type button{border-radius:12px!important;padding:10px 16px!important;font-weight:800!important;box-shadow:0 10px 24px rgba(15,23,42,.14);transition:transform .15s,box-shadow .15s,opacity .15s}
+        .todo-page > .flex:first-of-type button:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(15,23,42,.18)}
+        .todo-page table{border-collapse:separate;border-spacing:0;min-width:760px}
+        .todo-page table thead tr{background:#f8fafc!important}
+        .todo-page table th{padding:12px 16px!important;font-size:11px!important;font-weight:900!important;color:#64748b!important;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid #e8edf3!important}
+        .todo-page table td{padding:14px 16px!important;vertical-align:middle}
+        .todo-page tbody tr{transition:background .15s,transform .15s}
+        .todo-page tbody tr:hover{background:#fbfdff!important}
+        .todo-page .bg-white.rounded-xl{border-radius:18px!important;border:1px solid #e8edf3;box-shadow:0 10px 30px rgba(15,23,42,.06)!important}
+        .todo-page .overflow-hidden{overflow-x:auto!important}
+        .todo-page .rounded-full{border:1px solid rgba(15,23,42,.08);font-weight:800}
+        .todo-page td button{transition:transform .15s,background .15s,color .15s}
+        .todo-page td button:hover{transform:translateY(-1px)}
+        .todo-page .text-right button{border-radius:10px!important;padding:8px!important}
+        .todo-page input[type="date"]{border-radius:10px!important;padding:5px 8px!important}
+        .todo-page .text-center.py-16{border-radius:18px!important;border:1px solid #e8edf3;box-shadow:0 10px 30px rgba(15,23,42,.06)!important;background:rgba(255,255,255,.94)!important}
+        @media (max-width:760px){
+          .todo-page{padding:12px;border-radius:14px}
+          .todo-page > .flex:first-of-type{align-items:flex-start!important;gap:12px}
+          .todo-page h2{font-size:22px!important}
+        }
+      `}</style>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-slate-800">
@@ -162,7 +200,8 @@ export default function Todos() {
                     )}
                   </td>
                   <td className="px-4 py-3 hidden sm:table-cell">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityStyle[todo.priority]}`}>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: priorityTone[todo.priority]?.bg, color: priorityTone[todo.priority]?.text, borderColor: priorityTone[todo.priority]?.border }}>
                       {priorityLabel[todo.priority]}
                     </span>
                   </td>
@@ -196,7 +235,10 @@ export default function Todos() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-xs text-slate-600">{statusLabel[todo.status]}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: statusTone[todo.status]?.bg, color: statusTone[todo.status]?.text, borderColor: statusTone[todo.status]?.border }}>
+                      {statusLabel[todo.status]}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
