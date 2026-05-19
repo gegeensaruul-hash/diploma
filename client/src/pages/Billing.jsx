@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import { MdCheckCircle, MdDiamond, MdQrCode } from "react-icons/md";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function Billing() {
   const { user } = useSelector((state) => state.auth);
