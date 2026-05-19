@@ -49,31 +49,7 @@ export default function AIChat({ onClose }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const scrollRef = useRef(null);
   const inputRef = useRef(null);
-  const isAtBottomRef = useRef(true);
-
-  // Helper: scroll to bottom (used only for AI replies)
-  const scrollToBottom = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  };
-
-  // Track whether user is near the bottom
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    isAtBottomRef.current = scrollHeight - scrollTop - clientHeight < 80;
-  };
-
-  // When AI replies: only scroll if user was already at the bottom
-  useEffect(() => {
-    if (loading) return; // don't scroll while AI is typing
-    if (isAtBottomRef.current) {
-      scrollToBottom();
-    }
-  }, [messages]);
 
   const sendMessage = async (text) => {
     const msgText = (text || input).trim();
@@ -83,7 +59,6 @@ export default function AIChat({ onClose }) {
     const newMessages = [...messages, { role: "user", content: msgText }];
     setMessages(newMessages);
     setLoading(true);
-    // Do NOT force-scroll here — let the user stay where they are
 
     try {
       const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
@@ -169,12 +144,9 @@ export default function AIChat({ onClose }) {
 
       {/* Messages */}
       <div
-        ref={scrollRef}
-        onScroll={handleScroll}
         style={{
           flex: 1, overflowY: "auto", padding: "24px 20px",
           display: "flex", flexDirection: "column", gap: 20,
-          scrollBehavior: "smooth",
         }}
       >
         {messages.map((msg, i) => (
