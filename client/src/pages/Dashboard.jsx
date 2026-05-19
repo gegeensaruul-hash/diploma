@@ -11,27 +11,33 @@ const PRIORITY_COLOR = { high: "#ef4444", medium: "#f59e0b", low: "#22c55e" };
 const PRIORITY_LABEL_MN = { high: "Өндөр", medium: "Дунд", low: "Бага" };
 const PRIORITY_LABEL_EN = { high: "High", medium: "Medium", low: "Low" };
 const STATUS_COLOR = { todo: "#94a3b8", in_progress: "#3b82f6", completed: "#22c55e" };
+const PANEL = {
+  background: "rgba(255,255,255,0.94)",
+  borderRadius: 18,
+  border: "1px solid #e8edf3",
+  boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
+};
 
 function StatCard({ label, count, icon, accent, to, sublabel }) {
   return (
     <Link to={to} style={{
       display: "flex", flexDirection: "column", justifyContent: "space-between",
-      background: "white", borderRadius: 16, padding: "18px 20px",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.06)", border: "1px solid #f1f5f9",
-      textDecoration: "none", transition: "box-shadow .15s, transform .15s",
-      minHeight: 110,
+      ...PANEL, padding: "18px 20px",
+      textDecoration: "none", transition: "box-shadow .15s, transform .15s, border-color .15s",
+      minHeight: 112, position: "relative", overflow: "hidden",
     }}
-      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)"; e.currentTarget.style.transform = "none"; }}
+      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 16px 36px rgba(15,23,42,0.10)"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.borderColor = accent + "55"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = PANEL.boxShadow; e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "#e8edf3"; }}
     >
+      <div style={{ position: "absolute", inset: "auto -18px -28px auto", width: 86, height: 86, borderRadius: "50%", background: accent + "12" }} />
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-        <div style={{ width: 38, height: 38, borderRadius: 10, background: accent + "18", display: "flex", alignItems: "center", justifyContent: "center", color: accent }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: accent + "18", display: "flex", alignItems: "center", justifyContent: "center", color: accent, boxShadow: `inset 0 0 0 1px ${accent}22` }}>
           {icon}
         </div>
         <span style={{ fontSize: 28, fontWeight: 800, color: "#1e293b" }}>{count ?? "—"}</span>
       </div>
       <div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#475569" }}>{label}</div>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "#334155" }}>{label}</div>
         {sublabel && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{sublabel}</div>}
       </div>
     </Link>
@@ -104,20 +110,23 @@ export default function Dashboard() {
   const completePct = stats?.total ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20,
+      background: "linear-gradient(180deg,#f8fafc 0%,#f4f7fb 100%)",
+      borderRadius: 18, padding: 18, minHeight: "calc(100vh - 110px)" }}>
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1e293b", margin: 0 }}>
           {t.dashboard}
         </h2>
-        <span style={{ fontSize: 12, color: "#94a3b8" }}>
+        <span style={{ fontSize: 12, color: "#64748b", background: "white", border: "1px solid #e2e8f0",
+          borderRadius: 999, padding: "6px 11px", boxShadow: "0 4px 14px rgba(15,23,42,0.04)" }}>
           {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
         </span>
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))", gap: 14 }}>
         <StatCard label={lang === "mn" ? "Нийт" : "Total"} count={stats?.total} icon={<MdOutlineChecklist size={20} />} accent={theme.accent} to="/todos" />
         <StatCard label={lang === "mn" ? "Хийх" : "To Do"} count={stats?.todo} icon={<MdOutlineRadioButtonUnchecked size={20} />} accent="#94a3b8" to="/todos/todo" />
         <StatCard label={lang === "mn" ? "Хийж байна" : "In Progress"} count={stats?.in_progress} icon={<MdOutlineTimer size={20} />} accent="#3b82f6" to="/todos/in_progress" />
@@ -125,9 +134,9 @@ export default function Dashboard() {
       </div>
 
       {/* Progress + priority */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
         {/* Progress */}
-        <div style={{ background: "white", borderRadius: 16, padding: "18px 20px", border: "1px solid #f1f5f9", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <div style={{ ...PANEL, padding: "18px 20px" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 12 }}>
             {lang === "mn" ? "Нийт явц" : "Overall progress"}
           </div>
@@ -166,24 +175,25 @@ export default function Dashboard() {
         </div>
 
         {/* Priority */}
-        <div style={{ background: "white", borderRadius: 16, padding: "18px 20px", border: "1px solid #f1f5f9", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <div style={{ ...PANEL, padding: "18px 20px" }}>
           <PriorityBar high={stats?.high ?? 0} medium={stats?.medium ?? 0} low={stats?.low ?? 0} lang={lang} />
         </div>
       </div>
 
       {/* Todo list — sortable */}
-      <div style={{ background: "white", borderRadius: 16, border: "1px solid #f1f5f9", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+      <div style={{ ...PANEL, overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px 12px", borderBottom: "1px solid #f1f5f9" }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", margin: 0 }}>
             {lang === "mn" ? "Сүүлийн Todo-нууд" : "Recent Todos"}
           </h3>
-          <Link to="/todos" style={{ fontSize: 12, color: theme.accent, textDecoration: "none", fontWeight: 500 }}>
+          <Link to="/todos" style={{ fontSize: 12, color: theme.accent, textDecoration: "none", fontWeight: 800,
+            background: theme.accent + "10", borderRadius: 999, padding: "6px 10px" }}>
             {lang === "mn" ? "Бүгдийг харах →" : "View all →"}
           </Link>
         </div>
 
         {/* Table header */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 110px 90px", padding: "8px 20px", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(180px,1fr) 90px 110px 90px", padding: "10px 20px", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
           {[
             { f: "title",     l: lang === "mn" ? "Гарчиг"    : "Title" },
             { f: "priority",  l: lang === "mn" ? "Чухал"     : "Priority" },
@@ -206,8 +216,8 @@ export default function Dashboard() {
             {sorted.map((todo, i) => (
               <div key={todo.id}
                 style={{
-                  display: "grid", gridTemplateColumns: "1fr 90px 110px 90px",
-                  padding: "11px 20px", borderBottom: i < sorted.length - 1 ? "1px solid #f8fafc" : "none",
+                  display: "grid", gridTemplateColumns: "minmax(180px,1fr) 90px 110px 90px",
+                  padding: "12px 20px", borderBottom: i < sorted.length - 1 ? "1px solid #f1f5f9" : "none",
                   alignItems: "center", transition: "background .1s",
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "#fafafa"}
