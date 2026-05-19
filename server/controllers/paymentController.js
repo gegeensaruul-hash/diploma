@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { Payment } from "../models/index.js";
+import { Payment, User } from "../models/index.js";
 import { createQpayInvoice, checkQpayInvoice } from "../utils/qpayClient.js";
 
 const toNumber = (value) => {
@@ -74,7 +74,26 @@ export const checkInvoice = asyncHandler(async (req, res) => {
     providerResponse: { ...(payment.providerResponse || {}), lastCheck: result },
   });
 
+  if (paid) {
+    await User.update({ isPro: true }, { where: { id: req.user.userId } });
+  }
+
   res.json({ status: true, paid, payment, qpay: result });
+});
+
+export const mockPay = asyncHandler(async (req, res) => {
+  const payment = await Payment.findOne({ where: { id: req.params.id, userId: req.user.userId } });
+  if (!payment) return res.status(404).json({ status: false, message: "Payment not found" });
+
+  await payment.update({
+    status: "paid",
+    paidAt: new Date(),
+    providerResponse: { ...(payment.providerResponse || {}), mockPayment: true },
+  });
+
+  await User.update({ isPro: true }, { where: { id: req.user.userId } });
+
+  res.json({ status: true, paid: true, payment });
 });
 
 export const qpayCallback = asyncHandler(async (req, res) => {

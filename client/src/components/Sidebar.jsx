@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
   MdDashboard, MdOutlineChecklist, MdNote, MdCalendarMonth,
-  MdLogout, MdDashboardCustomize, MdAdd, MdMailOutline, MdAccountBalanceWallet,
+  MdLogout, MdDashboardCustomize, MdAdd, MdMailOutline, MdAccountBalanceWallet, MdDiamond
 } from "react-icons/md";
 import { clearCredentials } from "../redux/slices/authSlice";
 import { useLogoutMutation } from "../redux/slices/api/authApiSlice";
@@ -144,6 +144,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
     { to: "/todos/todo", label: t.allTodos, icon: <MdOutlineChecklist size={24} /> },
     { to: "/notes", label: t.notes, icon: <MdNote size={24} /> },
     { to: "/calendar", label: t.calendar, icon: <MdCalendarMonth size={24} /> },
+    { to: "/billing", label: "Pro", icon: <MdDiamond size={24} /> },
   ];
 
   const handleLogout = async () => {

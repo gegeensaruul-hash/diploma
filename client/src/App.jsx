@@ -14,6 +14,7 @@ import Calendar from "./pages/Calendar";
 import VisionBoardPage from "./pages/VisionBoardPage";
 import FutureCapsulePage from "./pages/FutureCapsulePage";
 import Finance from "./pages/Finance";
+import Billing from "./pages/Billing";
 import Layout from "./components/Layout";
 
 // Protected route — server session шалгана (зөвхөн нэг удаа)
@@ -99,6 +100,7 @@ export default function App() {
         <Route path="/visionboard/:id" element={<VisionBoardPage />} />
         <Route path="/futurecapsule" element={<FutureCapsulePage />} />
         <Route path="/finance" element={<Finance />} />
+        <Route path="/billing" element={<Billing />} />
         <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

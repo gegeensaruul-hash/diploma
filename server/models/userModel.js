@@ -22,6 +22,7 @@ const User = sequelize.define(
     },
     avatarImage: { type: DataTypes.TEXT("long"), defaultValue: null },
     coverImage: { type: DataTypes.TEXT("long"), defaultValue: null },
+    isPro: { type: DataTypes.BOOLEAN, defaultValue: false },
   },
   {
     timestamps: true,
