@@ -170,7 +170,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
       
       {/* Profile Avatar */}
       <Tooltip text={user?.name || "Profile"}>
-        <div className="relative mb-8 cursor-pointer hover:scale-105 transition-transform">
+        <div onClick={() => navigate('/profile')} className="relative mb-8 cursor-pointer hover:scale-105 transition-transform">
           <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center text-xl font-black text-white"
             style={{
               background: user?.avatarImage ? "transparent" : `linear-gradient(135deg, ${c1}, ${c2})`,
