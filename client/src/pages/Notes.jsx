@@ -796,11 +796,10 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
               }
             }}
             style={{
-              padding:"4px 9px", borderRadius:6, fontSize:11, border:"1px solid",
-              borderColor: showStickerPicker ? "#fcd34d" : "#e2e8f0",
+              padding:"4px 9px", borderRadius:6, fontSize:11,
+              border:"1px solid #e2e8f0",
               background: showStickerPicker ? "#fef3c7" : "white",
-              color: showStickerPicker ? "#d97706" : "#64748b",
-              cursor:"pointer", fontWeight:600,
+              color:"#64748b", cursor:"pointer", fontWeight:600,
             }}>
             ✨ {lang==="mn"?"Стикер":"Sticker"}
           </button>
