@@ -29,24 +29,6 @@ const COVERS = [
 
 const NOTE_STICKERS = ["🔥","⭐","✨","💡","✅","❌","📍","❤️","🚀","🎉","💎","🌈","🍀","🌸","🎨","🍕","🍟","🍦","🍔","🍩"];
 
-const PAGE_COLORS = ["#ffffff", "#f8fafc", "#fef2f2", "#f0fdf4", "#eff6ff", "#fff7ed"];
-const FONTS = [
-  { id:"sans",    label:"Sans",  style:'"Inter", sans-serif' },
-  { id:"serif",   label:"Serif", style:'"Georgia", serif' },
-  { id:"mono",    label:"Mono",  style:'"Fira Code", monospace' },
-];
-
-const SUBJECT_THEMES = [
-  { id:"red",    bg:"#ef4444", text:"#ffffff" },
-  { id:"blue",   bg:"#3b82f6", text:"#ffffff" },
-  { id:"green",  bg:"#10b981", text:"#ffffff" },
-  { id:"purple", bg:"#8b5cf6", text:"#ffffff" },
-  { id:"pink",   bg:"#ec4899", text:"#ffffff" },
-  { id:"orange", bg:"#f97316", text:"#ffffff" },
-];
-
-const SUBJECT_EMOJIS = ["📚","📝","🎨","🎵","💡","🌟","🔬","🏃","🎯","🎭","💻","📷","🍕","✈️"];
-
 /* ─── Simplified Note Card ─── */
 function NoteCard({ note, idx, onClick, onDelete }) {
   const cv = COVERS[note.coverIdx % COVERS.length] || COVERS[0];
@@ -56,8 +38,6 @@ function NoteCard({ note, idx, onClick, onDelete }) {
       className="group relative h-64 cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/20 bg-slate-900 border border-slate-800"
     >
       <div className="absolute inset-0 bg-gradient-to-br opacity-50 from-transparent to-black/60 pointer-events-none" />
-      
-      {/* Cover Area */}
       <div 
         className="h-32 w-full flex items-center justify-center relative overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${cv.bg}, ${cv.bg2})` }}
@@ -69,8 +49,6 @@ function NoteCard({ note, idx, onClick, onDelete }) {
           <span className="text-5xl drop-shadow-lg">{cv.deco[idx % cv.deco.length]}</span>
         )}
       </div>
-
-      {/* Info Area */}
       <div className="p-4 flex flex-col h-32 justify-between">
         <div>
           <h3 className="text-white font-bold text-sm leading-tight line-clamp-2 mb-1">
@@ -80,7 +58,6 @@ function NoteCard({ note, idx, onClick, onDelete }) {
             {note.subjectId ? `@${note.subjectId}` : "General"}
           </p>
         </div>
-        
         <div className="flex items-center justify-between mt-auto">
           <span className="text-slate-600 text-[10px] font-medium">
             {new Date(note.createdAt).toLocaleDateString()}
@@ -144,7 +121,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
     reader.readAsDataURL(file);
   };
 
-  const onMouseMove = (e) => {
+  const onPointerMove = (e) => {
     if (!dragRef.current) return;
     const rect = boardRef.current.getBoundingClientRect();
     if (dragRef.current.mode === "resize") {
@@ -161,7 +138,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xl" onMouseMove={onMouseMove} onMouseUp={() => dragRef.current = null} onClick={() => { setShowStickerPicker(false); setSelected(null); }}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xl" onPointerMove={onPointerMove} onPointerUp={() => dragRef.current = null} onPointerCancel={() => dragRef.current = null} onClick={() => { setShowStickerPicker(false); setSelected(null); }}>
       <style>{`
         .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
@@ -254,27 +231,30 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
                 <div 
                   key={item.id} 
                   className="vb-item-container"
-                  onMouseDown={(e) => {
+                  onPointerDown={(e) => {
                     if (e.target.closest('button') || e.target.closest('.handle')) return;
                     e.stopPropagation(); setSelected(item.id);
+                    e.currentTarget.setPointerCapture(e.pointerId);
                     const rect = boardRef.current.getBoundingClientRect();
                     dragRef.current = { mode: "drag", id: item.id, ox: e.clientX - rect.left - item.x, oy: e.clientY - rect.top - item.y };
                   }}
-                  style={{ position: "absolute", left: item.x, top: item.y, width: item.w || 'auto', height: item.h || 'auto', transform: rotate, zIndex: isSel ? 20 : 10 }}
+                  style={{ position: "absolute", left: item.x, top: item.y, width: item.w || 'auto', height: item.h || 'auto', transform: rotate, zIndex: isSel ? 20 : 10, touchAction: "none" }}
                 >
                   <button onClick={() => del(item.id)} className="action-btn absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center z-30 shadow-xl border-2 border-white transition-all"><MdClose size={16}/></button>
                   <div className="action-btn">
                      <div className="rot-line" />
-                     <div className="rot-handle handle" onMouseDown={(e) => {
+                     <div className="rot-handle handle" onPointerDown={(e) => {
                        e.stopPropagation(); e.preventDefault(); setSelected(item.id);
+                       e.currentTarget.setPointerCapture(e.pointerId);
                        const rect = boardRef.current.getBoundingClientRect();
                        const cx = item.x + (item.w || 80) / 2; const cy = item.y + (item.h || 80) / 2;
                        dragRef.current = { mode: "rotate", id: item.id, centerX: cx, centerY: cy, startAngle: item.rot || 0, startMouseAngle: Math.atan2(e.clientY - rect.top - cy, e.clientX - rect.left - cx) };
                      }}><MdRefresh size={14}/></div>
                   </div>
                   {item.type === 'image' && (
-                    <div className="action-btn absolute -right-2 -bottom-2 w-7 h-7 bg-indigo-600 border-2 border-white rounded-full cursor-nwse-resize z-30 handle shadow-xl" onMouseDown={(e) => {
+                    <div className="action-btn absolute -right-2 -bottom-2 w-7 h-7 bg-indigo-600 border-2 border-white rounded-full cursor-nwse-resize z-30 handle shadow-xl" onPointerDown={(e) => {
                       e.stopPropagation(); e.preventDefault(); setSelected(item.id);
+                      e.currentTarget.setPointerCapture(e.pointerId);
                       dragRef.current = { mode: "resize", id: item.id, startX: e.clientX, startY: e.clientY, startW: item.w, startH: item.h };
                     }} />
                   )}
