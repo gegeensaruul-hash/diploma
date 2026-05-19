@@ -469,11 +469,12 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     draggingRef.current = { id, startX: e.clientX, startY: e.clientY, origX: sticker.x, origY: sticker.y };
 
     const onMove = (me) => {
-      if (!draggingRef.current) return;
-      const dx = me.clientX - draggingRef.current.startX;
-      const dy = me.clientY - draggingRef.current.startY;
+      const d = draggingRef.current;
+      if (!d) return;
+      const dx = me.clientX - d.startX;
+      const dy = me.clientY - d.startY;
       setFloatStickers(prev => prev.map(s =>
-        s.id === id ? { ...s, x: draggingRef.current.origX + dx, y: draggingRef.current.origY + dy } : s
+        s.id === id ? { ...s, x: d.origX + dx, y: d.origY + dy } : s
       ));
     };
     const onUp = () => {
