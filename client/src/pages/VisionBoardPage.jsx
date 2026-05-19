@@ -55,7 +55,7 @@ export default function VisionBoardPage() {
     const bw = rect?.width || 1200, bh = rect?.height || 800;
     saveItems([...items, {
       id: newId, type:"note", x:rnd(bw-200,100), y:rnd(bh-200,100),
-      w:180, text:"", font:"caveat", color: rnd(NOTE_COLORS.length),
+      w:180, h:120, text:"", font:"caveat", color: rnd(NOTE_COLORS.length),
       pin: rnd(PIN_COLORS.length), rot: (rnd(21)-10)*0.5,
     }]);
     setSelected(newId); setEditingId(newId);
@@ -97,7 +97,6 @@ export default function VisionBoardPage() {
     const item = items.find(i=>i.id===itemId);
     const rect = boardRef.current.getBoundingClientRect();
     dragRef.current = { mode:"drag", id: itemId, ox: e.clientX - rect.left - item.x, oy: e.clientY - rect.top - item.y };
-    // e.preventDefault(); // This can break focus on textareas
   };
 
   const onResizeMouseDown = (e, itemId) => {
@@ -148,6 +147,8 @@ export default function VisionBoardPage() {
         }
         .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
         .tool-btn.active { background: #6366f1; color: #fff; }
+        .resize-handle { opacity: 0; transition: opacity 0.2s; }
+        .vb-item-container:hover .resize-handle { opacity: 1; }
       `}</style>
 
       {/* Integrated Toolbar */}
@@ -194,7 +195,6 @@ export default function VisionBoardPage() {
         </button>
       </div>
 
-      {/* The Board — No border, fills the screen */}
       <div
         ref={boardRef}
         onMouseMove={onMouseMove}
@@ -210,80 +210,69 @@ export default function VisionBoardPage() {
           cursor:"default", userSelect:"none",
         }}>
 
-        {/* Shadow Overlay */}
         <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.5)]" />
 
         {items.map(item => {
           const isSel = selected===item.id;
           const rotate = `rotate(${item.rot||0}deg)`;
 
-          if (item.type==="sticker") return (
+          return (
             <div key={item.id}
               onMouseDown={e=>onMouseDown(e,item.id)}
-              style={{
-                position:"absolute", left:item.x, top:item.y,
-                fontSize:item.size||48, fontWeight:900, color:"#fff",
-                transform:rotate, cursor:"grab", zIndex:isSel?20:5,
-                textShadow:"0 4px 10px rgba(0,0,0,0.5)",
-                filter:isSel?"drop-shadow(0 0 10px #6366f1)":"none",
-                userSelect:"none",
-              }}>
-              {item.emoji}
-            </div>
-          );
-
-          if (item.type==="image") return (
-            <div key={item.id}
-              onMouseDown={e=>onMouseDown(e,item.id)}
+              className="vb-item-container"
               style={{
                 position:"absolute", left:item.x, top:item.y,
                 width:item.w, height:item.h,
-                transform:rotate, cursor:"grab", zIndex:isSel?20:5,
-                boxShadow:isSel?"0 0 0 4px #6366f1, 0 10px 30px rgba(0,0,0,0.5)":"0 8px 24px rgba(0,0,0,0.4)",
-                background:"#fff", padding:item.border?6:0, borderRadius:2,
+                transform:rotate, cursor:editingId===item.id?"text":"grab", zIndex:isSel?20:5,
+                transition: "box-shadow 0.2s, transform 0.1s",
               }}>
-              <MdPushPin className="absolute -top-3 left-1/2 -translate-x-1/2 z-10" 
-                size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
-              <img src={item.src} alt="" className="w-full h-full object-cover rounded-[1px]" />
-              {isSel && (
-                <div onMouseDown={e=>onResizeMouseDown(e,item.id)}
-                  className="absolute -right-2 -bottom-2 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg" />
-              )}
-            </div>
-          );
-
-          if (item.type==="note") {
-            const fontCss = VB_FONTS.find(f=>f.id===item.font)?.css;
-            return (
-              <div key={item.id}
-                onMouseDown={e=>onMouseDown(e,item.id)}
-                onDoubleClick={(e)=>{e.stopPropagation(); setEditingId(item.id);}}
-                style={{
-                  position:"absolute", left:item.x, top:item.y,
-                  width:item.w||180, minHeight:100,
-                  background:NOTE_COLORS[item.color%NOTE_COLORS.length],
-                  transform:rotate, cursor:editingId===item.id?"text":"grab", zIndex:isSel?20:5,
-                  boxShadow:isSel?"0 0 0 4px #6366f1, 0 10px 30px rgba(0,0,0,0.3)":"0 6px 16px rgba(0,0,0,0.2)",
-                  borderRadius:2, padding:"24px 16px 16px",
-                }}>
+              
+              {/* Common Elements (Pins) */}
+              {(item.type === "image" || item.type === "note") && (
                 <MdPushPin className="absolute -top-3 left-1/2 -translate-x-1/2 z-10" 
                   size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
-                {editingId===item.id ? (
-                  <textarea autoFocus
-                    value={item.text}
-                    onChange={e=>upd(item.id,{text:e.target.value})}
-                    onBlur={()=>setEditingId(null)}
-                    className="w-full h-full border-none outline-none bg-transparent overflow-hidden"
-                    style={{fontSize:18, fontFamily:fontCss, color:"#1e293b", resize:"none", minHeight:80}}/>
-                ) : (
-                  <div style={{fontSize:18, fontFamily:fontCss, color:"#1e293b", lineHeight:1.4, whiteSpace:"pre-wrap"}}>
-                    {item.text || <span className="opacity-20 italic text-sm">{lang==="mn"?"Бичих...":"Edit..."}</span>}
-                  </div>
-                )}
-              </div>
-            );
-          }
-          return null;
+              )}
+
+              {/* Resize Handle (Always visible on hover or if selected) */}
+              {(item.type === "image" || item.type === "note") && (
+                <div onMouseDown={e=>onResizeMouseDown(e,item.id)}
+                  className={`resize-handle absolute -right-2 -bottom-2 w-5 h-5 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg flex items-center justify-center ${isSel ? "opacity-100 scale-110" : ""}`}>
+                  <div className="w-1.5 h-1.5 bg-white rounded-full opacity-50" />
+                </div>
+              )}
+
+              {/* Item Specific Content */}
+              {item.type === "sticker" ? (
+                <div style={{
+                  fontSize:item.size||48, fontWeight:900, color:"#fff",
+                  textShadow:"0 4px 10px rgba(0,0,0,0.5)",
+                  filter:isSel?"drop-shadow(0 0 10px #6366f1)":"none",
+                }}>
+                  {item.emoji}
+                </div>
+              ) : item.type === "image" ? (
+                <div className={`w-full h-full bg-white shadow-xl rounded-[2px] overflow-hidden ${isSel ? "ring-2 ring-indigo-500" : ""}`} style={{ padding: item.border?6:0 }}>
+                  <img src={item.src} alt="" className="w-full h-full object-cover rounded-[1px]" />
+                </div>
+              ) : item.type === "note" ? (
+                <div className={`w-full h-full shadow-xl rounded-[2px] p-6 pt-8 ${isSel ? "ring-2 ring-indigo-500" : ""}`} style={{ background: NOTE_COLORS[item.color%NOTE_COLORS.length] }}>
+                  {editingId===item.id ? (
+                    <textarea autoFocus
+                      value={item.text}
+                      onChange={e=>upd(item.id,{text:e.target.value})}
+                      onBlur={()=>setEditingId(null)}
+                      className="w-full h-full border-none outline-none bg-transparent overflow-hidden"
+                      style={{fontSize:18, fontFamily:VB_FONTS.find(f=>f.id===item.font)?.css, color:"#1e293b", resize:"none"}}/>
+                  ) : (
+                    <div onDoubleClick={(e)=>{e.stopPropagation(); setEditingId(item.id);}} 
+                      style={{fontSize:18, fontFamily:VB_FONTS.find(f=>f.id===item.font)?.css, color:"#1e293b", lineHeight:1.4, whiteSpace:"pre-wrap"}}>
+                      {item.text || <span className="opacity-20 italic text-sm">{lang==="mn"?"Бичих...":"Edit..."}</span>}
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          );
         })}
 
         {items.length===0 && (
