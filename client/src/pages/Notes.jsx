@@ -779,6 +779,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         {/* Sticker button */}
         <div style={{ position:"relative" }}>
           <button ref={stickerBtnRef}
+            onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => {
               e.preventDefault();
               e.stopPropagation();
