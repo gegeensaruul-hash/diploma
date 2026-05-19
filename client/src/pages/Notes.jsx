@@ -46,14 +46,53 @@ const SUBJECT_THEMES = [
 
 const SUBJECT_EMOJIS = ["📚","📝","🎨","🎵","💡","🌟","🔬","🏃","🎯","🌺","🎭","✈️","🍕","💻","🧶","📷"];
 
-/* ─── Sticker sets ─── */
-const STICKER_SETS = [
-  { label: "Emotions", emojis: ["😊","😂","🥰","😎","🤔","😴","🥳","😤","🤩","😌","🫡","🤗","🥹","😇","😈","🤯"] },
-  { label: "Nature",   emojis: ["🌸","🌼","🌺","🍀","🌿","🌱","🌈","⭐","🌙","☀️","❄️","🌊","🔥","🌴","🍃","🌻"] },
-  { label: "Objects",  emojis: ["📌","📍","🔖","🗒️","📎","✂️","🔍","💡","🔑","🎯","🏆","⏰","📱","💻","🎁","🎈"] },
-  { label: "Food",     emojis: ["☕","🍕","🍎","🍓","🍩","🍜","🧋","🍰","🥑","🍇","🌮","🍦","🍫","🥐","🍊","🫐"] },
-  { label: "Animals",  emojis: ["🐱","🐶","🦊","🐼","🐨","🦁","🐸","🦋","🐝","🐙","🦄","🐢","🦉","🐺","🐧","🐬"] },
-  { label: "Symbols",  emojis: ["❤️","💛","💚","💙","💜","🖤","✨","💫","⚡","🌀","💯","🔥","👑","🎵","🎶","✅"] },
+/* ─── SVG Sticker sets ─── */
+const mk = (body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">${body}</svg>`;
+const SVG_STICKERS = [
+  {
+    label: "Хичээл", color: "#6366f1",
+    items: [
+      mk(`<rect x="8" y="6" width="36" height="48" rx="4" fill="#6366f1"/><rect x="8" y="6" width="6" height="48" rx="3" fill="#4338ca"/><line x1="19" y1="22" x2="38" y2="22" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="19" y1="31" x2="38" y2="31" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="19" y1="40" x2="30" y2="40" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="26" cy="14" r="4" fill="white" opacity="0.35"/>`),
+      mk(`<polygon points="30,5 36,22 55,22 41,34 46,51 30,39 14,51 19,34 5,22 24,22" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/><polygon points="30,12 35,22 46,22 38,29 41,40 30,33 19,40 22,29 14,22 25,22" fill="#fde68a" opacity="0.7"/>`),
+      mk(`<circle cx="30" cy="26" r="14" fill="#fbbf24"/><path d="M24,40 h12" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/><path d="M25,46 h10" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="6" x2="30" y2="10" stroke="#fde68a" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="26" x2="4" y2="26" stroke="#fde68a" stroke-width="3" stroke-linecap="round"/><line x1="52" y1="26" x2="56" y2="26" stroke="#fde68a" stroke-width="3" stroke-linecap="round"/><line x1="14" y1="12" x2="11" y2="9" stroke="#fde68a" stroke-width="2.5" stroke-linecap="round"/><line x1="46" y1="12" x2="49" y2="9" stroke="#fde68a" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="24" cy="22" rx="5" ry="7" fill="white" opacity="0.25" transform="rotate(-20 24 22)"/>`),
+      mk(`<circle cx="30" cy="30" r="22" fill="#22c55e"/><polyline points="16,30 26,40 44,20" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`),
+      mk(`<path d="M20,10 h20 v14 a10,10 0 0 1-20,0z" fill="#fbbf24"/><path d="M12,12 h8 v10 a6,4 0 0 1-10-2 3,3 0 0 1 2-8z" fill="#fcd34d"/><path d="M48,12 h-8 v10 a6,4 0 0 0 10-2 3,3 0 0 0-2-8z" fill="#fcd34d"/><rect x="26" y="32" width="8" height="8" fill="#fbbf24"/><rect x="18" y="40" width="24" height="6" rx="2" fill="#f59e0b"/><text x="30" y="25" text-anchor="middle" font-size="9" font-weight="bold" fill="white" font-family="sans-serif">1</text>`),
+      mk(`<rect x="10" y="12" width="40" height="30" rx="4" fill="#3b82f6"/><rect x="10" y="38" width="40" height="8" rx="2" fill="#2563eb"/><rect x="18" y="4" width="6" height="12" rx="3" fill="#93c5fd"/><rect x="36" y="4" width="6" height="12" rx="3" fill="#93c5fd"/><line x1="18" y1="24" x2="42" y2="24" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/><line x1="18" y1="30" x2="34" y2="30" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>`),
+    ],
+  },
+  {
+    label: "Хөөрхөн", color: "#f43f5e",
+    items: [
+      mk(`<polygon points="12,22 19,34 8,34" fill="#fb923c"/><polygon points="48,22 52,34 41,34" fill="#fb923c"/><ellipse cx="30" cy="36" rx="20" ry="18" fill="#fb923c"/><circle cx="22" cy="34" r="4.5" fill="white"/><circle cx="38" cy="34" r="4.5" fill="white"/><circle cx="23" cy="35" r="3" fill="#1e293b"/><circle cx="39" cy="35" r="3" fill="#1e293b"/><circle cx="24.5" cy="33.5" r="1" fill="white"/><ellipse cx="30" cy="42" rx="5" ry="3" fill="#fda4af"/><line x1="27" y1="40" x2="33" y2="40" stroke="#1e293b" stroke-width="1.5"/><line x1="30" y1="38" x2="30" y2="43" stroke="#1e293b" stroke-width="1.5"/><line x1="18" y1="37" x2="10" y2="35" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/><line x1="18" y1="40" x2="10" y2="40" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/><line x1="42" y1="37" x2="50" y2="35" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/><line x1="42" y1="40" x2="50" y2="40" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>`),
+      mk(`<circle cx="18" cy="22" r="10" fill="#334155"/><circle cx="42" cy="22" r="10" fill="#334155"/><circle cx="30" cy="32" r="20" fill="white"/><ellipse cx="22" cy="32" rx="7" ry="7" fill="#334155"/><ellipse cx="38" cy="32" rx="7" ry="7" fill="#334155"/><circle cx="22" cy="31" r="3.5" fill="white"/><circle cx="38" cy="31" r="3.5" fill="white"/><circle cx="23" cy="32" r="2.5" fill="#334155"/><circle cx="39" cy="32" r="2.5" fill="#334155"/><circle cx="24" cy="31" r="1" fill="white"/><ellipse cx="30" cy="42" rx="6" ry="4" fill="#fda4af"/><path d="M26,42 Q30,46 34,42" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round"/>`),
+      mk(`<path d="M30,50 C10,38 6,22 6,20 a12,12 0 0 1 24,-4 a12,12 0 0 1 24,4 C54,22 50,38 30,50z" fill="#f43f5e"/><path d="M20,18 a6,6 0 0 0-5,6" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.45"/><circle cx="38" cy="16" r="4" fill="#fda4af" opacity="0.5"/>`),
+      mk(`<path d="M5,40 a25,25 0 0 1 50,0" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round"/><path d="M9,40 a21,21 0 0 1 42,0" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round"/><path d="M13,40 a17,17 0 0 1 34,0" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/><path d="M17,40 a13,13 0 0 1 26,0" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/><path d="M21,40 a9,9 0 0 1 18,0" fill="none" stroke="#3b82f6" stroke-width="4" stroke-linecap="round"/><path d="M25,40 a5,5 0 0 1 10,0" fill="none" stroke="#a855f7" stroke-width="4" stroke-linecap="round"/><circle cx="10" cy="46" r="7" fill="white"/><circle cx="50" cy="46" r="7" fill="white"/>`),
+      mk(`<ellipse cx="30" cy="16" rx="7" ry="12" fill="#f9a8d4"/><ellipse cx="30" cy="44" rx="7" ry="12" fill="#f9a8d4"/><ellipse cx="16" cy="30" rx="12" ry="7" fill="#f9a8d4"/><ellipse cx="44" cy="30" rx="12" ry="7" fill="#f9a8d4"/><ellipse cx="17" cy="17" rx="8" ry="11" fill="#fda4af" transform="rotate(-45 17 17)"/><ellipse cx="43" cy="17" rx="8" ry="11" fill="#fda4af" transform="rotate(45 43 17)"/><ellipse cx="17" cy="43" rx="8" ry="11" fill="#fda4af" transform="rotate(45 17 43)"/><ellipse cx="43" cy="43" rx="8" ry="11" fill="#fda4af" transform="rotate(-45 43 43)"/><circle cx="30" cy="30" r="10" fill="#fbbf24"/><circle cx="27" cy="27" r="3" fill="white" opacity="0.4"/>`),
+      mk(`<circle cx="30" cy="30" r="22" fill="#c4b5fd"/><circle cx="22" cy="26" r="5" fill="white"/><circle cx="38" cy="26" r="5" fill="white"/><circle cx="23" cy="27" r="3" fill="#4c1d95"/><circle cx="39" cy="27" r="3" fill="#4c1d95"/><circle cx="24.5" cy="26" r="1.2" fill="white"/><path d="M18,40 Q30,50 42,40" fill="none" stroke="#4c1d95" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="40" r="2.5" fill="#f43f5e"/><circle cx="42" cy="40" r="2.5" fill="#f43f5e"/><circle cx="30" cy="12" r="5" fill="white" opacity="0.35"/>`),
+    ],
+  },
+  {
+    label: "Мэдрэмж", color: "#f97316",
+    items: [
+      mk(`<path d="M30,54 C18,54 10,44 10,34 C10,22 18,16 22,12 C20,22 26,26 28,22 C26,30 30,34 30,28 C32,34 36,28 34,22 C40,28 50,32 50,40 C50,48 40,54 30,54z" fill="#f97316"/><path d="M30,50 C22,50 18,44 18,38 C18,32 22,28 24,26 C23,30 26,33 27,30 C28,34 31,32 31,30 C33,33 35,30 34,26 C38,32 42,36 42,40 C42,46 36,50 30,50z" fill="#fbbf24"/><ellipse cx="27" cy="44" rx="4" ry="6" fill="#fde68a" opacity="0.6"/>`),
+      mk(`<polygon points="6,46 6,24 18,36 30,14 42,36 54,24 54,46" fill="#fbbf24"/><rect x="6" y="46" width="48" height="8" rx="2" fill="#f59e0b"/><circle cx="30" cy="20" r="5" fill="#f43f5e"/><circle cx="8" cy="26" r="4" fill="#3b82f6"/><circle cx="52" cy="26" r="4" fill="#22c55e"/>`),
+      mk(`<path d="M26,14 C26,14 28,6 36,6 C38,6 40,9 38,16 L36,24 h10 a4,4 0 0 1 4,4 L46,50 a4,4 0 0 1-4,4 H24 V32 h-8 a4,4 0 0 1-4,-4 v-2 a4,4 0 0 1 4,-4 h10z" fill="#fbbf24"/>`),
+      mk(`<path d="M30,4 L32.5,25 L54,22 L34,30 L44,50 L30,36 L16,50 L26,30 L6,22 L27.5,25z" fill="#a78bfa"/><circle cx="14" cy="10" r="5" fill="#fbbf24"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/><circle cx="12" cy="48" r="4" fill="#f9a8d4"/><circle cx="48" cy="48" r="4" fill="#f9a8d4"/>`),
+      mk(`<circle cx="30" cy="30" r="22" fill="#fbbf24"/><circle cx="22" cy="26" r="4" fill="white"/><circle cx="38" cy="26" r="4" fill="white"/><circle cx="23" cy="27" r="2.5" fill="#1e293b"/><circle cx="39" cy="27" r="2.5" fill="#1e293b"/><circle cx="24" cy="26" r="1" fill="white"/><path d="M18,38 Q30,48 42,38" fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="38" r="2" fill="#f43f5e"/><circle cx="42" cy="38" r="2" fill="#f43f5e"/>`),
+      mk(`<circle cx="30" cy="30" r="22" fill="#fbbf24"/><rect x="14" y="23" width="32" height="11" rx="5.5" fill="#1e293b"/><ellipse cx="22" cy="29" rx="7" ry="5.5" fill="#1e293b"/><ellipse cx="38" cy="29" rx="7" ry="5.5" fill="#1e293b"/><circle cx="24" cy="27" r="2" fill="white" opacity="0.4"/><circle cx="40" cy="27" r="2" fill="white" opacity="0.4"/><path d="M20,43 Q30,51 40,43" fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>`),
+    ],
+  },
+  {
+    label: "Хоол", color: "#7c3aed",
+    items: [
+      mk(`<rect x="10" y="28" width="32" height="22" rx="4" fill="#7c3aed"/><path d="M42,34 C46,34 50,36 50,40 C50,44 46,46 42,46" fill="none" stroke="#7c3aed" stroke-width="5.5" stroke-linecap="round"/><path d="M42,34 C46,34 50,36 50,40 C50,44 46,46 42,46" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/><rect x="8" y="50" width="36" height="5" rx="2" fill="#6d28d9"/><path d="M20,27 C20,20 22,16 20,12" stroke="#94a3b8" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M28,27 C28,18 30,14 28,10" stroke="#94a3b8" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="14" y="32" width="24" height="14" rx="3" fill="#a78bfa" opacity="0.4"/>`),
+      mk(`<rect x="6" y="36" width="48" height="16" rx="4" fill="#fda4af"/><rect x="12" y="26" width="36" height="14" rx="3" fill="#f9a8d4"/><path d="M12,36 Q22,30 30,36 Q38,30 48,36" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="22" y1="26" x2="22" y2="10" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="26" x2="30" y2="8" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/><line x1="38" y1="26" x2="38" y2="10" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="22" cy="10" rx="3.5" ry="5" fill="#fbbf24"/><ellipse cx="30" cy="8" rx="3.5" ry="5" fill="#3b82f6"/><ellipse cx="38" cy="10" rx="3.5" ry="5" fill="#f43f5e"/>`),
+      mk(`<path d="M16,20 h28 l-4,30 a4,4 0 0 1-4,4 h-12 a4,4 0 0 1-4,-4z" fill="#c4b5fd"/><rect x="16" y="14" width="28" height="9" rx="4" fill="#ede9fe"/><rect x="26" y="4" width="8" height="14" rx="4" fill="#a78bfa"/><circle cx="24" cy="38" r="4.5" fill="#4c1d95"/><circle cx="36" cy="38" r="4.5" fill="#4c1d95"/><circle cx="30" cy="46" r="4.5" fill="#4c1d95"/><circle cx="30" cy="30" r="4.5" fill="#4c1d95"/>`),
+      mk(`<circle cx="30" cy="30" r="22" fill="#fda4af"/><circle cx="30" cy="30" r="10" fill="white"/><path d="M12,22 Q20,8 42,18" fill="none" stroke="#fecdd3" stroke-width="5" stroke-linecap="round" opacity="0.8"/><circle cx="20" cy="22" r="3.5" fill="#fbbf24"/><circle cx="38" cy="15" r="3.5" fill="#86efac"/><circle cx="12" cy="36" r="3" fill="#93c5fd"/><circle cx="46" cy="30" r="3.5" fill="#f43f5e"/><circle cx="38" cy="44" r="3" fill="#a78bfa"/>`),
+      mk(`<path d="M30,6 C18,6 10,18 10,32 C10,46 18,56 30,56 C42,56 50,46 50,32 C50,18 42,6 30,6z" fill="#86efac"/><path d="M30,12 C22,12 16,22 16,32 C16,44 22,52 30,52 C38,52 44,44 44,32 C44,22 38,12 30,12z" fill="#4ade80"/><circle cx="30" cy="34" r="12" fill="#d97706"/><circle cx="27" cy="31" r="4" fill="#fbbf24" opacity="0.5"/>`),
+      mk(`<polygon points="30,8 54,50 6,50" fill="#fbbf24"/><polygon points="30,16 48,48 12,48" fill="#ef4444" opacity="0.85"/><circle cx="30" cy="36" r="4" fill="#fde68a"/><circle cx="22" cy="44" r="3" fill="#fde68a"/><circle cx="38" cy="44" r="3" fill="#fde68a"/><circle cx="26" cy="28" r="2.5" fill="#fde68a"/><circle cx="34" cy="28" r="2.5" fill="#fde68a"/>`),
+    ],
+  },
 ];
 
 /* ════════════ wrapSelection helper ════════════ */
@@ -392,7 +431,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
 
   const saveSelection = () => {
     const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+    if (sel && sel.rangeCount > 0) {
       savedRange.current = sel.getRangeAt(0).cloneRange();
     }
   };
@@ -404,17 +443,45 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
     sel.addRange(savedRange.current);
   };
 
-  const insertSticker = (emoji) => {
+  const insertSvgSticker = (svgStr) => {
     setShowStickerPicker(false);
-    editorRef.current?.focus();
-    try {
-      document.execCommand("insertText", false, emoji + " ");
-    } catch {
-      // fallback: append to end
-      if (editorRef.current) {
-        editorRef.current.innerHTML += `<span>${emoji}</span>&nbsp;`;
-      }
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const img = document.createElement("img");
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgStr)}`;
+    img.style.cssText = "width:48px;height:48px;display:inline-block;vertical-align:middle;margin:2px 4px;cursor:default;user-select:none;";
+    img.draggable = false;
+    img.contentEditable = "false";
+
+    // restore saved cursor position, else append to end
+    let range;
+    if (savedRange.current) {
+      // verify saved range is still inside editor
+      try {
+        range = savedRange.current;
+      } catch { range = null; }
     }
+    if (!range) {
+      range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+    }
+
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    range.deleteContents();
+    range.insertNode(img);
+
+    // move cursor after the inserted img
+    const r2 = document.createRange();
+    r2.setStartAfter(img);
+    r2.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(r2);
+    editor.focus();
+    savedRange.current = null;
   };
 
   const applyHL = (c) => {
@@ -696,49 +763,57 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         {/* Sticker button */}
         <div style={{ position:"relative" }}>
           <button
-            onClick={() => setShowStickerPicker(v => !v)}
+            onClick={() => { saveSelection(); setShowStickerPicker(v => !v); }}
             style={{
-              padding:"4px 9px", borderRadius:6, fontSize:11, border:"1px solid #e2e8f0",
+              padding:"4px 9px", borderRadius:6, fontSize:11, border:"1px solid",
+              borderColor: showStickerPicker ? "#fcd34d" : "#e2e8f0",
               background: showStickerPicker ? "#fef3c7" : "white",
               color: showStickerPicker ? "#d97706" : "#64748b",
               cursor:"pointer", fontWeight:600,
-              borderColor: showStickerPicker ? "#fcd34d" : "#e2e8f0",
             }}>
-            😊 {lang==="mn"?"Стикер":"Sticker"}
+            ✨ {lang==="mn"?"Стикер":"Sticker"}
           </button>
 
           {showStickerPicker && (
             <div style={{
               position:"absolute", top:"calc(100% + 6px)", right:0,
-              background:"white", borderRadius:14, boxShadow:"0 12px 40px rgba(0,0,0,0.16)",
-              border:"1px solid #e2e8f0", zIndex:200, width:280, padding:12,
+              background:"white", borderRadius:16, boxShadow:"0 12px 40px rgba(0,0,0,0.16)",
+              border:"1px solid #e2e8f0", zIndex:200, width:300, padding:14,
             }}
             onClick={e => e.stopPropagation()}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                <span style={{ fontSize:11, fontWeight:700, color:"#64748b", letterSpacing:"0.05em" }}>
-                  {lang==="mn" ? "СТИКЕР СОНГОХ" : "PICK A STICKER"}
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                <span style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:"0.05em" }}>
+                  {lang==="mn" ? "✨ СТИКЕР СОНГОХ" : "✨ PICK A STICKER"}
                 </span>
                 <button onClick={() => setShowStickerPicker(false)}
-                  style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:16, lineHeight:1 }}>×</button>
+                  style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", fontSize:18, lineHeight:1, padding:"0 2px" }}>×</button>
               </div>
-              {STICKER_SETS.map(set => (
-                <div key={set.label} style={{ marginBottom:10 }}>
-                  <p style={{ fontSize:10, color:"#94a3b8", fontWeight:600, marginBottom:5, letterSpacing:"0.05em" }}>
-                    {set.label.toUpperCase()}
-                  </p>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>
-                    {set.emojis.map(emoji => (
-                      <button key={emoji} onClick={() => insertSticker(emoji)}
+              {SVG_STICKERS.map(set => (
+                <div key={set.label} style={{ marginBottom:12 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:7 }}>
+                    <div style={{ width:8, height:8, borderRadius:"50%", background:set.color }}/>
+                    <span style={{ fontSize:10, color:"#94a3b8", fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase" }}>
+                      {set.label}
+                    </span>
+                  </div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                    {set.items.map((svg, i) => (
+                      <div key={i}
+                        onClick={() => insertSvgSticker(svg)}
                         style={{
-                          width:30, height:30, borderRadius:7, fontSize:17,
-                          border:"1px solid transparent", background:"transparent",
-                          cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
-                          transition:"all 0.12s",
+                          width:44, height:44, borderRadius:10, cursor:"pointer",
+                          border:"1.5px solid transparent", background:"#f8fafc",
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          transition:"all 0.12s", overflow:"hidden", padding:2,
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background="#f1f5f9"; e.currentTarget.style.borderColor="#e2e8f0"; e.currentTarget.style.transform="scale(1.2)"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.borderColor="transparent"; e.currentTarget.style.transform="scale(1)"; }}>
-                        {emoji}
-                      </button>
+                        onMouseEnter={e => { e.currentTarget.style.borderColor=set.color; e.currentTarget.style.transform="scale(1.15)"; e.currentTarget.style.background="#f0f9ff"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor="transparent"; e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.background="#f8fafc"; }}>
+                        <img
+                          src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`}
+                          style={{ width:38, height:38, pointerEvents:"none" }}
+                          alt=""
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
