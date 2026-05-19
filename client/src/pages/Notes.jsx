@@ -129,7 +129,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
 
   const addSticker = (emoji) => {
     const newId = Date.now();
-    setItems([...items, { id: newId, type: "sticker", x: 100, y: 100, emoji, size: 64, rot: 0 }]);
+    setItems([...items, { id: newId, type: "sticker", x: 150, y: 150, emoji, size: 64, rot: 0 }]);
     setSelected(newId); setShowStickerPicker(false);
   };
 
@@ -138,7 +138,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
     const reader = new FileReader();
     reader.onload = ev => {
       const newId = Date.now();
-      setItems([...items, { id: newId, type: "image", x: 100, y: 100, w: 200, h: 150, src: ev.target.result, rot: 0 }]);
+      setItems([...items, { id: newId, type: "image", x: 150, y: 150, w: 200, h: 150, src: ev.target.result, rot: 0 }]);
       setSelected(newId);
     };
     reader.readAsDataURL(file);
@@ -161,7 +161,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl" onMouseMove={onMouseMove} onMouseUp={() => dragRef.current = null}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xl" onMouseMove={onMouseMove} onMouseUp={() => dragRef.current = null}>
       <style>{`
         .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
@@ -172,96 +172,166 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           cursor: grab; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #6366f1; }
+        
+        /* Notebook Paper Styles */
+        .paper-background {
+          background-color: #fefcf0;
+          background-image: 
+            linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+            linear-gradient(#eee .1em, transparent .1em);
+          background-size: 100% 1.4em;
+          position: relative;
+        }
+        .paper-background::before {
+          content: '';
+          position: absolute;
+          top: 0; bottom: 0; left: 40px;
+          width: 1px;
+          background: rgba(255, 0, 0, 0.2);
+          z-index: 1;
+        }
+        .notebook-holes {
+          position: absolute;
+          left: 10px;
+          top: 0; bottom: 0;
+          width: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+          padding-top: 40px;
+          z-index: 2;
+        }
+        .hole {
+          width: 12px; height: 12px;
+          background: #1e293b;
+          border-radius: 50%;
+          box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
       `}</style>
       
-      <div className="bg-slate-950 w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-slate-800">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
-          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Note Title..." className="bg-transparent border-none text-xl font-bold text-white outline-none w-2/3" />
-          <div className="flex items-center gap-3">
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-white transition-colors"><MdClose size={24}/></button>
-            <button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2">
-              <MdSave size={18}/> Save
+      <div className="bg-slate-900 w-full max-w-6xl h-[92vh] rounded-[40px] overflow-hidden flex flex-col shadow-2xl border border-white/10 relative">
+        {/* Editor Header */}
+        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-slate-900/80 backdrop-blur-md z-50">
+          <input 
+            value={title} 
+            onChange={e => setTitle(e.target.value)} 
+            placeholder="Journal Title..." 
+            className="bg-transparent border-none text-2xl font-black text-white outline-none w-2/3 placeholder:text-white/20" 
+          />
+          <div className="flex items-center gap-4">
+            <button onClick={onClose} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-white/50 hover:text-white transition-all"><MdClose size={24}/></button>
+            <button onClick={handleSave} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-8 py-3 rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 flex items-center gap-2">
+              <MdSave size={20}/> Save Entry
             </button>
           </div>
         </div>
 
-        <div className="px-4 py-2 border-b border-slate-800 flex items-center gap-2 bg-slate-900/30 overflow-x-auto">
-          <button onClick={() => document.execCommand('bold')} className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg"><MdFormatBold/></button>
-          <button onClick={() => document.execCommand('italic')} className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg"><MdFormatItalic/></button>
-          <div className="w-px h-6 bg-slate-800 mx-1" />
-          <div className="relative">
-            <button onClick={() => setShowStickerPicker(!showStickerPicker)} className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg flex items-center gap-1">
-              <MdEmojiEmotions/> Stickers
+        {/* Toolbar */}
+        <div className="px-6 py-3 border-b border-white/5 flex items-center gap-4 bg-slate-900/50 overflow-x-auto z-40">
+          <div className="flex items-center bg-black/20 rounded-xl p-1">
+            <button onClick={() => document.execCommand('bold')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatBold size={20}/></button>
+            <button onClick={() => document.execCommand('italic')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatItalic size={20}/></button>
+            <button onClick={() => document.execCommand('underline')} className="p-2.5 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"><MdFormatUnderlined size={20}/></button>
+          </div>
+          
+          <div className="w-px h-6 bg-white/10" />
+          
+          <div className="relative group">
+            <button onClick={() => setShowStickerPicker(!showStickerPicker)} className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all flex items-center gap-2 font-bold text-sm">
+              <MdEmojiEmotions size={20}/> Stickers
             </button>
             {showStickerPicker && (
-              <div className="absolute top-full left-0 mt-2 p-3 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 grid grid-cols-5 gap-2 w-48">
+              <div className="absolute top-full left-0 mt-3 p-4 bg-slate-800 border border-white/10 rounded-3xl shadow-2xl z-[100] grid grid-cols-4 gap-3 w-56 animate-in fade-in zoom-in duration-200">
                 {NOTE_STICKERS.map(s => (
-                  <button key={s} onClick={() => addSticker(s)} className="text-2xl hover:scale-125 transition-transform">{s}</button>
+                  <button key={s} onClick={() => addSticker(s)} className="text-3xl hover:scale-125 transition-transform active:scale-95">{s}</button>
                 ))}
               </div>
             )}
           </div>
-          <label className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg cursor-pointer flex items-center gap-1">
-            <MdImage/> Image
+
+          <label className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all cursor-pointer flex items-center gap-2 font-bold text-sm">
+            <MdImage size={20}/> Add Photo
             <input type="file" hidden accept="image/*" onChange={addImage} />
           </label>
+
+          <div className="flex-1" />
+
+          <div className="flex items-center gap-2 bg-black/20 p-1 rounded-xl">
+            {COVERS.map((c, i) => (
+              <button 
+                key={c.id}
+                onClick={() => setCoverIdx(i)}
+                className={`w-6 h-6 rounded-full border-2 transition-all hover:scale-110 ${coverIdx === i ? 'border-white scale-125' : 'border-transparent opacity-50'}`}
+                style={{ background: c.bg }}
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="flex-1 relative overflow-hidden bg-slate-950" ref={boardRef}>
-          {/* Main Text Editor Layer */}
-          <div 
-            ref={editorRef}
-            contentEditable
-            className="absolute inset-0 p-12 outline-none text-slate-200 text-xl leading-relaxed overflow-y-auto scrollbar-hide z-0"
-            style={{ fontFamily: 'Inter, sans-serif' }}
-            data-placeholder="Start your masterpiece..."
-          />
+        {/* Notebook Body */}
+        <div className="flex-1 relative overflow-hidden bg-slate-950 flex" ref={boardRef}>
+          {/* Side binding effect */}
+          <div className="w-16 h-full bg-slate-900 border-r border-white/10 flex flex-col items-center gap-12 pt-12 shadow-2xl z-10">
+            {Array.from({length: 15}).map((_, i) => (
+              <div key={i} className="w-3 h-3 rounded-full bg-black/40 shadow-inner" />
+            ))}
+          </div>
 
-          {/* Floating Items Layer */}
-          {items.map(item => {
-            const isSel = selected === item.id;
-            const rotate = `rotate(${item.rot || 0}deg)`;
-            return (
-              <div 
-                key={item.id} 
-                className="vb-item-container"
-                onMouseDown={(e) => {
-                  if (e.target.closest('button') || e.target.closest('.handle')) return;
-                  e.stopPropagation(); setSelected(item.id);
-                  const rect = boardRef.current.getBoundingClientRect();
-                  dragRef.current = { mode: "drag", id: item.id, ox: e.clientX - rect.left - item.x, oy: e.clientY - rect.top - item.y };
-                }}
-                style={{ position: "absolute", left: item.x, top: item.y, width: item.w || 'auto', height: item.h || 'auto', transform: rotate, zIndex: isSel ? 20 : 10 }}
-              >
-                {/* Controls */}
-                <button onClick={() => del(item.id)} className="action-btn absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center z-30 shadow-lg"><MdClose size={14}/></button>
-                <div className="action-btn">
-                   <div className="rot-line" />
-                   <div className="rot-handle handle" onMouseDown={(e) => {
-                     e.stopPropagation(); e.preventDefault(); setSelected(item.id);
-                     const rect = boardRef.current.getBoundingClientRect();
-                     const cx = item.x + (item.w || 64) / 2; const cy = item.y + (item.h || 64) / 2;
-                     dragRef.current = { mode: "rotate", id: item.id, centerX: cx, centerY: cy, startAngle: item.rot || 0, startMouseAngle: Math.atan2(e.clientY - rect.top - cy, e.clientX - rect.left - cx) };
-                   }}><MdRefresh size={14}/></div>
-                </div>
-                {item.type === 'image' && (
-                  <div className="action-btn absolute -right-2 -bottom-2 w-6 h-6 bg-indigo-500 border-2 border-white rounded-full cursor-nwse-resize z-30 handle" onMouseDown={(e) => {
-                    e.stopPropagation(); e.preventDefault(); setSelected(item.id);
-                    dragRef.current = { mode: "resize", id: item.id, startX: e.clientX, startY: e.clientY, startW: item.w, startH: item.h };
-                  }} />
-                )}
+          {/* Paper Area */}
+          <div className="flex-1 relative paper-background overflow-hidden">
+            <div 
+              ref={editorRef}
+              contentEditable
+              className="absolute inset-0 pl-24 pr-12 py-12 outline-none text-slate-800 text-xl leading-[1.4em] overflow-y-auto z-0 selection:bg-indigo-500/20"
+              style={{ fontFamily: '"Inter", sans-serif' }}
+              data-placeholder="Once upon a time..."
+            />
 
-                {/* Content */}
-                {item.type === 'sticker' ? (
-                  <div className="text-6xl drop-shadow-2xl select-none">{item.emoji}</div>
-                ) : (
-                  <div className={`rounded-xl overflow-hidden shadow-2xl border-2 ${isSel ? 'border-indigo-500' : 'border-white/10'}`}>
-                    <img src={item.src} className="w-full h-full object-cover select-none pointer-events-none" alt="" />
+            {/* Floating Items */}
+            {items.map(item => {
+              const isSel = selected === item.id;
+              const rotate = `rotate(${item.rot || 0}deg)`;
+              return (
+                <div 
+                  key={item.id} 
+                  className="vb-item-container"
+                  onMouseDown={(e) => {
+                    if (e.target.closest('button') || e.target.closest('.handle')) return;
+                    e.stopPropagation(); setSelected(item.id);
+                    const rect = boardRef.current.getBoundingClientRect();
+                    dragRef.current = { mode: "drag", id: item.id, ox: e.clientX - rect.left - item.x, oy: e.clientY - rect.top - item.y };
+                  }}
+                  style={{ position: "absolute", left: item.x, top: item.y, width: item.w || 'auto', height: item.h || 'auto', transform: rotate, zIndex: isSel ? 20 : 10 }}
+                >
+                  <button onClick={() => del(item.id)} className="action-btn absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center z-30 shadow-xl border-2 border-white"><MdClose size={16}/></button>
+                  <div className="action-btn">
+                     <div className="rot-line" />
+                     <div className="rot-handle handle" onMouseDown={(e) => {
+                       e.stopPropagation(); e.preventDefault(); setSelected(item.id);
+                       const rect = boardRef.current.getBoundingClientRect();
+                       const cx = item.x + (item.w || 64) / 2; const cy = item.y + (item.h || 64) / 2;
+                       dragRef.current = { mode: "rotate", id: item.id, centerX: cx, centerY: cy, startAngle: item.rot || 0, startMouseAngle: Math.atan2(e.clientY - rect.top - cy, e.clientX - rect.left - cx) };
+                     }}><MdRefresh size={14}/></div>
                   </div>
-                )}
-              </div>
-            );
-          })}
+                  {item.type === 'image' && (
+                    <div className="action-btn absolute -right-2 -bottom-2 w-7 h-7 bg-indigo-600 border-2 border-white rounded-full cursor-nwse-resize z-30 handle shadow-xl" onMouseDown={(e) => {
+                      e.stopPropagation(); e.preventDefault(); setSelected(item.id);
+                      dragRef.current = { mode: "resize", id: item.id, startX: e.clientX, startY: e.clientY, startW: item.w, startH: item.h };
+                    }} />
+                  )}
+
+                  {item.type === 'sticker' ? (
+                    <div className="text-7xl drop-shadow-2xl select-none hover:scale-110 transition-transform">{item.emoji}</div>
+                  ) : (
+                    <div className={`rounded-2xl overflow-hidden shadow-2xl border-4 ${isSel ? 'border-indigo-500' : 'border-white'} transition-all`}>
+                      <img src={item.src} className="w-full h-full object-cover select-none pointer-events-none" alt="" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -281,7 +351,7 @@ export default function Notes() {
 
   const handleDelete = (id) => {
     setNotes(p => p.filter(n => n.id !== id));
-    toast.success("Deleted");
+    toast.success("Entry Deleted");
   };
 
   const handleSave = (updated) => {
@@ -300,55 +370,124 @@ export default function Notes() {
     <div className="h-full flex bg-slate-950 text-white overflow-hidden">
       <style>{`
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        [contenteditable]:empty:before { content: attr(data-placeholder); color: #64748b; cursor: text; }
+        [contenteditable]:empty:before { content: attr(data-placeholder); color: #94a3b8; cursor: text; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
 
-      <div className="w-72 border-r border-slate-900 flex flex-col bg-slate-900/20 backdrop-blur-md">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">{lang === "mn" ? "Тэмдэглэл" : "Notes"}</h1>
-            <button onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: null, floatItems: [] })} className="p-2 bg-indigo-600 rounded-xl hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20"><MdAdd size={24} /></button>
-          </div>
-          <div className="relative mb-6">
-            <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search notes..." className="w-full bg-slate-900/50 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none focus:border-indigo-500 transition-colors" />
-          </div>
-          <nav className="space-y-1">
-            <button onClick={() => setActiveSubj("all")} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeSubj === "all" ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' : 'hover:bg-slate-800/50 text-slate-400'}`}>
-              <div className="flex items-center gap-3"><MdBook size={20} /><span className="font-bold text-sm">All Notes</span></div>
-              <span className="text-[10px] font-black opacity-50">{notes.length}</span>
+      {/* Sidebar */}
+      <div className="w-80 border-r border-white/5 flex flex-col bg-slate-900/30 backdrop-blur-3xl">
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-10">
+            <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+              {lang === "mn" ? "Тэмдэглэл" : "Journals"}
+            </h1>
+            <button 
+              onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: null, floatItems: [] })}
+              className="w-12 h-12 flex items-center justify-center bg-indigo-600 rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+            >
+              <MdAdd size={28} />
             </button>
-            <div className="pt-4 pb-2 px-4 text-[10px] font-black text-slate-600 uppercase tracking-widest">Subjects</div>
+          </div>
+
+          <div className="relative mb-8 group">
+            <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={20} />
+            <input 
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search your thoughts..."
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
+            />
+          </div>
+
+          <nav className="space-y-2">
+            <button 
+              onClick={() => setActiveSubj("all")}
+              className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all ${activeSubj === "all" ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'hover:bg-white/5 text-slate-400'}`}
+            >
+              <div className="flex items-center gap-4">
+                <MdBook size={22} />
+                <span className="font-black text-sm">All Entries</span>
+              </div>
+              <span className={`text-xs font-black px-2.5 py-1 rounded-lg ${activeSubj === "all" ? 'bg-white/20' : 'bg-white/5'}`}>{notes.length}</span>
+            </button>
+            
+            <div className="pt-6 pb-3 px-5 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">Collections</div>
             {subjects.map(s => (
-              <button key={s.id} onClick={() => setActiveSubj(s.id)} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeSubj === s.id ? 'bg-slate-800 text-white' : 'hover:bg-slate-800/30 text-slate-500'}`}>
-                <div className="flex items-center gap-3"><span className="text-lg">{s.emoji}</span><span className="font-bold text-sm">{s.name}</span></div>
+              <button 
+                key={s.id}
+                onClick={() => setActiveSubj(s.id)}
+                className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all ${activeSubj === s.id ? 'bg-slate-800 text-white border border-white/10' : 'hover:bg-white/5 text-slate-500'}`}
+              >
+                <div className="flex items-center gap-4">
+                  <span className="text-xl">{s.emoji}</span>
+                  <span className="font-black text-sm">{s.name}</span>
+                </div>
               </button>
             ))}
           </nav>
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden bg-slate-950">
-        <header className="h-20 border-b border-slate-900 flex items-center justify-between px-8 bg-slate-950/50 backdrop-blur-md sticky top-0 z-10">
-          <h2 className="text-lg font-black text-white flex items-center gap-2">
-            {activeSubj === "all" ? "All Collections" : subjects.find(s => s.id === activeSubj)?.name || "Collection"}
-            <span className="text-slate-700 mx-2">/</span>
-            <span className="text-indigo-400">{filtered.length} items</span>
-          </h2>
-          <button onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: activeSubj !== "all" ? activeSubj : null, floatItems: [] })} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20">New Note</button>
+        <header className="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-10">
+          <div className="flex flex-col">
+            <h2 className="text-xl font-black text-white flex items-center gap-3">
+              {activeSubj === "all" ? "Master Library" : subjects.find(s => s.id === activeSubj)?.name || "Collection"}
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-800" />
+              <span className="text-indigo-400 text-sm">{filtered.length} entries</span>
+            </h2>
+            <p className="text-slate-500 text-xs font-medium mt-1">Manage and organize your personal thoughts</p>
+          </div>
+          
+          <div className="flex items-center gap-5">
+            <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all">
+              <MdGridOn size={22} />
+            </button>
+            <div className="w-px h-8 bg-white/10" />
+            <button onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: activeSubj !== "all" ? activeSubj : null, floatItems: [] })} className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
+              New Entry
+            </button>
+          </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="flex-1 overflow-y-auto p-10 scrollbar-hide">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
             {filtered.map((note, i) => (
               <NoteCard key={note.id} note={note} idx={i} onClick={() => setEditing(note)} onDelete={handleDelete} />
             ))}
+            
+            <button 
+              onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: activeSubj !== "all" ? activeSubj : null, floatItems: [] })}
+              className="h-64 border-4 border-dashed border-white/5 rounded-[32px] flex flex-col items-center justify-center text-slate-600 hover:text-indigo-400 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all group"
+            >
+              <div className="w-16 h-16 rounded-[24px] bg-white/5 group-hover:bg-indigo-600 transition-all mb-4 flex items-center justify-center">
+                <MdAdd size={32} className="group-hover:text-white transition-colors" />
+              </div>
+              <span className="font-black text-sm uppercase tracking-widest">Create New</span>
+            </button>
           </div>
+
+          {filtered.length === 0 && search && (
+            <div className="flex flex-col items-center justify-center py-32 text-slate-500">
+              <div className="w-24 h-24 rounded-[32px] bg-white/5 flex items-center justify-center mb-6">
+                <MdSearch size={48} className="opacity-20" />
+              </div>
+              <p className="text-xl font-black text-white mb-2">No results found</p>
+              <p className="text-sm font-medium">We couldn't find any entries matching "{search}"</p>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Editor Modal */}
       {editing && (
-        <NoteEditor note={editing} subjects={subjects} onSave={handleSave} onClose={() => setEditing(null)} />
+        <NoteEditor 
+          note={editing} 
+          subjects={subjects} 
+          onSave={handleSave} 
+          onClose={() => setEditing(null)} 
+        />
       )}
     </div>
   );
