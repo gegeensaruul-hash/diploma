@@ -717,7 +717,8 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
       {/* toolbar */}
       <div style={{ display:"flex",alignItems:"center",gap:4,padding:"6px 10px",
         background:"rgba(255,255,255,0.85)",borderBottom:"1px solid rgba(0,0,0,0.07)",
-        flexWrap:"wrap",backdropFilter:"blur(8px)" }}>
+        flexWrap:"wrap",backdropFilter:"blur(8px)",
+        position:"relative", zIndex:20 }}>
         {/* subject picker */}
         <select value={subjectId||""} onChange={e=>setSubjectId(e.target.value||null)}
           style={{ fontSize:11,border:"1px solid #e2e8f0",borderRadius:6,padding:"4px 6px",
@@ -774,7 +775,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
         {/* Sticker button */}
         <div style={{ position:"relative" }}>
           <button
-            onClick={() => { saveSelection(); setShowStickerPicker(v => !v); }}
+            onClick={(e) => { e.stopPropagation(); saveSelection(); setShowStickerPicker(v => !v); }}
             style={{
               padding:"4px 9px", borderRadius:6, fontSize:11, border:"1px solid",
               borderColor: showStickerPicker ? "#fcd34d" : "#e2e8f0",
@@ -789,7 +790,8 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
             <div style={{
               position:"absolute", top:"calc(100% + 6px)", right:0,
               background:"white", borderRadius:16, boxShadow:"0 12px 40px rgba(0,0,0,0.16)",
-              border:"1px solid #e2e8f0", zIndex:200, width:300, padding:14,
+              border:"1px solid #e2e8f0", zIndex:9999, width:300, padding:14,
+              maxHeight:360, overflowY:"auto",
             }}
             onClick={e => e.stopPropagation()}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
@@ -810,7 +812,7 @@ function NoteEditor({ note, subjects, onSave, onClose, onDelete }) {
                   <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
                     {set.items.map((svg, i) => (
                       <div key={i}
-                        onClick={() => insertSvgSticker(svg)}
+                        onClick={(e) => { e.stopPropagation(); insertSvgSticker(svg); }}
                         style={{
                           width:44, height:44, borderRadius:10, cursor:"pointer",
                           border:"1.5px solid transparent", background:"#f8fafc",
