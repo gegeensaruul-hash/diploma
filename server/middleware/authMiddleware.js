@@ -15,14 +15,16 @@ export const protectRoute = asyncHandler(async (req, res, next) => {
 
     if (!user) {
       // Token хүчинтэй боловч DB-д хэрэглэгч байхгүй — token цэвэрлэнэ
-      res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+      const isProd = process.env.NODE_ENV === "production";
+      res.cookie("token", "", { httpOnly: true, secure: isProd, sameSite: isProd ? "none" : "strict", expires: new Date(0) });
       return res.status(401).json({ status: false, message: "Сесс дууссан байна. Дахин нэвтэрнэ үү." });
     }
 
     // isActive-г шалгана (зөвхөн тодорхой false байвал)
     const active = user.getDataValue ? user.getDataValue("isActive") : user.isActive;
     if (active === false || active === 0) {
-      res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+      const isProd = process.env.NODE_ENV === "production";
+      res.cookie("token", "", { httpOnly: true, secure: isProd, sameSite: isProd ? "none" : "strict", expires: new Date(0) });
       return res.status(401).json({ status: false, message: "Хэрэглэгчийн эрх хаагдсан байна" });
     }
 
@@ -30,7 +32,8 @@ export const protectRoute = asyncHandler(async (req, res, next) => {
     next();
   } catch (err) {
     // Token хүчингүй эсвэл хугацаа дууссан
-    res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+    const isProd = process.env.NODE_ENV === "production";
+    res.cookie("token", "", { httpOnly: true, secure: isProd, sameSite: isProd ? "none" : "strict", expires: new Date(0) });
     return res.status(401).json({ status: false, message: "Сесс дууссан байна. Дахин нэвтэрнэ үү." });
   }
 });

@@ -49,8 +49,9 @@ const PrivateRoute = ({ children }) => {
       setVerified(_sessionValid);
       return;
     }
+    const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
     // Server-т session хүчинтэй эсэхийг нэг удаа шалгана
-    fetch("/api/auth/me", { credentials: "include" })
+    fetch(`${API_BASE}/auth/me`, { credentials: "include" })
       .then(res => {
         _sessionChecked = true;
         _sessionValid = res.ok;

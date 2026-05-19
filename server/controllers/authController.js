@@ -28,7 +28,13 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const logout = (req, res) => {
-  res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+  const isProd = process.env.NODE_ENV === "production";
+  res.cookie("token", "", { 
+    httpOnly: true, 
+    secure: isProd,
+    sameSite: isProd ? "none" : "strict",
+    expires: new Date(0) 
+  });
   res.json({ status: true, message: "Амжилттай гарлаа" });
 };
 
