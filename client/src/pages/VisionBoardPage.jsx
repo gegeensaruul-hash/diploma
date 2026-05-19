@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSettings } from "../context/SettingsContext";
 import { getUserStore, setUserStore } from "../utils/userStorage";
-import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin, MdClose } from "react-icons/md";
+import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin, MdClose, MdRefresh } from "react-icons/md";
 
 const VB_FONTS = [
   {id:"caveat",    label:"Caveat",       css:"'Caveat', cursive"},
@@ -32,9 +32,7 @@ export default function VisionBoardPage() {
 
   useEffect(() => {
     setItems(getStore(`vb3_items_${id}`, []));
-    setSelected(null);
-    setEditingId(null);
-    setShowStickerPicker(false);
+    setSelected(null); setEditingId(null); setShowStickerPicker(false);
   }, [id]);
 
   const saveItems = (it) => { setItems(it); setStore(storageKey, it); };
@@ -56,10 +54,9 @@ export default function VisionBoardPage() {
     saveItems([...items, {
       id: newId, type:"note", x:rnd(bw-200,100), y:rnd(bh-200,100),
       w:180, h:120, text:"", font:"caveat", color: rnd(NOTE_COLORS.length),
-      pin: rnd(PIN_COLORS.length), rot: (rnd(21)-10)*0.5,
+      pin: rnd(PIN_COLORS.length), rot: 0,
     }]);
-    setSelected(newId);
-    setTimeout(() => setEditingId(newId), 50);
+    setSelected(newId); setTimeout(() => setEditingId(newId), 50);
   };
 
   const addSticker = (emoji) => {
@@ -68,7 +65,7 @@ export default function VisionBoardPage() {
     const bw2 = rect2?.width || 1200, bh2 = rect2?.height || 800;
     saveItems([...items, {
       id: newId, type:"sticker", x:rnd(bw2-100,100), y:rnd(bh2-100,100),
-      emoji, size:54, rot: (rnd(21)-10)*0.5,
+      emoji, size:54, rot: 0,
     }]);
     setSelected(newId); setShowStickerPicker(false);
   };
@@ -82,7 +79,7 @@ export default function VisionBoardPage() {
       const bw3 = rect3?.width || 1200, bh3 = rect3?.height || 800;
       saveItems([...items, {
         id: newId, type:"image", x:rnd(bw3-250,100), y:rnd(bh3-200,100),
-        w:220, h:160, src:ev.target.result, rot:(rnd(11)-5)*0.5,
+        w:220, h:160, src:ev.target.result, rot:0,
         border:true, pin:rnd(PIN_COLORS.length),
       }]);
       setSelected(newId);
@@ -92,7 +89,7 @@ export default function VisionBoardPage() {
   };
 
   const onItemMouseDown = (e, itemId) => {
-    if (e.target.closest('button') || e.target.tagName === 'TEXTAREA' || e.target.closest('.resize-handle')) return;
+    if (e.target.closest('button') || e.target.tagName === 'TEXTAREA' || e.target.closest('.resize-handle') || e.target.closest('.rot-handle')) return;
     e.stopPropagation();
     setSelected(itemId);
     const item = items.find(i=>i.id===itemId);
@@ -107,21 +104,31 @@ export default function VisionBoardPage() {
     dragRef.current = { mode:"resize", id: itemId, startX: e.clientX, startY: e.clientY, startW: item.w||180, startH: item.h||120 };
   };
 
+  const onRotateMouseDown = (e, itemId) => {
+    e.stopPropagation(); e.preventDefault();
+    setSelected(itemId);
+    const item = items.find(i=>i.id===itemId);
+    const rect = boardRef.current.getBoundingClientRect();
+    const centerX = item.x + (item.w||100)/2;
+    const centerY = item.y + (item.h||100)/2;
+    dragRef.current = { mode:"rotate", id: itemId, centerX, centerY, startAngle: item.rot || 0, startMouseAngle: Math.atan2(e.clientY - rect.top - centerY, e.clientX - rect.left - centerX) };
+  };
+
   const onMouseMove = (e) => {
     if (!dragRef.current) return;
     const rect = boardRef.current.getBoundingClientRect();
+    const item = items.find(i=>i.id===dragRef.current.id);
+    
     if (dragRef.current.mode === "resize") {
       const dx = e.clientX - dragRef.current.startX;
       const dy = e.clientY - dragRef.current.startY;
-      upd(dragRef.current.id, {
-        w: Math.max(80, dragRef.current.startW + dx),
-        h: Math.max(60, dragRef.current.startH + dy),
-      });
+      upd(dragRef.current.id, { w: Math.max(80, dragRef.current.startW + dx), h: Math.max(60, dragRef.current.startH + dy) });
+    } else if (dragRef.current.mode === "rotate") {
+      const mouseAngle = Math.atan2(e.clientY - rect.top - dragRef.current.centerY, e.clientX - rect.left - dragRef.current.centerX);
+      const angleDiff = (mouseAngle - dragRef.current.startMouseAngle) * (180 / Math.PI);
+      upd(dragRef.current.id, { rot: dragRef.current.startAngle + angleDiff });
     } else {
-      upd(dragRef.current.id, {
-        x: e.clientX - rect.left - dragRef.current.ox,
-        y: e.clientY - rect.top  - dragRef.current.oy,
-      });
+      upd(dragRef.current.id, { x: e.clientX - rect.left - dragRef.current.ox, y: e.clientY - rect.top  - dragRef.current.oy });
     }
   };
   const onMouseUp = () => { dragRef.current = null; };
@@ -157,6 +164,13 @@ export default function VisionBoardPage() {
         .tool-btn.active { background: #6366f1; color: #fff; }
         .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
+        .rot-handle { 
+          position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+          width: 24px; height: 24px; border-radius: 50%; background: #6366f1;
+          color: white; display: flex; align-items: center; justify-content: center;
+          cursor: grab; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #6366f1; }
       `}</style>
 
       <div className="vb-toolbar" onMouseDown={e => e.stopPropagation()}>
@@ -215,7 +229,6 @@ export default function VisionBoardPage() {
           const isSel = selected===item.id;
           const isEdit = editingId===item.id;
           const rotate = `rotate(${item.rot||0}deg)`;
-          // Calculate dynamic font size based on width
           const baseFontSize = item.type === "note" ? Math.max(12, Math.floor(item.w / 10)) : 48;
 
           return (
@@ -225,13 +238,24 @@ export default function VisionBoardPage() {
               className="vb-item-container"
               style={{
                 position:"absolute", left:item.x, top:item.y,
-                width:item.w, height:item.h,
+                width:item.type === 'sticker' ? 'auto' : item.w, 
+                height:item.type === 'sticker' ? 'auto' : item.h,
                 transform:rotate, cursor: isEdit ? "text" : "grab", zIndex:isSel?20:5,
               }}>
               
               {(item.type === "image" || item.type === "note") && (
                 <MdPushPin className="absolute -top-3 left-1/2 -translate-x-1/2 z-10" 
                   size={24} style={{ color: PIN_COLORS[item.pin%PIN_COLORS.length], filter:"drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+              )}
+
+              {/* Rotation Handle */}
+              {!isEdit && (
+                <div className="action-btn">
+                  <div className="rot-line" />
+                  <div onMouseDown={e=>onRotateMouseDown(e,item.id)} className="rot-handle">
+                    <MdRefresh size={14}/>
+                  </div>
+                </div>
               )}
 
               {!isEdit && (
