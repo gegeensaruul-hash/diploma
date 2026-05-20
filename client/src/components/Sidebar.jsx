@@ -25,10 +25,10 @@ function Tooltip({ children, text }) {
   return (
     <div className="group relative flex items-center justify-center">
       {children}
-      <div className="absolute left-[calc(100%+16px)] px-3 py-1.5 bg-slate-800 text-stone-900 dark:text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-black/10 dark:border-white/10 z-50">
+      <div className="absolute left-[calc(100%+16px)] px-3 py-1.5 text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl z-50" style={{ background: "var(--bg-card)", color: "var(--text)", border: "1px solid var(--border)" }}>
         {text}
         {/* Triangle arrow */}
-        <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45 border-l border-b border-black/10 dark:border-white/10" />
+        <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 rotate-45" style={{ background: "var(--bg-card)", borderLeft: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }} />
       </div>
     </div>
   );
@@ -47,11 +47,11 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
   return (
     <div style={{
       position:"fixed", top: pos.top, left: pos.left, zIndex:200,
-      background:"rgba(15, 23, 42, 0.98)", borderRadius:24, padding:20, width:280,
-      boxShadow:"0 32px 64px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)",
+      background:"var(--bg-card)", borderRadius:24, padding:20, width:280,
+      boxShadow:"0 32px 64px var(--shadow)", border: "1px solid var(--border)",
       backdropFilter: "blur(20px)"
     }}>
-      <p style={{fontSize:11, color:"#94a3b8", fontWeight: 700, letterSpacing:"0.08em", marginBottom:16, textTransform: "uppercase"}}>
+      <p style={{fontSize:11, color:"var(--text3)", fontWeight: 700, letterSpacing:"0.08em", marginBottom:16, textTransform: "uppercase"}}>
         CREATE NEW MODULE
       </p>
 
@@ -167,7 +167,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
     }`;
 
   return (
-    <aside className="w-20 h-full flex flex-col items-center py-6 bg-slate-900/60 backdrop-blur-2xl rounded-[40px] border border-black/5 dark:border-white/5 shadow-2xl relative">
+    <aside className="w-20 h-full flex flex-col items-center py-6 backdrop-blur-2xl rounded-[40px] border shadow-2xl relative" style={{ background: "var(--bg-card)", borderColor: "var(--border)" }}>
       
       {/* Profile Avatar */}
       <Tooltip text={user?.name || "Profile"}>
@@ -182,7 +182,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
               ? <img src={user.avatarImage} alt="avatar" className="w-full h-full object-cover" />
               : user?.name?.[0]?.toUpperCase()}
           </div>
-          <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-[3px] border-[#0f172a] rounded-full"></div>
+          <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full" style={{ border: "3px solid var(--bg-app)" }}></div>
         </div>
       </Tooltip>
 

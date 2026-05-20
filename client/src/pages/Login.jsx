@@ -174,7 +174,7 @@ export default function Login() {
     padding: "14px 20px",
     fontSize: 15,
     fontFamily: "'Inter', sans-serif",
-    color: "#fff",
+    color: "var(--text)",
     background: "rgba(255, 255, 255, 0.03)",
     outline: "none",
     boxSizing: "border-box",

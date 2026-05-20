@@ -113,12 +113,12 @@ export default function Finance() {
       {/* Header */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:16 }}>
         <div>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px" }}>Finance Tracker</h2>
-          <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 4 }}>Manage your wealth with precision</p>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: "var(--text)", margin: 0, letterSpacing: "-1px" }}>Finance Tracker</h2>
+          <p style={{ fontSize: 14, color: "var(--text2)", marginTop: 4 }}>Manage your wealth with precision</p>
         </div>
         <div style={{ display:"flex", gap:12 }}>
           <div className="premium-card" style={{ padding: "12px 20px", display: "flex", flexDirection: "column", minWidth: 140 }}>
-            <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Monthly Net</span>
+            <span style={{ fontSize: 11, color: "var(--text2)", fontWeight: 700, textTransform: "uppercase" }}>Monthly Net</span>
             <span style={{ fontSize: 20, fontWeight: 800, color: net >= 0 ? C.green : C.red }}>{fmt(net)}</span>
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function Finance() {
                 <div key={a.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding: 14, borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accentLight, display: "flex", alignItems: "center", justifyContent: "center", color: C.accent, fontWeight: 800 }}>{a.name[0]}</div>
-                    <span style={{ fontSize:14, fontWeight:600, color: "#fff" }}>{a.name}</span>
+                    <span style={{ fontSize:14, fontWeight:600, color: "var(--text)" }}>{a.name}</span>
                   </div>
                   <span style={{ fontSize:16, fontWeight:800, color: a.balance < 0 ? C.red : "#fff" }}>{fmt(a.balance)}</span>
                 </div>
@@ -205,23 +205,23 @@ export default function Finance() {
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Transaction</th>
-                  <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Date</th>
-                  <th style={{ textAlign: "right", padding: "12px", fontSize: 11, color: "#64748b", textTransform: "uppercase" }}>Amount</th>
+                  <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "var(--text3)", textTransform: "uppercase" }}>Transaction</th>
+                  <th style={{ textAlign: "left", padding: "12px", fontSize: 11, color: "var(--text3)", textTransform: "uppercase" }}>Date</th>
+                  <th style={{ textAlign: "right", padding: "12px", fontSize: 11, color: "var(--text3)", textTransform: "uppercase" }}>Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {expenses.map(e => (
                   <tr key={e.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
-                    <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "#fff" }}>{e.name}</td>
-                    <td style={{ padding: "16px 12px", fontSize: 13, color: "#64748b" }}>{e.date}</td>
+                    <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{e.name}</td>
+                    <td style={{ padding: "16px 12px", fontSize: 13, color: "var(--text3)" }}>{e.date}</td>
                     <td style={{ padding: "16px 12px", textAlign: "right", fontSize: 15, fontWeight: 800, color: C.red }}>-{fmt(e.amount)}</td>
                   </tr>
                 ))}
                 {incomes.map(i => (
                   <tr key={i.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
-                    <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "#fff" }}>{i.type}</td>
-                    <td style={{ padding: "16px 12px", fontSize: 13, color: "#64748b" }}>{i.date}</td>
+                    <td style={{ padding: "16px 12px", fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{i.type}</td>
+                    <td style={{ padding: "16px 12px", fontSize: 13, color: "var(--text3)" }}>{i.date}</td>
                     <td style={{ padding: "16px 12px", textAlign: "right", fontSize: 15, fontWeight: 800, color: C.green }}>+{fmt(i.amount)}</td>
                   </tr>
                 ))}

@@ -16,7 +16,7 @@ export default function Layout() {
   const toggle = () => setSidebarOpen(v => !v);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-950 relative p-0 md:p-4 gap-0 md:gap-4 font-sans">
+    <div className="flex h-screen overflow-hidden relative p-0 md:p-4 gap-0 md:gap-4 font-sans" style={{ background: "var(--bg-app)" }}>
       {/* Dynamic Glowing Background */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen hidden md:block" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen hidden md:block" />
@@ -44,7 +44,7 @@ export default function Layout() {
       </div>
 
       {/* Main Bento Box */}
-      <div className="flex flex-col flex-1 min-w-0 bg-slate-900/60 backdrop-blur-2xl rounded-none md:rounded-[40px] border-0 md:border border-black/5 dark:border-white/5 overflow-hidden relative shadow-2xl z-40">
+      <div className="flex flex-col flex-1 min-w-0 backdrop-blur-2xl rounded-none md:rounded-[40px] border-0 md:border overflow-hidden relative shadow-2xl z-40" style={{ background: "var(--bg-card)", borderColor: "var(--border)" }}>
         <Navbar
           onChatToggle={() => setChatOpen(v => !v)}
           chatOpen={chatOpen}
@@ -68,7 +68,7 @@ export default function Layout() {
 
       {/* Chat panel */}
       <div
-        className={`fixed md:relative inset-y-0 right-0 z-50 md:z-40 h-full flex flex-col shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] bg-slate-950 md:bg-transparent ${chatOpen ? 'translate-x-0 w-full max-w-full md:max-w-[320px]' : 'translate-x-full md:translate-x-0 w-0 max-w-0'}`}
+        className={`fixed md:relative inset-y-0 right-0 z-50 md:z-40 h-full flex flex-col shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] md:bg-transparent ${chatOpen ? 'translate-x-0 w-full max-w-full md:max-w-[320px]' : 'translate-x-full md:translate-x-0 w-0 max-w-0'}`}
         style={{
           borderLeft: chatOpen ? "1px solid var(--border)" : "none",
           background: "var(--bg-card)",

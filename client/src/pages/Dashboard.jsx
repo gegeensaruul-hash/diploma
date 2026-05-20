@@ -17,18 +17,18 @@ function StatCard({ label, count, icon, accent, to, sublabel }) {
     <Link to={to} className="premium-card" style={{
       display: "flex", flexDirection: "column", justifyContent: "space-between",
       padding: "24px", textDecoration: "none", minHeight: 128, position: "relative", 
-      overflow: "hidden", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)"
+      overflow: "hidden", background: "var(--bg-card)", backdropFilter: "blur(20px)"
     }}>
       <div style={{ position: "absolute", inset: "auto -20px -20px auto", width: 100, height: 100, borderRadius: "50%", background: `${accent}10` }} />
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
         <div style={{ width: 44, height: 44, borderRadius: 14, background: `${accent}15`, display: "flex", alignItems: "center", justifyContent: "center", color: accent, border: `1px solid ${accent}30` }}>
           {icon}
         </div>
-        <span style={{ fontSize: 32, fontWeight: 800, color: "#fff", letterSpacing: "-1px" }}>{count ?? "0"}</span>
+        <span style={{ fontSize: 32, fontWeight: 800, color: "var(--text)", letterSpacing: "-1px" }}>{count ?? "0"}</span>
       </div>
       <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", tracking: "0.05em" }}>{label}</div>
-        {sublabel && <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>{sublabel}</div>}
+        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text2)", textTransform: "uppercase", tracking: "0.05em" }}>{label}</div>
+        {sublabel && <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>{sublabel}</div>}
       </div>
     </Link>
   );
@@ -38,7 +38,7 @@ function PriorityBar({ high = 0, medium = 0, low = 0, lang }) {
   const total = (high + medium + low) || 1;
   return (
     <div>
-      <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ fontSize: 13, color: "var(--text2)", marginBottom: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
         <MdTrendingUp size={16} />
         {lang === "mn" ? "ЧУХЛЫН ХУВААРИЛАЛТ" : "PRIORITY BREAKDOWN"}
       </div>
@@ -50,10 +50,10 @@ function PriorityBar({ high = 0, medium = 0, low = 0, lang }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 16 }}>
         {[["#ef4444", lang === "mn" ? "Өндөр" : "High", high], ["#f59e0b", lang === "mn" ? "Дунд" : "Med", medium], ["#10b981", lang === "mn" ? "Бага" : "Low", low]].map(([c, l, v]) => (
           <div key={l} style={{ background: "rgba(255,255,255,0.02)", padding: "10px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#64748b", marginBottom: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--text3)", marginBottom: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: c }} />{l}
             </div>
-            <b style={{ color: "#fff", fontSize: 16 }}>{v}</b>
+            <b style={{ color: "var(--text)", fontSize: 16 }}>{v}</b>
           </div>
         ))}
       </div>
@@ -113,14 +113,14 @@ export default function Dashboard() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
         <div>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px" }}>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: "var(--text)", margin: 0, letterSpacing: "-1px" }}>
             {t.dashboard}
           </h2>
-          <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 4 }}>{lang === "mn" ? "Таны бүтээмжийн өнөөдрийн тойм" : "Overview of your productivity today"}</p>
+          <p style={{ fontSize: 14, color: "var(--text2)", marginTop: 4 }}>{lang === "mn" ? "Таны бүтээмжийн өнөөдрийн тойм" : "Overview of your productivity today"}</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "10px 16px" }}>
           <MdCalendarToday size={16} color="#ffffff" />
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>
             {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { weekday: "short", month: "long", day: "numeric" })}
           </span>
         </div>
@@ -136,8 +136,8 @@ export default function Dashboard() {
 
       <div className="dash-panel-grid">
         {/* Progress Card */}
-        <div className="premium-card" style={{ padding: "24px", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#94a3b8", marginBottom: 20, tracking: "0.05em" }}>
+        <div className="premium-card" style={{ padding: "24px", background: "var(--bg-card)", backdropFilter: "blur(20px)" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text2)", marginBottom: 20, tracking: "0.05em" }}>
             {lang === "mn" ? "НИЙТ ЯВЦ" : "OVERALL PROGRESS"}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
@@ -151,7 +151,7 @@ export default function Dashboard() {
                   style={{ transform: "rotate(-90deg)", transformOrigin: "center", transition: "stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1)" }}
                 />
               </svg>
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "#fff" }}>
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "var(--text)" }}>
                 {completePct}%
               </div>
             </div>
@@ -159,14 +159,14 @@ export default function Dashboard() {
               {[
                 { label: lang === "mn" ? "Дууссан" : "Done", val: stats?.completed, color: "#10b981" },
                 { label: lang === "mn" ? "Хийж байна" : "In Progress", val: stats?.in_progress, color: "#ffffff" },
-                { label: lang === "mn" ? "Хийх" : "To Do", val: stats?.todo, color: "#94a3b8" },
+                { label: lang === "mn" ? "Хийх" : "To Do", val: stats?.todo, color: "var(--text2)" },
               ].map((r) => (
                 <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text2)", fontWeight: 500 }}>
                     <span style={{ width: 8, height: 8, borderRadius: "50%", background: r.color, boxShadow: `0 0 8px ${r.color}66` }} />
                     {r.label}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.val ?? 0}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>{r.val ?? 0}</span>
                 </div>
               ))}
             </div>
@@ -174,15 +174,15 @@ export default function Dashboard() {
         </div>
 
         {/* Priority Card */}
-        <div className="premium-card" style={{ padding: "24px", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)" }}>
+        <div className="premium-card" style={{ padding: "24px", background: "var(--bg-card)", backdropFilter: "blur(20px)" }}>
           <PriorityBar high={stats?.high ?? 0} medium={stats?.medium ?? 0} low={stats?.low ?? 0} lang={lang} />
         </div>
       </div>
 
       {/* Table Card */}
-      <div className="premium-card" style={{ overflow: "hidden", background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)" }}>
+      <div className="premium-card" style={{ overflow: "hidden", background: "var(--bg-card)", backdropFilter: "blur(20px)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", margin: 0 }}>
             {lang === "mn" ? "Сүүлийн Ажлууд" : "Recent Tasks"}
           </h3>
           <Link to="/todos" style={{ fontSize: 12, color: "#ffffff", textDecoration: "none", fontWeight: 700, background: "rgba(255, 255, 255, 0.1)", borderRadius: 8, padding: "8px 12px", border: "1px solid rgba(255, 255, 255, 0.15)" }}>
@@ -206,7 +206,7 @@ export default function Dashboard() {
           </div>
 
           {sorted.length === 0 ? (
-            <div style={{ padding: "48px", textAlign: "center", color: "#64748b", fontSize: 14 }}>
+            <div style={{ padding: "48px", textAlign: "center", color: "var(--text3)", fontSize: 14 }}>
               {lang === "mn" ? "Todo байхгүй байна" : "No tasks found"}
             </div>
           ) : (
@@ -215,7 +215,7 @@ export default function Dashboard() {
                 <div key={todo.id} className="dash-table-row" style={{ padding: "14px 24px", alignItems: "center", transition: "all .2s" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
                     <span style={{ width: 8, height: 8, borderRadius: "50%", background: STATUS_COLOR[todo.status], flexShrink: 0, boxShadow: `0 0 8px ${STATUS_COLOR[todo.status]}44` }} />
-                    <span style={{ fontSize: 14, fontWeight: 500, color: "#f8fafc", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: todo.status === "completed" ? "line-through" : "none", opacity: todo.status === "completed" ? 0.5 : 1 }}>{todo.title}</span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: todo.status === "completed" ? "line-through" : "none", opacity: todo.status === "completed" ? 0.5 : 1 }}>{todo.title}</span>
                   </div>
                   <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 8, background: `${PRIORITY_COLOR[todo.priority]}15`, color: PRIORITY_COLOR[todo.priority], width: "fit-content", border: `1px solid ${PRIORITY_COLOR[todo.priority]}25` }}>
                     {priorityLabel[todo.priority]}
@@ -223,7 +223,7 @@ export default function Dashboard() {
                   <span style={{ fontSize: 13, color: STATUS_COLOR[todo.status], fontWeight: 600 }}>
                     {statusLabel[todo.status]}
                   </span>
-                  <span style={{ fontSize: 12, color: "#64748b" }}>
+                  <span style={{ fontSize: 12, color: "var(--text3)" }}>
                     {todo.createdAt ? new Date(todo.createdAt).toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { month: "short", day: "numeric" }) : "—"}
                   </span>
                 </div>

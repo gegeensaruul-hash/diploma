@@ -119,12 +119,12 @@ export default function AIChat({ onClose }) {
   const suggestions = mn ? SUGGESTIONS_MN : SUGGESTIONS_EN;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#020617", borderLeft: "1px solid rgba(255,255,255,0.05)" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "var(--bg-app)", borderLeft: "1px solid rgba(255,255,255,0.05)" }}>
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", gap: 12, padding: "16px 20px",
         borderBottom: "1px solid rgba(255,255,255,0.05)", flexShrink: 0,
-        background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)"
+        background: "var(--bg-card)", backdropFilter: "blur(20px)"
       }}>
         <div style={{
           width: 36, height: 36, borderRadius: 12,
@@ -145,7 +145,7 @@ export default function AIChat({ onClose }) {
         <div style={{ display: "flex", gap: 6 }}>
           <button onClick={clearChat} style={{
             width: 32, height: 32, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)",
-            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8"
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)"
           }} className="hover:text-red-400 transition-colors">
             <MdDelete size={18} />
           </button>
@@ -208,7 +208,7 @@ export default function AIChat({ onClose }) {
             </div>
             <div style={{
               padding: "12px 16px", borderRadius: "2px 20px 20px 20px",
-              background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(255,255,255,0.05)",
+              background: "var(--bg-card)", border: "1px solid rgba(255,255,255,0.05)",
             }}>
               <TypingDots />
             </div>
@@ -226,7 +226,7 @@ export default function AIChat({ onClose }) {
                   style={{
                     background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
                     borderRadius: 12, padding: "12px 16px",
-                    fontSize: 13, color: "#94a3b8", cursor: "pointer",
+                    fontSize: 13, color: "var(--text2)", cursor: "pointer",
                     textAlign: "left", fontFamily: "inherit", transition: "all 0.2s",
                   }}
                   onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "#fff"; }}
@@ -244,7 +244,7 @@ export default function AIChat({ onClose }) {
       {/* Input */}
       <div style={{
         padding: "20px", borderTop: "1px solid rgba(255,255,255,0.05)", flexShrink: 0,
-        background: "rgba(15, 23, 42, 0.4)"
+        background: "var(--bg-card)"
       }}>
         <div style={{ display: "flex", gap: 10, alignItems: "flex-end", background: "rgba(255,255,255,0.03)", borderRadius: 16, padding: "6px", border: "1px solid rgba(255,255,255,0.08)" }}>
           <textarea

@@ -8,13 +8,62 @@ export const LANGUAGES = {
 };
 
 export const THEMES = [
-  { id: "mono",   mn: "Хар & Цагаан", en: "Black & White", sidebar: "#0a0a0a", accent: "#ffffff", pro: false },
-  { id: "slate",  mn: "Саарал",  en: "Slate",  sidebar: "#1e293b", accent: "#94a3b8", pro: false },
-  { id: "green",  mn: "Ногоон",  en: "Green",  sidebar: "#0d3b2e", accent: "#10b981", pro: true },
-  { id: "blue",   mn: "Цэнхэр",  en: "Blue",   sidebar: "#0f2044", accent: "#3b82f6", pro: true },
-  { id: "purple", mn: "Ягаан",   en: "Purple", sidebar: "#1e0a3c", accent: "#8b5cf6", pro: true },
-  { id: "rose",   mn: "Улаан",   en: "Red",    sidebar: "#3b0a1e", accent: "#f43f5e", pro: true },
-  { id: "amber",  mn: "Шар",     en: "Amber",  sidebar: "#2d1a00", accent: "#f59e0b", pro: true },
+  {
+    id: "light", mn: "Цагаан", en: "Light", mode: "light",
+    bg: "#ffffff", card: "#f8fafc", cardAlt: "#f1f5f9",
+    sidebar: "#f8fafc", text: "#0f172a", text2: "#64748b", text3: "#94a3b8",
+    accent: "#0f172a", border: "rgba(0,0,0,0.08)",
+    shadow: "rgba(0,0,0,0.06)", inputBg: "rgba(0,0,0,0.03)",
+    preview: ["#ffffff", "#0f172a"], pro: false,
+  },
+  {
+    id: "dark", mn: "Харанхуй", en: "Dark", mode: "dark",
+    bg: "#020617", card: "rgba(15, 23, 42, 0.6)", cardAlt: "#1e293b",
+    sidebar: "rgba(15, 23, 42, 0.6)", text: "#f8fafc", text2: "#94a3b8", text3: "#64748b",
+    accent: "#ffffff", border: "rgba(255,255,255,0.08)",
+    shadow: "rgba(0,0,0,0.5)", inputBg: "rgba(255,255,255,0.03)",
+    preview: ["#020617", "#f8fafc"], pro: false,
+  },
+  {
+    id: "green", mn: "Ногоон", en: "Green", mode: "dark",
+    bg: "#020617", card: "rgba(15, 23, 42, 0.6)", cardAlt: "#1e293b",
+    sidebar: "#0d3b2e", text: "#f8fafc", text2: "#94a3b8", text3: "#64748b",
+    accent: "#10b981", border: "rgba(16,185,129,0.15)",
+    shadow: "rgba(0,0,0,0.5)", inputBg: "rgba(255,255,255,0.03)",
+    preview: ["#020617", "#10b981"], pro: true,
+  },
+  {
+    id: "blue", mn: "Цэнхэр", en: "Blue", mode: "dark",
+    bg: "#020617", card: "rgba(15, 23, 42, 0.6)", cardAlt: "#1e293b",
+    sidebar: "#0f2044", text: "#f8fafc", text2: "#94a3b8", text3: "#64748b",
+    accent: "#3b82f6", border: "rgba(59,130,246,0.15)",
+    shadow: "rgba(0,0,0,0.5)", inputBg: "rgba(255,255,255,0.03)",
+    preview: ["#020617", "#3b82f6"], pro: true,
+  },
+  {
+    id: "purple", mn: "Ягаан", en: "Purple", mode: "dark",
+    bg: "#020617", card: "rgba(15, 23, 42, 0.6)", cardAlt: "#1e293b",
+    sidebar: "#1e0a3c", text: "#f8fafc", text2: "#94a3b8", text3: "#64748b",
+    accent: "#8b5cf6", border: "rgba(139,92,246,0.15)",
+    shadow: "rgba(0,0,0,0.5)", inputBg: "rgba(255,255,255,0.03)",
+    preview: ["#020617", "#8b5cf6"], pro: true,
+  },
+  {
+    id: "rose", mn: "Улаан", en: "Rose", mode: "dark",
+    bg: "#020617", card: "rgba(15, 23, 42, 0.6)", cardAlt: "#1e293b",
+    sidebar: "#3b0a1e", text: "#f8fafc", text2: "#94a3b8", text3: "#64748b",
+    accent: "#f43f5e", border: "rgba(244,63,94,0.15)",
+    shadow: "rgba(0,0,0,0.5)", inputBg: "rgba(255,255,255,0.03)",
+    preview: ["#020617", "#f43f5e"], pro: true,
+  },
+  {
+    id: "amber", mn: "Шар", en: "Amber", mode: "dark",
+    bg: "#020617", card: "rgba(15, 23, 42, 0.6)", cardAlt: "#1e293b",
+    sidebar: "#2d1a00", text: "#f8fafc", text2: "#94a3b8", text3: "#64748b",
+    accent: "#f59e0b", border: "rgba(245,158,11,0.15)",
+    shadow: "rgba(0,0,0,0.5)", inputBg: "rgba(255,255,255,0.03)",
+    preview: ["#020617", "#f59e0b"], pro: true,
+  },
 ];
 
 export const T = {
@@ -33,7 +82,6 @@ export const T = {
     noteTitle: "Гарчиг", noteContent: "Агуулга...",
     calendar: "Хуанли",
     visionBoard: "Vision Board",
-    // Login / Auth
     loginTab: "Нэвтрэх", registerTab: "Бүртгүүлэх",
     checking: "Шалгаж байна...", loadingBtn: "Түр хүлээнэ үү...",
     loginError: "Нэвтрэх боломжгүй. Дахин оролдоно уу.",
@@ -45,7 +93,6 @@ export const T = {
     confirmPwRequired: "Нууц үг давтана уу",
     nameRequired2: "Нэр оруулна уу", namePlaceholder: "Бүтэн нэр",
     registerBtn: "Бүртгүүлэх",
-    // Finance
     finTitle: "Төсөв & Санхүүгийн хяналт",
     finMonth: "Энэ сар",
     finQuickAdd: "Хурдан нэмэх",
@@ -98,7 +145,6 @@ export const T = {
     noteTitle: "Title", noteContent: "Content...",
     calendar: "Calendar",
     visionBoard: "Vision Board",
-    // Login / Auth
     loginTab: "Sign In", registerTab: "Register",
     checking: "Checking...", loadingBtn: "Please wait...",
     loginError: "Login failed. Please try again.",
@@ -110,7 +156,6 @@ export const T = {
     confirmPwRequired: "Please confirm your password",
     nameRequired2: "Name is required", namePlaceholder: "Full name",
     registerBtn: "Create Account",
-    // Finance
     finTitle: "Budget & Finance Tracker",
     finMonth: "This Month",
     finQuickAdd: "Quick Add",
@@ -152,43 +197,46 @@ export const T = {
 
 export function SettingsProvider({ children }) {
   const [lang, setLang] = useState(() => localStorage.getItem("app_lang") || "mn");
-  const [themeId, setThemeId] = useState(() => localStorage.getItem("app_theme") || "mono");
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("app_dark") === "true");
+  const [themeId, setThemeId] = useState(() => localStorage.getItem("app_theme") || "light");
 
   const theme = THEMES.find((th) => th.id === themeId) || THEMES[0];
   const t = T[lang] || T.mn;
 
   const changeLang = (l) => { setLang(l); localStorage.setItem("app_lang", l); };
   const changeTheme = (id, isPro) => {
-    const t = THEMES.find((th) => th.id === id);
-    if (t?.pro && !isPro) return false;
+    const found = THEMES.find((th) => th.id === id);
+    if (found?.pro && !isPro) return false;
     setThemeId(id);
     localStorage.setItem("app_theme", id);
     return true;
   };
-  const toggleDark = () => {
-    setDarkMode(v => {
-      const next = !v;
-      localStorage.setItem("app_dark", String(next));
-      return next;
-    });
-  };
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--sidebar-bg", theme.sidebar);
-    document.documentElement.style.setProperty("--accent", theme.accent);
+    const root = document.documentElement;
+    root.style.setProperty("--bg-app", theme.bg);
+    root.style.setProperty("--bg-card", theme.card);
+    root.style.setProperty("--bg-card2", theme.cardAlt);
+    root.style.setProperty("--sidebar-bg", theme.sidebar);
+    root.style.setProperty("--text", theme.text);
+    root.style.setProperty("--text2", theme.text2);
+    root.style.setProperty("--text3", theme.text3);
+    root.style.setProperty("--accent", theme.accent);
+    root.style.setProperty("--border", theme.border);
+    root.style.setProperty("--shadow", theme.shadow);
+    root.style.setProperty("--input-bg", theme.inputBg);
+
+    root.setAttribute("data-theme", theme.mode);
+    if (theme.mode === "light") {
+      root.classList.add("light-theme");
+      root.classList.remove("dark");
+    } else {
+      root.classList.remove("light-theme");
+      root.classList.add("dark");
+    }
   }, [theme]);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
-
   return (
-    <SettingsContext.Provider value={{ lang, theme, t, changeLang, changeTheme, THEMES, LANGUAGES, darkMode, toggleDark }}>
+    <SettingsContext.Provider value={{ lang, theme, t, changeLang, changeTheme, THEMES, LANGUAGES }}>
       {children}
     </SettingsContext.Provider>
   );

@@ -124,10 +124,10 @@ export default function Todos() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-1px" }}>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: "var(--text)", margin: 0, letterSpacing: "-1px" }}>
             {status ? (titleMap[status] || status) : t.allTodos}
           </h2>
-          <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 4 }}>
+          <p style={{ fontSize: 14, color: "var(--text2)", marginTop: 4 }}>
             {lang === "mn" ? `${todos.length} ажил олдлоо` : `${todos.length} tasks found`}
           </p>
         </div>
@@ -141,9 +141,9 @@ export default function Todos() {
       </div>
 
       {/* Content */}
-      <div className="premium-card" style={{ background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)", overflow: "hidden" }}>
+      <div className="premium-card" style={{ background: "var(--bg-card)", backdropFilter: "blur(20px)", overflow: "hidden" }}>
         {isLoading ? (
-          <div style={{ padding: 60, textAlign: "center", color: "#64748b" }}>
+          <div style={{ padding: 60, textAlign: "center", color: "var(--text3)" }}>
             <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
             {lang === "mn" ? "Уншиж байна..." : "Loading tasks..."}
           </div>
@@ -152,8 +152,8 @@ export default function Todos() {
             <div style={{ width: 64, height: 64, borderRadius: 20, background: "rgba(255,255,255,0.03)", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", color: "#334155" }}>
               <MdOutlineChecklist size={32} />
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#fff", margin: 0 }}>{lang === "mn" ? "Ажил олдсонгүй" : "No tasks found"}</h3>
-            <p style={{ fontSize: 14, color: "#64748b", marginTop: 8 }}>{lang === "mn" ? "Шинэ ажил нэмж бүтээмжээ нэмэгдүүлнэ үү." : "Add a new task to start being productive."}</p>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", margin: 0 }}>{lang === "mn" ? "Ажил олдсонгүй" : "No tasks found"}</h3>
+            <p style={{ fontSize: 14, color: "var(--text3)", marginTop: 8 }}>{lang === "mn" ? "Шинэ ажил нэмж бүтээмжээ нэмэгдүүлнэ үү." : "Add a new task to start being productive."}</p>
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
@@ -183,7 +183,7 @@ export default function Todos() {
                           {todo.title}
                         </span>
                         {todo.description && (
-                          <span style={{ fontSize: 12, color: "#64748b", marginTop: 2, maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <span style={{ fontSize: 12, color: "var(--text3)", marginTop: 2, maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {todo.description}
                           </span>
                         )}
@@ -191,7 +191,7 @@ export default function Todos() {
                     </td>
                     <td className="hidden md:table-cell">
                       {todo.category ? (
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#94a3b8" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--text2)" }}>
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: todo.category.color }} />
                           {todo.category.name}
                         </div>
@@ -215,7 +215,7 @@ export default function Todos() {
                           autoFocus
                           style={{
                             background: "rgba(255,255,255,0.05)", border: "1px solid #ffffff", borderRadius: 8,
-                            padding: "4px 8px", fontSize: 12, color: "#fff", outline: "none"
+                            padding: "4px 8px", fontSize: 12, color: "var(--text)", outline: "none"
                           }}
                           onBlur={(e) => handleQuickDate(todo, e.target.value)}
                         />
@@ -223,7 +223,7 @@ export default function Todos() {
                         <button
                           onClick={() => setQuickDateId(todo.id)}
                           style={{
-                            display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#64748b",
+                            display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--text3)",
                             background: "none", border: "none", cursor: "pointer", padding: "4px 0"
                           }}
                         >
@@ -243,10 +243,10 @@ export default function Todos() {
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
-                        <button onClick={() => openEdit(todo)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-white">
+                        <button onClick={() => openEdit(todo)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "var(--text3)" }} className="hover:text-white">
                           <MdEdit size={18} />
                         </button>
-                        <button onClick={() => handleTrash(todo.id)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-red-400">
+                        <button onClick={() => handleTrash(todo.id)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "var(--text3)" }} className="hover:text-red-400">
                           <MdDelete size={18} />
                         </button>
                       </div>
