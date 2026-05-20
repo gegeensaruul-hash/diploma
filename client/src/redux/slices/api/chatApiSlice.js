@@ -30,6 +30,18 @@ export const chatApiSlice = apiSlice.injectEndpoints({
       query: ({ id, email }) => ({ url: `/chat/rooms/${id}/add`, method: "POST", body: { email } }),
       invalidatesTags: ["ChatRoom"],
     }),
+    getInvites: builder.query({
+      query: () => "/chat/invites",
+      providesTags: ["ChatInvite"],
+    }),
+    acceptInvite: builder.mutation({
+      query: (id) => ({ url: `/chat/invites/${id}/accept`, method: "POST" }),
+      invalidatesTags: ["ChatInvite", "ChatRoom"],
+    }),
+    declineInvite: builder.mutation({
+      query: (id) => ({ url: `/chat/invites/${id}/decline`, method: "POST" }),
+      invalidatesTags: ["ChatInvite", "ChatRoom"],
+    }),
   }),
 });
 
@@ -41,4 +53,7 @@ export const {
   useDeleteRoomMutation,
   useGetMessagesQuery,
   useAddMemberMutation,
+  useGetInvitesQuery,
+  useAcceptInviteMutation,
+  useDeclineInviteMutation,
 } = chatApiSlice;

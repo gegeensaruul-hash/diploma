@@ -7,6 +7,11 @@ const RoomMember = sequelize.define(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     roomId: { type: DataTypes.INTEGER, allowNull: false },
     userId: { type: DataTypes.INTEGER, allowNull: false },
+    status: {
+      type: DataTypes.ENUM("accepted", "pending", "declined"),
+      defaultValue: "accepted",
+      allowNull: false,
+    },
   },
   { timestamps: true }
 );

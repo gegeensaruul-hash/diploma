@@ -22,6 +22,10 @@ Todo.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
 ChatRoom.belongsToMany(User, { through: RoomMember, foreignKey: "roomId", as: "members" });
 User.belongsToMany(ChatRoom, { through: RoomMember, foreignKey: "userId", as: "rooms" });
 
+// RoomMember -> ChatRoom (for invite queries)
+RoomMember.belongsTo(ChatRoom, { foreignKey: "roomId" });
+ChatRoom.hasMany(RoomMember, { foreignKey: "roomId" });
+
 // ChatRoom -> ChatMessage
 ChatRoom.hasMany(ChatMessage, { foreignKey: "roomId", as: "messages", onDelete: "CASCADE" });
 ChatMessage.belongsTo(ChatRoom, { foreignKey: "roomId", as: "room" });
