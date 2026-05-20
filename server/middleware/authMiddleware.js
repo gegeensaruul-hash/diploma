@@ -3,7 +3,14 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/index.js";
 
 export const protectRoute = asyncHandler(async (req, res, next) => {
-  const token = req.cookies.token;
+  // Accept token from Authorization header or cookie
+  let token = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else {
+    token = req.cookies.token;
+  }
   if (!token) {
     return res.status(401).json({ status: false, message: "Нэвтрэх шаардлагатай" });
   }

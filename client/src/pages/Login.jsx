@@ -132,7 +132,9 @@ export default function Login() {
       if (!user) { setChecking(false); return; }
       try {
         const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
-        const res = await fetch(`${API_BASE}/auth/me`, { credentials: "include" });
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const res = await fetch(`${API_BASE}/auth/me`, { credentials: "include", headers });
         if (res.ok) { navigate("/dashboard"); }
         else { dispatch(clearCredentials()); setChecking(false); }
       } catch { dispatch(clearCredentials()); setChecking(false); }
@@ -143,7 +145,7 @@ export default function Login() {
   const handleLogin = async (data) => {
     try {
       const res = await login(data).unwrap();
-      dispatch(setCredentials(res.user));
+      dispatch(setCredentials({ user: res.user, token: res.token }));
       markSessionValid();
       navigate("/dashboard");
     } catch (err) { toast.error(err?.data?.message || t.loginError); }

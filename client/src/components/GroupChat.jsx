@@ -41,7 +41,8 @@ export default function GroupChat({ onClose }) {
   const rooms = roomsData?.rooms || [];
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, { withCredentials: true });
+    const token = localStorage.getItem("token");
+    const socket = io(SOCKET_URL, { withCredentials: true, auth: { token } });
     socketRef.current = socket;
     socket.on("new_message", (msg) => {
       setMessages((prev) => prev.find((m) => m.id === msg.id) ? prev : [...prev, msg]);

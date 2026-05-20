@@ -58,13 +58,16 @@ const startServer = async () => {
   app.use(routeNotFound);
   app.use(errorHandler);
 
-  // Socket.io auth middleware — more robust cookie parsing
+  // Socket.io auth middleware — supports both cookie and token auth
   io.use((socket, next) => {
     try {
-      const cookieHeader = socket.handshake.headers?.cookie || "";
-      // Use regex to find the token cookie value
-      const match = cookieHeader.match(/(?:^|; )token=([^;]*)/);
-      const token = match ? match[1] : null;
+      // Try token from handshake auth first, then fall back to cookie
+      let token = socket.handshake.auth?.token || null;
+      if (!token) {
+        const cookieHeader = socket.handshake.headers?.cookie || "";
+        const match = cookieHeader.match(/(?:^|; )token=([^;]*)/);
+        token = match ? match[1] : null;
+      }
 
       if (!token) {
         console.log("❌ Socket Auth: No token found");

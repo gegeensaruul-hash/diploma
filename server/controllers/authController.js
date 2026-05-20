@@ -22,9 +22,9 @@ export const login = asyncHandler(async (req, res) => {
   const match = await user.matchPassword(password);
   if (!match) return res.status(401).json({ status: false, message: "И-мэйл эсвэл нууц үг буруу байна" });
 
-  createJWT(res, user.id);
+  const token = createJWT(res, user.id);
   user.password = undefined;
-  res.json({ status: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  res.json({ status: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });
 
 export const logout = (req, res) => {

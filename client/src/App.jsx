@@ -51,7 +51,9 @@ const PrivateRoute = ({ children }) => {
     }
     const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
     // Server-т session хүчинтэй эсэхийг нэг удаа шалгана
-    fetch(`${API_BASE}/auth/me`, { credentials: "include" })
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    fetch(`${API_BASE}/auth/me`, { credentials: "include", headers })
       .then(res => {
         _sessionChecked = true;
         _sessionValid = res.ok;
