@@ -30,6 +30,16 @@ const startServer = async () => {
     console.log("ℹ️ isActive fix skipped:", err.message);
   }
 
+  // RoomMember status=NULL бичлэгүүдийг accepted болгох
+  try {
+    await sequelize.query('UPDATE "RoomMembers" SET "status" = \'accepted\' WHERE "status" IS NULL').catch(() =>
+      sequelize.query("UPDATE RoomMembers SET status = 'accepted' WHERE status IS NULL")
+    );
+    console.log("✅ RoomMember status values ensured");
+  } catch (err) {
+    console.log("ℹ️ RoomMember fix skipped:", err.message);
+  }
+
   const app = express();
   const httpServer = createServer(app);
   const port = process.env.PORT || 5000;
@@ -88,7 +98,7 @@ const startServer = async () => {
     console.log(`💬 User ${socket.userId} connected`);
 
     socket.on("join_room", async (roomId) => {
-      const member = await RoomMember.findOne({ where: { roomId, userId: socket.userId } });
+      const member = await RoomMember.findOne({ where: { roomId, userId: socket.userId, status: ["accepted", null] } });
       if (!member) return socket.emit("chat_error", "Та энэ room-ын member биш байна");
       socket.join(`room_${roomId}`);
       socket.emit("joined_room", roomId);
@@ -98,7 +108,7 @@ const startServer = async () => {
 
     socket.on("send_message", async ({ roomId, message }) => {
       if (!message?.trim()) return;
-      const member = await RoomMember.findOne({ where: { roomId, userId: socket.userId } });
+      const member = await RoomMember.findOne({ where: { roomId, userId: socket.userId, status: ["accepted", null] } });
       if (!member) return socket.emit("chat_error", "Зөвшөөрөл байхгүй");
       const saved = await ChatMessage.create({ roomId, userId: socket.userId, message: message.trim() });
       const full = await ChatMessage.findByPk(saved.id, {

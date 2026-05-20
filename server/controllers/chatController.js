@@ -20,7 +20,8 @@ export const getRooms = asyncHandler(async (req, res) => {
   const result = rooms.map((room) => {
     const r = room.toJSON();
     const myMembership = r.members.find((m) => m.id === req.user.userId);
-    r.isMember = myMembership?.RoomMember?.status === "accepted";
+    const memberStatus = myMembership?.RoomMember?.status;
+    r.isMember = memberStatus === "accepted" || (myMembership && !memberStatus);
     return r;
   });
 
@@ -71,7 +72,7 @@ export const deleteRoom = asyncHandler(async (req, res) => {
 // GET /api/chat/rooms/:id/messages — өмнөх мессежүүд
 export const getMessages = asyncHandler(async (req, res) => {
   const member = await RoomMember.findOne({
-    where: { roomId: req.params.id, userId: req.user.userId, status: "accepted" },
+    where: { roomId: req.params.id, userId: req.user.userId, status: { [Op.or]: ["accepted", null] } },
   });
   if (!member) return res.status(403).json({ status: false, message: "Энэ room-ын member биш байна" });
 
