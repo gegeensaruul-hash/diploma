@@ -1,38 +1,23 @@
-import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
+import { useActivateProMutation } from "../redux/slices/api/paymentApiSlice";
 import { MdCheckCircle, MdDiamond } from "react-icons/md";
 import { toast } from "sonner";
 
 export default function Billing() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  const [activatePro, { isLoading }] = useActivateProMutation();
 
   const handleUpgrade = async () => {
     try {
-      setLoading(true);
-      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
-      const token = localStorage.getItem("token");
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      const res = await fetch(`${API_BASE}/payments/activate-pro`, {
-        method: "POST",
-        headers,
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.status && data.isPro) {
+      const data = await activatePro().unwrap();
+      if (data.isPro) {
         toast.success("Pro амжилттай идэвхжлээ!");
         dispatch(setCredentials({ ...user, isPro: true }));
-      } else {
-        toast.error(data.message || "Алдаа гарлаа");
       }
     } catch (err) {
-      toast.error("Сүлжээний алдаа");
-    } finally {
-      setLoading(false);
+      toast.error(err?.data?.message || "Алдаа гарлаа");
     }
   };
 
@@ -87,10 +72,10 @@ export default function Billing() {
 
           <button
             onClick={handleUpgrade}
-            disabled={loading}
+            disabled={isLoading}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-400 hover:to-emerald-400 text-stone-900 font-black text-lg transition-all shadow-xl shadow-lime-600/30 flex items-center justify-center gap-2 z-10 active:scale-95 disabled:opacity-50"
           >
-            {loading ? "Түр хүлээнэ үү..." : "Одоо идэвхжүүлэх"}
+            {isLoading ? "Түр хүлээнэ үү..." : "Одоо идэвхжүүлэх"}
           </button>
         </div>
       </div>

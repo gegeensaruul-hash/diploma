@@ -40,7 +40,9 @@ export const logout = (req, res) => {
 
 export const getMe = asyncHandler(async (req, res) => {
   const user = await User.findByPk(req.user.userId, {
-    attributes: ["id", "name", "email", "role"],
+    attributes: ["id", "name", "email", "role", "isPro"],
   });
-  res.json({ status: true, user });
+  // Refresh token so existing cookie-only sessions get a token in response
+  const token = createJWT(res, req.user.userId);
+  res.json({ status: true, token, user });
 });

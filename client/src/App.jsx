@@ -54,10 +54,12 @@ const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     fetch(`${API_BASE}/auth/me`, { credentials: "include", headers })
-      .then(res => {
+      .then(async (res) => {
         _sessionChecked = true;
         _sessionValid = res.ok;
         if (res.ok) {
+          const data = await res.json();
+          if (data.token) localStorage.setItem("token", data.token);
           setVerified(true);
         } else {
           dispatch(clearCredentials());

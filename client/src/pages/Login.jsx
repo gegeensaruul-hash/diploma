@@ -135,7 +135,12 @@ export default function Login() {
         const token = localStorage.getItem("token");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const res = await fetch(`${API_BASE}/auth/me`, { credentials: "include", headers });
-        if (res.ok) { navigate("/dashboard"); }
+        if (res.ok) {
+          const data = await res.json();
+          // Save token for existing cookie-only sessions
+          if (data.token) localStorage.setItem("token", data.token);
+          navigate("/dashboard");
+        }
         else { dispatch(clearCredentials()); setChecking(false); }
       } catch { dispatch(clearCredentials()); setChecking(false); }
     };
