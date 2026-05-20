@@ -26,32 +26,33 @@ function EyeIcon({ open }) {
   );
 }
 
-function IllustrationPanel({ mn }) {
+function IllustrationPanel({ mn, isLight }) {
   return (
     <div style={{
-      background: "#0a0a0a",
+      background: isLight ? "#f1f5f9" : "#0a0a0a",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "60px 48px", position: "relative", overflow: "hidden",
       width: "100%", height: "100%",
     }}>
       {/* Decorative orbs */}
-      <div style={{position:"absolute",top:-100,right:-100,width:400,height:400,borderRadius:"50%",background:"rgba(255, 255, 255, 0.05)",filter:"blur(80px)"}}/>
-      <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background:"rgba(255, 255, 255, 0.03)",filter:"blur(60px)"}}/>
+      <div style={{position:"absolute",top:-100,right:-100,width:400,height:400,borderRadius:"50%",background: isLight ? "rgba(0,0,0,0.03)" : "rgba(255,255,255,0.05)",filter:"blur(80px)"}}/>
+      <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background: isLight ? "rgba(0,0,0,0.02)" : "rgba(255,255,255,0.03)",filter:"blur(60px)"}}/>
 
       {/* Grid pattern overlay */}
       <div style={{
         position:"absolute",inset:0,
-        backgroundImage:"radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)",
+        backgroundImage: `radial-gradient(${isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.03)'} 1px, transparent 1px)`,
         backgroundSize:"32px 32px",
       }}/>
 
       {/* App mockup */}
       <div style={{
         position:"relative",zIndex:1,width:"100%",maxWidth:360,
-        background:"rgba(15, 23, 42, 0.6)",borderRadius:32,
-        border:"1px solid rgba(255, 255, 255, 0.08)",
+        background: isLight ? "rgba(255,255,255,0.8)" : "rgba(15,23,42,0.6)",
+        borderRadius:32,
+        border: `1px solid var(--border)`,
         padding:24,backdropFilter:"blur(20px)",
-        boxShadow:"0 32px 80px rgba(0,0,0,0.5)",
+        boxShadow: isLight ? "0 32px 80px rgba(0,0,0,0.1)" : "0 32px 80px rgba(0,0,0,0.5)",
         marginBottom:48,
       }}>
         {/* Window chrome */}
@@ -64,27 +65,27 @@ function IllustrationPanel({ mn }) {
         {/* Mini dashboard */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
           {[
-            {label: mn?"Нийт":"Total", val:"24", color:"#ffffff"},
-            {label: mn?"Дууссан":"Done", val:"18", color:"#a0a0a0"},
+            {label: mn?"Нийт":"Total", val:"24"},
+            {label: mn?"Дууссан":"Done", val:"18"},
           ].map((item,i) => (
             <div key={i} style={{
-              background:"rgba(255,255,255,0.03)",borderRadius:16,padding:16,
-              border:"1px solid rgba(255,255,255,0.05)",
+              background:"var(--input-bg)",borderRadius:16,padding:16,
+              border:"1px solid var(--border)",
             }}>
-              <div style={{fontSize:12,color:"#94a3b8",fontFamily:"'Inter',sans-serif",marginBottom:4}}>{item.label}</div>
-              <div style={{fontSize:24,fontWeight:800,color:item.color,fontFamily:"'Outfit',sans-serif"}}>{item.val}</div>
+              <div style={{fontSize:12,color:"var(--text3)",fontFamily:"'Inter',sans-serif",marginBottom:4}}>{item.label}</div>
+              <div style={{fontSize:24,fontWeight:800,color:"var(--text)",fontFamily:"'Outfit',sans-serif"}}>{item.val}</div>
             </div>
           ))}
         </div>
 
         {/* Progress bar */}
-        <div style={{background:"rgba(255,255,255,0.03)",borderRadius:16,padding:16,border:"1px solid rgba(255,255,255,0.05)"}}>
+        <div style={{background:"var(--input-bg)",borderRadius:16,padding:16,border:"1px solid var(--border)"}}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-            <span style={{fontSize:12,color:"#94a3b8",fontFamily:"'Inter',sans-serif"}}>{mn?"Ажлын явц":"Workflow"}</span>
-            <span style={{fontSize:12,color:"#ffffff",fontWeight:700}}>75%</span>
+            <span style={{fontSize:12,color:"var(--text3)",fontFamily:"'Inter',sans-serif"}}>{mn?"Ажлын явц":"Workflow"}</span>
+            <span style={{fontSize:12,color:"var(--text)",fontWeight:700}}>75%</span>
           </div>
-          <div style={{height:6,borderRadius:3,background:"rgba(255,255,255,0.05)"}}>
-            <div style={{width:"75%",height:"100%",borderRadius:3,background:"#ffffff",boxShadow:"0 0 12px rgba(255,255,255,0.3)"}}/>
+          <div style={{height:6,borderRadius:3,background:"var(--input-bg)"}}>
+            <div style={{width:"75%",height:"100%",borderRadius:3,background:"var(--accent)",boxShadow:`0 0 12px ${isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.3)'}`}}/>
           </div>
         </div>
       </div>
@@ -92,16 +93,16 @@ function IllustrationPanel({ mn }) {
       {/* Text */}
       <div style={{textAlign:"center",position:"relative",zIndex:1, padding: "0 20px"}}>
         <h2 style={{
-          fontSize:32, color:"white", fontFamily:"'Outfit',sans-serif",
+          fontSize:32, color:"var(--text)", fontFamily:"'Outfit',sans-serif",
           fontWeight:800, lineHeight:1.1, margin:0, marginBottom:16,
           letterSpacing: "-1px"
         }}>
           {mn ? "Илүү төвлөрч," : "Master your focus,"}
           <br/>
-          <span style={{color: "#ffffff"}}>{mn ? "илүүг амжуул." : "achieve more."}</span>
+          {mn ? "илүүг амжуул." : "achieve more."}
         </h2>
         <p style={{
-          fontSize:15, color:"#94a3b8",
+          fontSize:15, color:"var(--text2)",
           fontFamily:"'Inter',sans-serif", lineHeight:1.6,
           maxWidth: 320, margin: "0 auto"
         }}>
@@ -113,11 +114,11 @@ function IllustrationPanel({ mn }) {
 }
 
 export default function Login() {
-  const { t } = useSettings();
+  const { t, theme, lang, changeLang } = useSettings();
+  const isLight = theme.mode === "light";
   const [tab, setTab] = useState("login");
   const [checking, setChecking] = useState(true);
   const [showPw, setShowPw] = useState(false);
-  const [lang, setLang] = useState(() => localStorage.getItem("app_lang") || "mn");
   const mn = lang === "mn";
   const { user } = useSelector((s) => s.auth);
   const dispatch = useDispatch();
@@ -137,7 +138,6 @@ export default function Login() {
         const res = await fetch(`${API_BASE}/auth/me`, { credentials: "include", headers });
         if (res.ok) {
           const data = await res.json();
-          // Save token for existing cookie-only sessions
           if (data.token) localStorage.setItem("token", data.token);
           navigate("/dashboard");
         }
@@ -169,24 +169,24 @@ export default function Login() {
 
   const inp = {
     width: "100%",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: "1px solid var(--border)",
     borderRadius: 14,
     padding: "14px 20px",
     fontSize: 15,
     fontFamily: "'Inter', sans-serif",
     color: "var(--text)",
-    background: "rgba(255, 255, 255, 0.03)",
+    background: "var(--input-bg)",
     outline: "none",
     boxSizing: "border-box",
     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
   };
 
   if (checking) return (
-    <div style={{width:"100vw",height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#1c1917"}}>
+    <div style={{width:"100vw",height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--bg-app)"}}>
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
         <div style={{
           width:40,height:40,borderRadius:"50%",
-          border:"3px solid rgba(254,252,232,0.05)",borderTopColor:"#ffffff",
+          border: `3px solid var(--border)`, borderTopColor:"var(--accent)",
           animation:"spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
         }}/>
       </div>
@@ -198,84 +198,78 @@ export default function Login() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root { --brand: #ffffff; }
 
-        html, body, #root { margin:0; padding:0; width:100%; height:100%; background: #0a0a0a; }
+        html, body, #root { margin:0; padding:0; width:100%; height:100%; background: var(--bg-app); }
 
         .li-inp:focus {
-          border-color: #ffffff !important;
-          background: rgba(255, 255, 255, 0.04) !important;
-          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08) !important;
+          border-color: var(--accent) !important;
+          background: ${isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.04)'} !important;
+          box-shadow: 0 0 0 4px ${isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)'} !important;
         }
 
         .li-btn {
-          background: #ffffff; color: #000000; border: none; border-radius: 14px;
+          background: var(--accent); color: var(--bg-app); border: none; border-radius: 14px;
           padding: 16px 0; font-size: 15px; font-weight: 700; cursor: pointer;
           font-family: 'Inter', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+          box-shadow: 0 8px 24px ${isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'};
         }
         .li-btn:hover:not(:disabled) {
-          background: #e5e5e5; transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(255, 255, 255, 0.15);
+          opacity: 0.85; transform: translateY(-2px);
+          box-shadow: 0 12px 32px ${isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)'};
         }
-        
+
         .tab-btn {
           flex: 1; padding: 14px 0; font-size: 14px; font-weight: 600;
-          font-family: 'Inter', sans-serif; color: #a8a29e; background: none; border: none;
+          font-family: 'Inter', sans-serif; color: var(--text3); background: none; border: none;
           border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
         }
-        .tab-btn.active { color: #fefce8; border-bottom-color: var(--brand); }
-        
+        .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        
+
         .top-btn {
-          background: rgba(254, 252, 232, 0.03); border: 1px solid rgba(254, 252, 232, 0.08);
+          background: var(--input-bg); border: 1px solid var(--border);
           border-radius: 12px; padding: 8px 16px; font-size: 13px; font-family: 'Inter', sans-serif;
-          color: #a8a29e; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+          color: var(--text2); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
         }
-        .top-btn:hover { background: rgba(254, 252, 232, 0.08); color: #fefce8; border-color: rgba(254, 252, 232, 0.2); }
+        .top-btn:hover { background: ${isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)'}; color: var(--text); border-color: ${isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.2)'}; }
       `}</style>
 
-      <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-[1fr_1.1fr] bg-[#1c1917] overflow-hidden">
+      <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-[1fr_1.1fr] overflow-hidden" style={{ background: "var(--bg-app)" }}>
 
         {/* ── LEFT PANEL ── */}
-        <div className="flex flex-col justify-center px-8 md:px-[8%] h-screen overflow-y-auto relative border-r border-white/5">
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 8%", height: "100vh", overflowY: "auto", position: "relative", borderRight: "1px solid var(--border)" }}>
           {/* TOP BAR */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6vh"}}>
             <button className="top-btn" onClick={() => navigate("/")}>
               <MdArrowBack />
               {mn ? "Буцах" : "Back"}
             </button>
-            <button className="top-btn" onClick={() => {
-              const nl = mn ? "en" : "mn";
-              setLang(nl);
-              localStorage.setItem("app_lang", nl);
-            }}>
+            <button className="top-btn" onClick={() => changeLang(mn ? "en" : "mn")}>
               {mn ? "English" : "Монгол"}
             </button>
           </div>
 
           {/* Logo */}
           <div style={{marginBottom:"4vh",display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:28,height:28,borderRadius:8,background:"#ffffff",display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <MdOutlineTaskAlt color="#fff" size={18}/>
+            <div style={{width:28,height:28,borderRadius:8,background:"var(--accent)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <MdOutlineTaskAlt color={isLight ? "#fff" : "#000"} size={18}/>
             </div>
-            <span style={{fontFamily:"'Outfit',serif",fontSize:22,fontWeight:800,color:"#fff",letterSpacing:"-0.5px"}}>TodoApp</span>
+            <span style={{fontFamily:"'Outfit',serif",fontSize:22,fontWeight:800,color:"var(--text)",letterSpacing:"-0.5px"}}>TodoApp</span>
           </div>
 
           {/* Header */}
           <div style={{marginBottom:"4vh"}}>
             <h1 style={{
-              fontSize:"clamp(32px, 4vw, 44px)", fontWeight:800, color:"#fff",
+              fontSize:"clamp(32px, 4vw, 44px)", fontWeight:800, color:"var(--text)",
               margin:0, lineHeight:1.1, fontFamily:"'Outfit',sans-serif", letterSpacing:"-1px",
             }}>
               {tab==="login"
                 ? (mn ? "Тавтай морил" : "Welcome Back")
                 : (mn ? "Бүртгүүлэх" : "Join the System")}
             </h1>
-            <p style={{color:"#94a3b8",fontSize:15,marginTop:12,lineHeight:1.6}}>
+            <p style={{color:"var(--text2)",fontSize:15,marginTop:12,lineHeight:1.6}}>
               {tab==="login"
                 ? (mn ? "Ажлын урсгалаа дахин нэг шат ахиул." : "Take your workflow to the next level.")
                 : (mn ? "Цоо шинэ бүтээмжийн ертөнцөд нэгд." : "Join the next gen of productivity.")}
@@ -283,7 +277,7 @@ export default function Login() {
           </div>
 
           {/* Tabs */}
-          <div style={{display:"flex",borderBottom:"1px solid rgba(255, 255, 255, 0.05)",marginBottom:"4vh"}}>
+          <div style={{display:"flex",borderBottom:"1px solid var(--border)",marginBottom:"4vh"}}>
             <button className={`tab-btn ${tab==="login"?"active":""}`} onClick={() => { setTab("login"); reset(); }}>
               {mn ? "Нэвтрэх" : "Sign In"}
             </button>
@@ -295,7 +289,7 @@ export default function Login() {
           {/* FORMS */}
           <form onSubmit={handleSubmit(tab==="login"?handleLogin:handleRegister)} className="slide-up"
             style={{display:"flex",flexDirection:"column",gap:"20px"}}>
-            
+
             {tab==="register" && (
               <div>
                 <input type="text" className="li-inp" style={inp} placeholder={mn?"Таны нэр":"Full Name"}
@@ -312,7 +306,7 @@ export default function Login() {
               <input type={showPw?"text":"password"} className="li-inp" style={inp} placeholder="Password"
                 {...register("password",{required:true, minLength:6})}/>
               <button type="button" onClick={() => setShowPw(v => !v)}
-                style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#64748b"}}>
+                style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"var(--text3)"}}>
                 <EyeIcon open={showPw}/>
               </button>
             </div>
@@ -329,9 +323,9 @@ export default function Login() {
             </button>
           </form>
 
-          <p style={{textAlign:"center",fontSize:14,color:"#64748b",marginTop:"4vh"}}>
+          <p style={{textAlign:"center",fontSize:14,color:"var(--text3)",marginTop:"4vh"}}>
             {tab==="login" ? (mn?"Бүртгэл байхгүй юу? ":"No account? ") : (mn?"Бүртгэлтэй юу? ":"Already joined? ")}
-            <span style={{color: "#ffffff", fontWeight: 700, cursor: "pointer"}} onClick={() => setTab(tab==="login"?"register":"login")}>
+            <span style={{color: "var(--accent)", fontWeight: 700, cursor: "pointer"}} onClick={() => setTab(tab==="login"?"register":"login")}>
               {tab==="login" ? (mn?"Бүртгүүлэх":"Sign Up") : (mn?"Нэвтрэх":"Sign In")}
             </span>
           </p>
@@ -339,7 +333,7 @@ export default function Login() {
 
         {/* ── RIGHT PANEL ── - Hidden on mobile */}
         <div className="hidden md:block">
-          <IllustrationPanel mn={mn}/>
+          <IllustrationPanel mn={mn} isLight={isLight}/>
         </div>
       </div>
     </>
