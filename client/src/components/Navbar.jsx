@@ -14,7 +14,7 @@ function SearchDropdown({ q, setQ, onClose }) {
     t.description?.toLowerCase().includes(q.toLowerCase())
   ).slice(0, 6);
 
-  const statusColor = { todo: "#94a3b8", in_progress: "#6366f1", completed: "#10b981" };
+  const statusColor = { todo: "#94a3b8", in_progress: "#ffffff", completed: "#10b981" };
   const priColor = { high: "#ef4444", medium: "#f59e0b", low: "#10b981" };
   const priLabel = lang === "mn"
     ? { high: "Өндөр", medium: "Дунд", low: "Бага" }
@@ -62,7 +62,7 @@ function SearchDropdown({ q, setQ, onClose }) {
       ))}
       <div style={{ padding: "10px 16px", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
         <button onClick={() => { navigate("/todos"); onClose(); }}
-          style={{ fontSize: 12, color: "#6366f1", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+          style={{ fontSize: 12, color: "#ffffff", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
           {lang === "mn" ? "Бүх todo харах →" : "View all todos →"}
         </button>
       </div>
@@ -116,11 +116,11 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
           display: "flex", alignItems: "center", gap: 10,
           background: focused ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
           borderRadius: 12, padding: "8px 14px",
-          border: focused ? "1px solid #6366f1" : "1px solid rgba(255,255,255,0.08)",
-          boxShadow: focused ? "0 0 0 4px rgba(99, 102, 241, 0.15)" : "none",
+          border: focused ? "1px solid #ffffff" : "1px solid rgba(255,255,255,0.08)",
+          boxShadow: focused ? "0 0 0 4px rgba(255, 255, 255, 0.15)" : "none",
           transition: "all .2s",
         }}>
-          <MdSearch size={18} style={{ color: focused ? "#6366f1" : "#64748b", flexShrink: 0 }} />
+          <MdSearch size={18} style={{ color: focused ? "#ffffff" : "#64748b", flexShrink: 0 }} />
           <input
             ref={inputRef}
             value={q}
@@ -166,14 +166,14 @@ export default function Navbar({ onChatToggle, chatOpen, onMenuToggle, sidebarOp
       <button onClick={onChatToggle} style={{
         display: "flex", alignItems: "center", gap: 8,
         padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)",
-        background: chatOpen ? "rgba(99, 102, 241, 0.15)" : "rgba(255,255,255,0.03)",
-        color: chatOpen ? "#818cf8" : "#94a3b8",
+        background: chatOpen ? "rgba(255, 255, 255, 0.15)" : "rgba(255,255,255,0.03)",
+        color: chatOpen ? "#ffffff" : "#94a3b8",
         cursor: "pointer", fontSize: 13, fontWeight: 700,
         flexShrink: 0, transition: "all .2s",
       }}
         className="md:px-4"
         onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
-        onMouseLeave={e => e.currentTarget.style.background = chatOpen ? "rgba(99, 102, 241, 0.15)" : "rgba(255,255,255,0.03)"}
+        onMouseLeave={e => e.currentTarget.style.background = chatOpen ? "rgba(255, 255, 255, 0.15)" : "rgba(255,255,255,0.03)"}
       >
         <MdChat size={18} />
         <span className="hidden md:inline">Chat</span>

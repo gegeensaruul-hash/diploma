@@ -14,8 +14,8 @@
   --border:    rgba(254, 252, 232, 0.08);
   --input-bg:  rgba(254, 252, 232, 0.03);
   --shadow:    rgba(0, 0, 0, 0.5);
-  --accent:    #84cc16;
-  --accent-glow: rgba(132, 204, 22, 0.15);
+  --accent:    #ffffff;
+  --accent-glow: rgba(255, 255, 255, 0.1);
 }
 
 /* Light mode support (Warm Sand) */

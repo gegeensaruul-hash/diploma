@@ -10,7 +10,7 @@ import {
 const PRIORITY_COLOR = { high: "#ef4444", medium: "#f59e0b", low: "#10b981" };
 const PRIORITY_LABEL_MN = { high: "Өндөр", medium: "Дунд", low: "Бага" };
 const PRIORITY_LABEL_EN = { high: "High", medium: "Medium", low: "Low" };
-const STATUS_COLOR = { todo: "#94a3b8", in_progress: "#6366f1", completed: "#10b981" };
+const STATUS_COLOR = { todo: "#94a3b8", in_progress: "#ffffff", completed: "#10b981" };
 
 function StatCard({ label, count, icon, accent, to, sublabel }) {
   return (
@@ -119,7 +119,7 @@ export default function Dashboard() {
           <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 4 }}>{lang === "mn" ? "Таны бүтээмжийн өнөөдрийн тойм" : "Overview of your productivity today"}</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "10px 16px" }}>
-          <MdCalendarToday size={16} color="#6366f1" />
+          <MdCalendarToday size={16} color="#ffffff" />
           <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
             {new Date().toLocaleDateString(lang === "en" ? "en-US" : "mn-MN", { weekday: "short", month: "long", day: "numeric" })}
           </span>
@@ -128,9 +128,9 @@ export default function Dashboard() {
 
       {/* Stat cards */}
       <div className="dash-stat-grid">
-        <StatCard label={lang === "mn" ? "Нийт" : "Total Tasks"} count={stats?.total} icon={<MdOutlineChecklist size={22} />} accent="#6366f1" to="/todos" />
+        <StatCard label={lang === "mn" ? "Нийт" : "Total Tasks"} count={stats?.total} icon={<MdOutlineChecklist size={22} />} accent="#ffffff" to="/todos" />
         <StatCard label={lang === "mn" ? "Хийх" : "To Do"} count={stats?.todo} icon={<MdOutlineRadioButtonUnchecked size={22} />} accent="#94a3b8" to="/todos/todo" />
-        <StatCard label={lang === "mn" ? "Хийж байна" : "In Progress"} count={stats?.in_progress} icon={<MdOutlineTimer size={22} />} accent="#6366f1" to="/todos/in_progress" />
+        <StatCard label={lang === "mn" ? "Хийж байна" : "In Progress"} count={stats?.in_progress} icon={<MdOutlineTimer size={22} />} accent="#ffffff" to="/todos/in_progress" />
         <StatCard label={lang === "mn" ? "Дууссан" : "Completed"} count={stats?.completed} icon={<MdOutlineCheckCircle size={22} />} accent="#10b981" to="/todos/completed" />
       </div>
 
@@ -144,7 +144,7 @@ export default function Dashboard() {
             <div style={{ position: "relative", width: 90, height: 90, flexShrink: 0 }}>
               <svg width="90" height="90" viewBox="0 0 90 90">
                 <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="8" />
-                <circle cx="45" cy="45" r="38" fill="none" stroke="#6366f1" strokeWidth="8"
+                <circle cx="45" cy="45" r="38" fill="none" stroke="#ffffff" strokeWidth="8"
                   strokeDasharray={`${2 * Math.PI * 38}`}
                   strokeDashoffset={`${2 * Math.PI * 38 * (1 - completePct / 100)}`}
                   strokeLinecap="round"
@@ -158,7 +158,7 @@ export default function Dashboard() {
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
               {[
                 { label: lang === "mn" ? "Дууссан" : "Done", val: stats?.completed, color: "#10b981" },
-                { label: lang === "mn" ? "Хийж байна" : "In Progress", val: stats?.in_progress, color: "#6366f1" },
+                { label: lang === "mn" ? "Хийж байна" : "In Progress", val: stats?.in_progress, color: "#ffffff" },
                 { label: lang === "mn" ? "Хийх" : "To Do", val: stats?.todo, color: "#94a3b8" },
               ].map((r) => (
                 <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -185,7 +185,7 @@ export default function Dashboard() {
           <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>
             {lang === "mn" ? "Сүүлийн Ажлууд" : "Recent Tasks"}
           </h3>
-          <Link to="/todos" style={{ fontSize: 12, color: "#6366f1", textDecoration: "none", fontWeight: 700, background: "rgba(99, 102, 241, 0.1)", borderRadius: 8, padding: "8px 12px", border: "1px solid rgba(99, 102, 241, 0.15)" }}>
+          <Link to="/todos" style={{ fontSize: 12, color: "#ffffff", textDecoration: "none", fontWeight: 700, background: "rgba(255, 255, 255, 0.1)", borderRadius: 8, padding: "8px 12px", border: "1px solid rgba(255, 255, 255, 0.15)" }}>
             {lang === "mn" ? "Бүгдийг харах →" : "View all"}
           </Link>
         </div>
@@ -199,7 +199,7 @@ export default function Dashboard() {
               { f: "createdAt", l: lang === "mn" ? "ОГНОО"     : "DATE" },
             ].map(({ f, l }) => (
               <button key={f} onClick={() => toggleSort(f)}
-                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 800, color: sortField === f ? "#6366f1" : "#64748b", padding: 0, tracking: "0.05em" }}>
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 800, color: sortField === f ? "#ffffff" : "#64748b", padding: 0, tracking: "0.05em" }}>
                 {l}
               </button>
             ))}

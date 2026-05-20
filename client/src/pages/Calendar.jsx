@@ -117,7 +117,7 @@ export default function Calendar() {
             <div className="flex gap-2 mt-1">
               <button onClick={prevMonth} className="p-1 hover:bg-black/10 dark:bg-white/10 rounded-lg transition-colors"><MdChevronLeft size={20}/></button>
               <button onClick={nextMonth} className="p-1 hover:bg-black/10 dark:bg-white/10 rounded-lg transition-colors"><MdChevronRight size={20}/></button>
-              <button onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth()); }} className="text-[10px] font-black uppercase tracking-widest text-indigo-400 ml-2 hover:text-indigo-300">Today</button>
+              <button onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth()); }} className="text-[10px] font-black uppercase tracking-widest text-white ml-2 hover:text-gray-300">Today</button>
             </div>
           </div>
 
@@ -134,7 +134,7 @@ export default function Calendar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button onClick={() => setModal({ day: today.getDate(), idx: undefined })} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+          <button onClick={() => setModal({ day: today.getDate(), idx: undefined })} className="flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-200 text-stone-900 dark:text-white rounded-xl text-sm font-bold shadow-lg shadow-white/10 transition-all active:scale-95">
             <MdAdd size={20}/> {lang === "mn" ? "Тэмдэглэл" : "Add Event"}
           </button>
         </div>
@@ -161,7 +161,7 @@ export default function Calendar() {
                 const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                 return (
                   <div key={d} onClick={() => setModal({ day: d, idx: undefined })} className={`cal-cell ${isToday ? "today" : ""}`}>
-                    <span className={`text-sm font-black w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? "bg-indigo-500 text-stone-900 dark:text-white shadow-lg shadow-indigo-500/30" : "text-slate-400"}`}>
+                    <span className={`text-sm font-black w-7 h-7 flex items-center justify-center rounded-lg ${isToday ? "bg-white text-stone-900 dark:text-white shadow-lg shadow-white/15" : "text-slate-400"}`}>
                       {d}
                     </span>
                     <div className="flex flex-col gap-1 overflow-hidden mt-1">
@@ -207,7 +207,7 @@ export default function Calendar() {
                     autoFocus
                     value={form.text}
                     onChange={e => setForm({ ...form, text: e.target.value })}
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-4 text-stone-900 dark:text-white placeholder-slate-600 outline-none focus:border-indigo-500 transition-all min-h-[120px] resize-none"
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-4 text-stone-900 dark:text-white placeholder-slate-600 outline-none focus:border-white transition-all min-h-[120px] resize-none"
                     placeholder="What's happening?"
                   />
                 </div>
@@ -233,7 +233,7 @@ export default function Calendar() {
                     <MdDelete size={20}/> {lang === "mn" ? "Устгах" : "Delete"}
                   </button>
                 )}
-                <button onClick={saveEvent} className="flex-[2] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
+                <button onClick={saveEvent} className="flex-[2] px-6 py-3 bg-white hover:bg-gray-200 text-stone-900 dark:text-white rounded-2xl font-bold shadow-lg shadow-white/10 transition-all flex items-center justify-center gap-2">
                   <MdSave size={20}/> {lang === "mn" ? "Хадгалах" : "Save Changes"}
                 </button>
               </div>
@@ -274,7 +274,7 @@ function Timetable({ lang }) {
   return (
     <div className="h-full flex flex-col p-6 animate-in fade-in slide-in-from-bottom-4">
       <div className="flex gap-4 mb-6">
-        <button onClick={() => { setEditing("new"); setQForm({ subject: "", start: "09:00", end: "10:00", color: 0, day: 0 }); }} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 transition-all">
+        <button onClick={() => { setEditing("new"); setQForm({ subject: "", start: "09:00", end: "10:00", color: 0, day: 0 }); }} className="px-4 py-2 bg-white hover:bg-gray-200 text-stone-900 dark:text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-white/10 transition-all">
           + Add Class
         </button>
       </div>
@@ -335,7 +335,7 @@ function Timetable({ lang }) {
           <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-black/10 dark:border-white/10 shadow-2xl p-6" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-stone-900 dark:text-white mb-6">Class Details</h3>
             <div className="space-y-4">
-              <input value={qForm.subject} onChange={e => setQForm({...qForm, subject: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none focus:border-indigo-500" placeholder="Subject Name" />
+              <input value={qForm.subject} onChange={e => setQForm({...qForm, subject: e.target.value})} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none focus:border-white" placeholder="Subject Name" />
               <div className="grid grid-cols-2 gap-4">
                 <input type="time" value={qForm.start} onChange={e => setQForm({...qForm, start: e.target.value})} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none" />
                 <input type="time" value={qForm.end} onChange={e => setQForm({...qForm, end: e.target.value})} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 text-stone-900 dark:text-white outline-none" />
@@ -351,7 +351,7 @@ function Timetable({ lang }) {
             </div>
             <div className="flex gap-3 mt-8">
               {editing !== "new" && <button onClick={() => deleteSlot(editing)} className="flex-1 py-3 bg-red-500/10 text-red-500 rounded-xl font-bold">Delete</button>}
-              <button onClick={saveSlot} className="flex-[2] py-3 bg-indigo-600 text-stone-900 dark:text-white rounded-xl font-bold">Save</button>
+              <button onClick={saveSlot} className="flex-[2] py-3 bg-white text-stone-900 dark:text-white rounded-xl font-bold">Save</button>
             </div>
           </div>
         </div>
