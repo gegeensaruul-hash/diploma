@@ -49,6 +49,8 @@ export default function AIChat({ onClose }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [remaining, setRemaining] = useState(null);
+  const [limited, setLimited] = useState(false);
   const inputRef = useRef(null);
 
   const sendMessage = async (text) => {
@@ -62,22 +64,36 @@ export default function AIChat({ onClose }) {
 
     try {
       const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+      const token = localStorage.getItem("token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
       const response = await fetch(`${API_BASE}/ai/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         credentials: "include",
         body: JSON.stringify({
           messages: newMessages.map(m => ({ role: m.role, content: m.content })),
         }),
       });
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.message || "Server error");
+      const data = await response.json();
+
+      if (data.limited) {
+        setLimited(true);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: data.message,
+        }]);
+        setLoading(false);
+        return;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Server error");
+      }
+
       const reply = data.reply || (mn ? "Алдаа гарлаа" : "Something went wrong");
+      if (data.remaining !== null && data.remaining !== undefined) setRemaining(data.remaining);
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
       setMessages(prev => [...prev, {
@@ -122,8 +138,8 @@ export default function AIChat({ onClose }) {
           <p style={{ fontSize: 14, fontWeights: 800, color: "white", margin: 0, letterSpacing: "-0.5px" }}>
             Groq AI Assistant
           </p>
-          <p style={{ fontSize: 11, color: "#6366f1", margin: 0, fontWeight: 700 }}>
-            {loading ? (mn ? "БОДОЖ БАЙНА..." : "THINKING...") : "ONLINE"}
+          <p style={{ fontSize: 11, color: limited ? "#f43f5e" : "#6366f1", margin: 0, fontWeight: 700 }}>
+            {loading ? (mn ? "БОДОЖ БАЙНА..." : "THINKING...") : limited ? (mn ? "ЛИМИТ ДУУССАН" : "LIMIT REACHED") : remaining !== null ? `${remaining} ${mn ? "мессеж үлдсэн" : "messages left"}` : "ONLINE"}
           </p>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
@@ -254,7 +270,7 @@ export default function AIChat({ onClose }) {
           />
           <button
             onClick={() => sendMessage()}
-            disabled={!input.trim() || loading}
+            disabled={!input.trim() || loading || limited}
             style={{
               width: 40, height: 40, borderRadius: 12, border: "none",
               cursor: input.trim() && !loading ? "pointer" : "default",

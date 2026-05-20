@@ -23,6 +23,8 @@ const User = sequelize.define(
     avatarImage: { type: DataTypes.TEXT("long"), defaultValue: null },
     coverImage: { type: DataTypes.TEXT("long"), defaultValue: null },
     isPro: { type: DataTypes.BOOLEAN, defaultValue: false },
+    aiMsgCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+    aiMsgDate: { type: DataTypes.DATEONLY, defaultValue: null },
   },
   {
     timestamps: true,

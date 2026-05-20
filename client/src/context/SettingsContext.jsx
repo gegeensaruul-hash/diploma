@@ -8,12 +8,12 @@ export const LANGUAGES = {
 };
 
 export const THEMES = [
-  { id: "green",  mn: "Ногоон",  en: "Green",  sidebar: "#0d3b2e", accent: "#10b981" },
-  { id: "blue",   mn: "Цэнхэр",  en: "Blue",   sidebar: "#0f2044", accent: "#3b82f6" },
-  { id: "purple", mn: "Ягаан",   en: "Purple", sidebar: "#1e0a3c", accent: "#8b5cf6" },
-  { id: "slate",  mn: "Саарал",  en: "Slate",  sidebar: "#1e293b", accent: "#64748b" },
-  { id: "rose",   mn: "Улаан",   en: "Red",    sidebar: "#3b0a1e", accent: "#f43f5e" },
-  { id: "amber",  mn: "Шар",     en: "Amber",  sidebar: "#2d1a00", accent: "#f59e0b" },
+  { id: "green",  mn: "Ногоон",  en: "Green",  sidebar: "#0d3b2e", accent: "#10b981", pro: false },
+  { id: "blue",   mn: "Цэнхэр",  en: "Blue",   sidebar: "#0f2044", accent: "#3b82f6", pro: false },
+  { id: "purple", mn: "Ягаан",   en: "Purple", sidebar: "#1e0a3c", accent: "#8b5cf6", pro: true },
+  { id: "slate",  mn: "Саарал",  en: "Slate",  sidebar: "#1e293b", accent: "#64748b", pro: true },
+  { id: "rose",   mn: "Улаан",   en: "Red",    sidebar: "#3b0a1e", accent: "#f43f5e", pro: true },
+  { id: "amber",  mn: "Шар",     en: "Amber",  sidebar: "#2d1a00", accent: "#f59e0b", pro: true },
 ];
 
 export const T = {
@@ -158,7 +158,13 @@ export function SettingsProvider({ children }) {
   const t = T[lang] || T.mn;
 
   const changeLang = (l) => { setLang(l); localStorage.setItem("app_lang", l); };
-  const changeTheme = (id) => { setThemeId(id); localStorage.setItem("app_theme", id); };
+  const changeTheme = (id, isPro) => {
+    const t = THEMES.find((th) => th.id === id);
+    if (t?.pro && !isPro) return false;
+    setThemeId(id);
+    localStorage.setItem("app_theme", id);
+    return true;
+  };
   const toggleDark = () => {
     setDarkMode(v => {
       const next = !v;

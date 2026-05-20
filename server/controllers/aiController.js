@@ -1,7 +1,9 @@
 import Groq from "groq-sdk";
 import asyncHandler from "express-async-handler";
+import { User } from "../models/index.js";
 
-// Lazy-initialized so missing key at startup doesn't crash the server
+const FREE_AI_DAILY_LIMIT = 10;
+
 let _groq = null;
 const getGroq = () => {
   if (!_groq) {
@@ -25,6 +27,23 @@ export const chat = asyncHandler(async (req, res) => {
     throw new Error("Messages array is required");
   }
 
+  const user = await User.findByPk(req.user.userId);
+
+  // Free хэрэглэгчийн өдрийн лимит шалгах
+  if (!user.isPro) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (user.aiMsgDate !== today) {
+      await user.update({ aiMsgCount: 0, aiMsgDate: today });
+    }
+    if (user.aiMsgCount >= FREE_AI_DAILY_LIMIT) {
+      return res.status(403).json({
+        status: false,
+        limited: true,
+        message: `Өдрийн ${FREE_AI_DAILY_LIMIT} мессежийн хязгаар дууссан. Pro болж хязгааргүй ашиглаарай!`,
+      });
+    }
+  }
+
   const groq = getGroq();
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
@@ -38,5 +57,11 @@ export const chat = asyncHandler(async (req, res) => {
 
   const reply = completion.choices?.[0]?.message?.content || "Sorry, I could not generate a response.";
 
-  res.json({ reply });
+  // Free хэрэглэгчийн тоолуур нэмэх
+  if (!user.isPro) {
+    await user.increment("aiMsgCount");
+  }
+
+  const remaining = user.isPro ? null : FREE_AI_DAILY_LIMIT - (user.aiMsgCount + 1);
+  res.json({ reply, remaining });
 });

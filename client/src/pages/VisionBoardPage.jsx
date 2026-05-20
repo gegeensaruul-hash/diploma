@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useSettings } from "../context/SettingsContext";
 import { getUserStore, setUserStore } from "../utils/userStorage";
-import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin, MdClose, MdRefresh } from "react-icons/md";
+import { MdAdd, MdImage, MdStickyNote2, MdDelete, MdCleaningServices, MdPushPin, MdClose, MdRefresh, MdDiamond } from "react-icons/md";
+import { toast } from "sonner";
+
+const FREE_VB_LIMIT = 5;
 
 const VB_FONTS = [
   {id:"caveat",    label:"Caveat",       css:"'Caveat', cursive"},
@@ -22,6 +26,9 @@ const setStore = setUserStore;
 export default function VisionBoardPage() {
   const { lang, theme } = useSettings();
   const { id } = useParams();
+  const { user } = useSelector((s) => s.auth);
+  const navigate = useNavigate();
+  const isPro = user?.isPro;
   const storageKey = `vb3_items_${id}`;
   const [items, setItems] = useState(() => getStore(storageKey, []));
   const [selected, setSelected] = useState(null);
@@ -47,7 +54,16 @@ export default function VisionBoardPage() {
   const selItem = items.find(i=>i.id===selected);
   const rnd = (max,min=0) => Math.floor(Math.random()*(max-min))+min;
 
+  const checkLimit = () => {
+    if (!isPro && items.length >= FREE_VB_LIMIT) {
+      toast.error(`Үнэгүй хэрэглэгч ${FREE_VB_LIMIT} элемент нэмэх боломжтой. Pro болж хязгааргүй ашиглаарай!`);
+      return false;
+    }
+    return true;
+  };
+
   const addNote = () => {
+    if (!checkLimit()) return;
     const newId = Date.now();
     const rect = boardRef.current?.getBoundingClientRect();
     const bw = rect?.width || 1200, bh = rect?.height || 800;
@@ -60,6 +76,7 @@ export default function VisionBoardPage() {
   };
 
   const addSticker = (emoji) => {
+    if (!checkLimit()) return;
     const newId = Date.now();
     const rect2 = boardRef.current?.getBoundingClientRect();
     const bw2 = rect2?.width || 1200, bh2 = rect2?.height || 800;
@@ -72,6 +89,7 @@ export default function VisionBoardPage() {
 
   const addImage = (e) => {
     const file = e.target.files[0]; if(!file) return;
+    if (!checkLimit()) { e.target.value = ""; return; }
     const reader = new FileReader();
     reader.onload = ev => {
       const newId = Date.now();
