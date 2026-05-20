@@ -179,16 +179,16 @@ export default function VisionBoardPage() {
           background: transparent;
         }
         .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
-        .tool-btn.active { background: #6366f1; color: #fff; }
+        .tool-btn.active { background: #ffffff; color: #fff; }
         .action-btn { opacity: 0; transition: all 0.2s; pointer-events: none; }
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
         .rot-handle { 
           position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-          width: 24px; height: 24px; border-radius: 50%; background: #6366f1;
+          width: 24px; height: 24px; border-radius: 50%; background: #ffffff;
           color: white; display: flex; align-items: center; justify-content: center;
           cursor: grab; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #6366f1; }
+        .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #ffffff; }
       `}</style>
 
       <div className="vb-toolbar" onMouseDown={e => e.stopPropagation()}>
@@ -285,7 +285,7 @@ export default function VisionBoardPage() {
 
               {(item.type === "image" || item.type === "note") && !isEdit && (
                 <div onMouseDown={e=>onResizeMouseDown(e,item.id)}
-                  className={`action-btn absolute -right-2 -bottom-2 w-6 h-6 rounded-full bg-indigo-500 border-2 border-white cursor-nwse-resize z-30 shadow-lg flex items-center justify-center ${isSel ? "opacity-100 scale-110" : ""}`}>
+                  className={`action-btn absolute -right-2 -bottom-2 w-6 h-6 rounded-full bg-white border-2 border-white cursor-nwse-resize z-30 shadow-lg flex items-center justify-center ${isSel ? "opacity-100 scale-110" : ""}`}>
                   <div className="w-1.5 h-1.5 bg-white rounded-full opacity-50" />
                 </div>
               )}
@@ -294,16 +294,16 @@ export default function VisionBoardPage() {
                 <div style={{
                   fontSize: baseFontSize * (item.size/48 || 1), fontWeight:900, color:"#fff",
                   textShadow:"0 4px 10px rgba(0,0,0,0.5)",
-                  filter:isSel?"drop-shadow(0 0 10px #6366f1)":"none",
+                  filter:isSel?"drop-shadow(0 0 10px #ffffff)":"none",
                 }}>
                   {item.emoji}
                 </div>
               ) : item.type === "image" ? (
-                <div className={`w-full h-full bg-white shadow-xl rounded-[2px] overflow-hidden ${isSel ? "ring-2 ring-indigo-500" : ""}`} style={{ padding: item.border?6:0 }}>
+                <div className={`w-full h-full bg-white shadow-xl rounded-[2px] overflow-hidden ${isSel ? "ring-2 ring-white" : ""}`} style={{ padding: item.border?6:0 }}>
                   <img src={item.src} alt="" className="w-full h-full object-cover rounded-[1px]" />
                 </div>
               ) : item.type === "note" ? (
-                <div className={`w-full h-full shadow-xl rounded-[2px] p-6 pt-8 ${isSel ? "ring-2 ring-indigo-500" : ""}`} style={{ background: NOTE_COLORS[item.color%NOTE_COLORS.length] }}>
+                <div className={`w-full h-full shadow-xl rounded-[2px] p-6 pt-8 ${isSel ? "ring-2 ring-white" : ""}`} style={{ background: NOTE_COLORS[item.color%NOTE_COLORS.length] }}>
                   {isEdit ? (
                     <textarea autoFocus
                       value={item.text}

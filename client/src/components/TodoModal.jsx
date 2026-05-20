@@ -39,7 +39,7 @@ export default function TodoModal({ open, onClose, todo }) {
 
   return (
     <div className="fixed inset-0 bg-[#020617]/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in">
-      <div className="bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-md border border-black/5 dark:border-white/5 overflow-hidden shadow-indigo-500/10">
+      <div className="bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-md border border-black/5 dark:border-white/5 overflow-hidden shadow-white/10">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-black/5 dark:border-white/5 bg-black/2 dark:bg-white/2">
           <div>
@@ -58,7 +58,7 @@ export default function TodoModal({ open, onClose, todo }) {
               border-radius: 14px; padding: 12px 16px; color: #fff; font-size: 14px; outline: none; transition: all 0.2s;
               width: 100%; box-sizing: border-box;
             }
-            .modal-input:focus { border-color: #6366f1; background: rgba(255,255,255,0.06); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+            .modal-input:focus { border-color: #ffffff; background: rgba(255,255,255,0.06); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08); }
             .modal-label { display: block; font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
           `}</style>
 
@@ -134,7 +134,7 @@ export default function TodoModal({ open, onClose, todo }) {
             <button
               type="submit"
               disabled={creating || updating}
-              className="flex-1 py-3.5 bg-indigo-500 text-stone-900 dark:text-white rounded-xl text-sm font-bold hover:bg-indigo-600 disabled:opacity-50 transition-all shadow-lg shadow-indigo-500/20"
+              className="flex-1 py-3.5 bg-white text-black rounded-xl text-sm font-bold hover:bg-gray-200 disabled:opacity-50 transition-all shadow-lg shadow-white/10"
             >
               {creating || updating ? "Saving..." : todo ? "Update Task" : "Create Task"}
             </button>

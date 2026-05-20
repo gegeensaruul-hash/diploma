@@ -67,17 +67,15 @@ export default function Layout() {
       )}
 
       {/* Chat panel */}
-      <div 
-        className={`fixed md:relative inset-y-0 right-0 z-50 md:z-40 h-full flex flex-col shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] bg-slate-950 md:bg-transparent ${chatOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}
+      <div
+        className={`fixed md:relative inset-y-0 right-0 z-50 md:z-40 h-full flex flex-col shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] bg-slate-950 md:bg-transparent ${chatOpen ? 'translate-x-0 w-full max-w-full md:max-w-[320px]' : 'translate-x-full md:translate-x-0 w-0 max-w-0'}`}
         style={{
-          width: chatOpen ? '100%' : 0,
-          maxWidth: chatOpen ? 320 : 0,
           borderLeft: chatOpen ? "1px solid var(--border)" : "none",
           background: "var(--bg-card)",
           overflow: "hidden"
         }}
       >
-        <div style={{ width: '100%', minWidth: 320, height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ width: '100%', minWidth: 280, height: "100%", display: "flex", flexDirection: "column" }}>
           {/* Tab switcher */}
           <div style={{
             display: "flex", borderBottom: "1px solid var(--border)",

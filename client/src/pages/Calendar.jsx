@@ -20,7 +20,7 @@ const DOW_FULL_MN = ["Даваа","Мягмар","Лхагва","Пүрэв","Б
 const DOW_FULL_EN = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
 const NOTE_COLORS = [
-  { bg: "rgba(99, 102, 241, 0.15)", text: "#818cf8", border: "rgba(99, 102, 241, 0.3)" },
+  { bg: "rgba(255, 255, 255, 0.1)", text: "#ffffff", border: "rgba(255, 255, 255, 0.2)" },
   { bg: "rgba(236, 72, 153, 0.15)", text: "#f472b6", border: "rgba(236, 72, 153, 0.3)" },
   { bg: "rgba(16, 185, 129, 0.15)", text: "#34d399", border: "rgba(16, 185, 129, 0.3)" },
   { bg: "rgba(245, 158, 11, 0.15)", text: "#fbbf24", border: "rgba(245, 158, 11, 0.3)" },
@@ -99,12 +99,12 @@ export default function Calendar() {
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; min-height: 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .cal-cell { border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; position: relative; min-height: 100px; }
         .cal-cell:hover { background: rgba(255,255,255,0.02); }
-        .cal-cell.today { background: rgba(99, 102, 241, 0.03); }
-        .cal-cell.selected { background: rgba(99, 102, 241, 0.08); box-shadow: inset 0 0 0 1px #6366f1; }
+        .cal-cell.today { background: rgba(255, 255, 255, 0.03); }
+        .cal-cell.selected { background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1px #ffffff; }
         .cal-event { font-size: 11px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
         .cal-event:hover { filter: brightness(1.2); transform: translateY(-1px); }
         .tab-btn { padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-        .tab-btn.active { background: #6366f1; color: #fff; }
+        .tab-btn.active { background: #ffffff; color: #000; }
         .tab-btn:not(.active) { color: #94a3b8; }
         .tab-btn:not(.active):hover { background: rgba(255,255,255,0.05); color: #f8fafc; }
       `}</style>

@@ -19,7 +19,7 @@ const WIDGET_TYPES = [
   { id:"custom",  icon:"✨",  label:"Custom",     color:"#64748b", bg:"rgba(100, 116, 139, 0.1)", border:"rgba(100, 116, 139, 0.2)", desc:"Custom list" },
 ];
 const CUSTOM_ICONS = ["✨","🚀","🎨","🏆","📊","🌈","💡","🔥","🎵","🌟","💎","🦋","🎲","⚡","🍀","🧩"];
-const COLORS = ["#6366f1","#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#ec4899","#06b6d4","#64748b","#1e293b"];
+const COLORS = ["#ffffff","#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#ec4899","#06b6d4","#64748b","#1e293b"];
 
 /* ════════ FINANCE ════════ */
 function FinanceWidget({ widget, onUpdate }) {
@@ -41,7 +41,7 @@ function FinanceWidget({ widget, onUpdate }) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        {[{l:"In",v:income,c:"#22c55e"},{l:"Out",v:expense,c:"#ef4444"},{l:"Net",v:balance,c:balance>=0?"#6366f1":"#f59e0b"}].map(x=>(
+        {[{l:"In",v:income,c:"#22c55e"},{l:"Out",v:expense,c:"#ef4444"},{l:"Net",v:balance,c:balance>=0?"#ffffff":"#f59e0b"}].map(x=>(
           <div key={x.l} className="flex-1 bg-black/3 dark:bg-white/3 rounded-lg p-2 border border-black/5 dark:border-white/5 text-center">
             <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{x.l}</div>
             <div className="font-bold text-[11px]" style={{color:x.c}}>${x.v.toLocaleString()}</div>
@@ -60,20 +60,20 @@ function FinanceWidget({ widget, onUpdate }) {
       </div>
       {show ? (
         <div className="space-y-2 p-2 bg-black/2 dark:bg-white/2 rounded-xl border border-black/5 dark:border-white/5">
-          <input value={form.label} onChange={e=>setForm(f=>({...f,label:e.target.value}))} placeholder="Entry name..." className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none focus:border-indigo-500"/>
+          <input value={form.label} onChange={e=>setForm(f=>({...f,label:e.target.value}))} placeholder="Entry name..." className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none focus:border-white"/>
           <div className="flex gap-2">
-            <input type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="Amount" className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none focus:border-indigo-500"/>
+            <input type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="Amount" className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none focus:border-white"/>
             <select value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-2 text-xs text-stone-900 dark:text-white outline-none">
               <option value="income">+ In</option><option value="expense">- Out</option>
             </select>
           </div>
           <div className="flex gap-2">
             <button onClick={()=>setShow(false)} className="flex-1 p-2 rounded-lg text-[10px] font-bold text-slate-500 hover:text-stone-900 dark:text-white transition-colors">Cancel</button>
-            <button onClick={addEntry} className="flex-1 p-2 rounded-lg bg-indigo-500 text-stone-900 dark:text-white text-[10px] font-bold shadow-lg shadow-indigo-500/20">Add</button>
+            <button onClick={addEntry} className="flex-1 p-2 rounded-lg bg-white text-black text-[10px] font-bold shadow-lg shadow-white/10">Add</button>
           </div>
         </div>
       ) : (
-        <button onClick={()=>setShow(true)} className="w-full p-2 rounded-xl border-2 border-dashed border-black/10 dark:border-white/10 text-slate-500 hover:text-indigo-400 hover:border-indigo-500/30 text-[11px] font-bold transition-all">+ Add Entry</button>
+        <button onClick={()=>setShow(true)} className="w-full p-2 rounded-xl border-2 border-dashed border-black/10 dark:border-white/10 text-slate-500 hover:text-white hover:border-white/30 text-[11px] font-bold transition-all">+ Add Entry</button>
       )}
     </div>
   );
@@ -118,7 +118,7 @@ function TimerWidget({ widget, onUpdate }) {
       </div>
       <div className="flex gap-2 justify-center">
         {!running
-          ? <button onClick={start} className="px-6 py-2 rounded-xl bg-indigo-500 text-stone-900 dark:text-white text-[11px] font-black shadow-lg shadow-indigo-500/30">START</button>
+          ? <button onClick={start} className="px-6 py-2 rounded-xl bg-white text-black text-[11px] font-black shadow-lg shadow-white/10">START</button>
           : <button onClick={pause} className="px-6 py-2 rounded-xl bg-red-500 text-stone-900 dark:text-white text-[11px] font-black shadow-lg shadow-red-500/30">STOP</button>}
         <button onClick={reset} className="p-2 rounded-xl bg-black/5 dark:bg-white/5 text-slate-400 hover:text-stone-900 dark:text-white border border-black/5 dark:border-white/5">↺</button>
       </div>
@@ -140,7 +140,7 @@ function HabitWidget({ widget, onUpdate }) {
     <div className="space-y-2">
       {habits.map(h=>(
         <div key={h.id} className="flex items-center gap-3 p-2 rounded-xl bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 group">
-          <button onClick={()=>toggle(h.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${h.lastDone===today?"bg-indigo-500 border-indigo-500":"border-black/10 dark:border-white/10 hover:border-indigo-500/50"}`}>
+          <button onClick={()=>toggle(h.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${h.lastDone===today?"bg-white border-white":"border-black/10 dark:border-white/10 hover:border-white/50"}`}>
             {h.lastDone===today && <MdCheck size={12} color="white" />}
           </button>
           <span className={`flex-1 text-[12px] font-medium transition-all ${h.lastDone===today?"text-slate-500 line-through":"text-slate-200"}`}>{h.name}</span>
@@ -152,7 +152,7 @@ function HabitWidget({ widget, onUpdate }) {
       ))}
       <div className="flex gap-2 mt-4 bg-black/3 dark:bg-white/3 p-1.5 rounded-xl border border-black/5 dark:border-white/5">
         <input value={newH} onChange={e=>setNewH(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="Add habit..." className="flex-1 bg-transparent text-[12px] text-stone-900 dark:text-white px-2 outline-none"/>
-        <button onClick={add} className="w-8 h-8 rounded-lg bg-indigo-500 text-stone-900 dark:text-white flex items-center justify-center shadow-lg shadow-indigo-500/20"><MdAdd size={20}/></button>
+        <button onClick={add} className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center shadow-lg shadow-white/10"><MdAdd size={20}/></button>
       </div>
     </div>
   );
@@ -164,8 +164,8 @@ function QuickNoteWidget({ widget, onUpdate }) {
   return (
     <div className="space-y-3">
       <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="Type something..." 
-        className="w-full min-h-[100px] bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 rounded-xl p-3 text-[13px] text-slate-200 outline-none focus:border-indigo-500/50 resize-none custom-scrollbar"/>
-      <button onClick={()=>onUpdate({...widget,data:{text}})} className="w-full py-2.5 rounded-xl bg-indigo-500 text-stone-900 dark:text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+        className="w-full min-h-[100px] bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 rounded-xl p-3 text-[13px] text-slate-200 outline-none focus:border-white/50 resize-none custom-scrollbar"/>
+      <button onClick={()=>onUpdate({...widget,data:{text}})} className="w-full py-2.5 rounded-xl bg-white text-black text-[11px] font-black uppercase tracking-widest shadow-lg shadow-white/10 flex items-center justify-center gap-2">
         <MdSave size={16} /> Save Note
       </button>
     </div>
@@ -184,7 +184,7 @@ function CustomWidget({ widget, onUpdate }) {
       <div className="space-y-1 max-h-[140px] overflow-y-auto custom-scrollbar">
         {items.map(item=>(
           <div key={item.id} className="flex items-center gap-3 p-2 rounded-xl hover:bg-black/3 dark:bg-white/3 group transition-all">
-            <button onClick={()=>toggle(item.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${item.done?`bg-indigo-500 border-indigo-500`:"border-black/10 dark:border-white/10"}`}>
+            <button onClick={()=>toggle(item.id)} className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${item.done?`bg-white border-white`:"border-black/10 dark:border-white/10"}`}>
               {item.done && <MdCheck size={12} color="white" />}
             </button>
             <span className={`flex-1 text-[12px] transition-all ${item.done?"text-slate-500 line-through":"text-slate-300"}`}>{item.text}</span>
@@ -196,7 +196,7 @@ function CustomWidget({ widget, onUpdate }) {
       </div>
       <div className="flex gap-2 mt-2 bg-black/3 dark:bg-white/3 p-1.5 rounded-xl border border-black/5 dark:border-white/5">
         <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="Add item..." className="flex-1 bg-transparent text-[12px] text-stone-900 dark:text-white px-2 outline-none"/>
-        <button onClick={add} className="w-8 h-8 rounded-lg bg-indigo-500 text-stone-900 dark:text-white flex items-center justify-center shadow-lg shadow-indigo-500/20"><MdAdd size={20}/></button>
+        <button onClick={add} className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center shadow-lg shadow-white/10"><MdAdd size={20}/></button>
       </div>
     </div>
   );
@@ -209,7 +209,7 @@ export function AddWidgetModal({ onAdd, onClose }) {
   const [pickedType, setPickedType] = useState(null);
   const [name, setName]           = useState("");
   const [icon, setIcon]           = useState("✨");
-  const [color, setColor]         = useState("#6366f1");
+  const [color, setColor]         = useState("#ffffff");
 
   const pickType = typeId => {
     const type = WIDGET_TYPES.find(t=>t.id===typeId);
@@ -234,7 +234,7 @@ export function AddWidgetModal({ onAdd, onClose }) {
             <div className="grid grid-cols-1 gap-3">
               {WIDGET_TYPES.map(type => (
                 <button key={type.id} onClick={() => pickType(type.id)}
-                  className="flex items-center gap-4 p-4 rounded-[20px] bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all text-left">
+                  className="flex items-center gap-4 p-4 rounded-[20px] bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 hover:border-white/30 hover:bg-white/5 transition-all text-left">
                   <span className="text-3xl">{type.icon}</span>
                   <div>
                     <p className="text-[15px] font-bold text-stone-900 dark:text-white mb-0.5">{type.label}</p>
@@ -250,23 +250,23 @@ export function AddWidgetModal({ onAdd, onClose }) {
               <button onClick={()=>setStep(1)} className="p-2 rounded-xl bg-black/5 dark:bg-white/5 text-slate-400 hover:text-stone-900 dark:text-white transition-all"><MdChevronRight size={24} style={{transform:"rotate(180deg)"}}/></button>
               <h3 className="text-xl font-bold text-stone-900 dark:text-white tracking-tight">Customize</h3>
             </div>
-            <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-4 flex items-center gap-4">
+            <div className="bg-white/10 border border-white/20 rounded-2xl p-4 flex items-center gap-4">
               <span className="text-3xl">{icon}</span>
               <span className="text-lg font-bold text-stone-900 dark:text-white">{name || "Unnamed"}</span>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Widget Name</label>
-              <input value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-stone-900 dark:text-white outline-none focus:border-indigo-500" placeholder="My Widget"/>
+              <input value={name} onChange={e=>setName(e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-stone-900 dark:text-white outline-none focus:border-white" placeholder="My Widget"/>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Select Icon</label>
               <div className="grid grid-cols-8 gap-2">
                 {CUSTOM_ICONS.map(em => (
-                  <button key={em} onClick={()=>setIcon(em)} className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg transition-all ${icon===em?"bg-indigo-500 text-stone-900 dark:text-white":"bg-black/5 dark:bg-white/5 text-slate-500 hover:bg-black/10 dark:bg-white/10"}`}>{em}</button>
+                  <button key={em} onClick={()=>setIcon(em)} className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg transition-all ${icon===em?"bg-white text-black":"bg-black/5 dark:bg-white/5 text-slate-500 hover:bg-black/10 dark:bg-white/10"}`}>{em}</button>
                 ))}
               </div>
             </div>
-            <button onClick={confirm} className="w-full py-4 rounded-[20px] bg-indigo-500 text-stone-900 dark:text-white font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:bg-indigo-600 transition-all">Launch Widget</button>
+            <button onClick={confirm} className="w-full py-4 rounded-[20px] bg-white text-black font-black uppercase tracking-widest shadow-xl shadow-white/10 hover:bg-gray-200 transition-all">Launch Widget</button>
           </div>
         )}
       </div>

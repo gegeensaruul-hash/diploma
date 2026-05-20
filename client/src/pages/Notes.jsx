@@ -35,7 +35,7 @@ function NoteCard({ note, idx, onClick, onDelete }) {
   return (
     <div 
       onClick={onClick}
-      className="group relative h-64 cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/20 bg-slate-900 border border-slate-800"
+      className="group relative h-64 cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-white/20 bg-slate-900 border border-slate-800"
     >
       <div className="absolute inset-0 bg-gradient-to-br opacity-50 from-transparent to-black/60 pointer-events-none" />
       <div 
@@ -144,11 +144,11 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
         .vb-item-container:hover .action-btn { opacity: 1; pointer-events: auto; }
         .rot-handle { 
           position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-          width: 24px; height: 24px; border-radius: 50%; background: #6366f1;
+          width: 24px; height: 24px; border-radius: 50%; background: #ffffff;
           color: white; display: flex; align-items: center; justify-content: center;
           cursor: grab; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #6366f1; }
+        .rot-line { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 15px; background: #ffffff; }
         
         .paper-background {
           background-color: #fefcf0;
@@ -168,7 +168,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Journal Title..." className="bg-transparent border-none text-2xl font-black text-stone-900 dark:text-white outline-none w-2/3 placeholder:text-stone-900 dark:text-white/20" />
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl text-stone-900 dark:text-white/50 hover:text-stone-900 dark:text-white transition-all"><MdClose size={24}/></button>
-            <button onClick={handleSave} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-stone-900 dark:text-white px-8 py-3 rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 flex items-center gap-2">
+            <button onClick={handleSave} className="bg-white hover:bg-gray-200 text-black px-8 py-3 rounded-2xl font-black transition-all shadow-xl shadow-white/10 flex items-center gap-2">
               <MdSave size={20}/> Save Entry
             </button>
           </div>
@@ -185,7 +185,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
           <div className="w-px h-6 bg-black/10 dark:bg-white/10" />
           
           <div className="relative">
-            <button onClick={(e) => { e.stopPropagation(); setShowStickerPicker(!showStickerPicker); }} className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 font-bold text-sm ${showStickerPicker ? 'bg-indigo-600 text-stone-900 dark:text-white' : 'bg-black/5 dark:bg-white/5 text-stone-900 dark:text-white/70 hover:text-stone-900 dark:text-white'}`}>
+            <button onClick={(e) => { e.stopPropagation(); setShowStickerPicker(!showStickerPicker); }} className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 font-bold text-sm ${showStickerPicker ? 'bg-white text-black' : 'bg-black/5 dark:bg-white/5 text-stone-900 dark:text-white/70 hover:text-stone-900 dark:text-white'}`}>
               <MdEmojiEmotions size={20}/> Stickers
             </button>
             {showStickerPicker && (
@@ -217,7 +217,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
             <div 
               ref={editorRef}
               contentEditable
-              className="absolute inset-0 pl-24 pr-12 py-12 outline-none text-slate-800 text-xl leading-[1.4em] overflow-y-auto overflow-x-hidden z-0 selection:bg-indigo-500/20"
+              className="absolute inset-0 pl-24 pr-12 py-12 outline-none text-slate-800 text-xl leading-[1.4em] overflow-y-auto overflow-x-hidden z-0 selection:bg-white/20"
               style={{ fontFamily: '"Inter", sans-serif' }}
               data-placeholder="Once upon a time..."
             />
@@ -251,7 +251,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
                      }}><MdRefresh size={14}/></div>
                   </div>
                   {item.type === 'image' && (
-                    <div className="action-btn absolute -right-2 -bottom-2 w-7 h-7 bg-indigo-600 border-2 border-white rounded-full cursor-nwse-resize z-30 handle shadow-xl" onPointerDown={(e) => {
+                    <div className="action-btn absolute -right-2 -bottom-2 w-7 h-7 bg-white border-2 border-slate-300 rounded-full cursor-nwse-resize z-30 handle shadow-xl" onPointerDown={(e) => {
                       e.stopPropagation(); e.preventDefault(); setSelected(item.id);
                       e.currentTarget.setPointerCapture(e.pointerId);
                       dragRef.current = { mode: "resize", id: item.id, startX: e.clientX, startY: e.clientY, startW: item.w, startH: item.h };
@@ -261,7 +261,7 @@ function NoteEditor({ note, subjects, onSave, onClose }) {
                   {item.type === 'sticker' ? (
                     <div className="text-7xl drop-shadow-2xl select-none hover:scale-110 transition-transform active:scale-95">{item.emoji}</div>
                   ) : (
-                    <div className={`rounded-2xl overflow-hidden shadow-2xl border-4 ${isSel ? 'border-indigo-500' : 'border-white'} transition-all`}>
+                    <div className={`rounded-2xl overflow-hidden shadow-2xl border-4 ${isSel ? 'border-white' : 'border-white/50'} transition-all`}>
                       <img src={item.src} className="w-full h-full object-cover select-none pointer-events-none" alt="" />
                     </div>
                   )}
@@ -317,31 +317,31 @@ export default function Notes() {
       <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5 flex flex-col bg-slate-900/30 backdrop-blur-3xl flex-shrink-0 max-h-[40vh] md:max-h-none overflow-y-auto">
         <div className="p-8">
           <div className="flex items-center justify-between mb-10">
-            <h1 className="text-3xl font-black bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-black text-white">
               {lang === "mn" ? "Тэмдэглэл" : "Journals"}
             </h1>
             <button 
               onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: null, floatItems: [] })}
-              className="w-12 h-12 flex items-center justify-center bg-indigo-600 rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+              className="w-12 h-12 flex items-center justify-center bg-white text-black rounded-2xl hover:bg-gray-200 transition-all shadow-xl shadow-white/10 active:scale-95"
             >
               <MdAdd size={28} />
             </button>
           </div>
 
           <div className="relative mb-8 group">
-            <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={20} />
+            <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-white transition-colors" size={20} />
             <input 
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search your thoughts..."
-              className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm outline-none focus:border-indigo-500/50 focus:bg-black/10 dark:bg-white/10 transition-all"
+              className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm outline-none focus:border-white/50 focus:bg-black/10 dark:bg-white/10 transition-all"
             />
           </div>
 
           <nav className="space-y-2">
             <button 
               onClick={() => setActiveSubj("all")}
-              className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all ${activeSubj === "all" ? 'bg-indigo-600 text-stone-900 dark:text-white shadow-xl shadow-indigo-600/20' : 'hover:bg-black/5 dark:bg-white/5 text-slate-400'}`}
+              className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all ${activeSubj === "all" ? 'bg-white text-black shadow-xl shadow-white/10' : 'hover:bg-black/5 dark:bg-white/5 text-slate-400'}`}
             >
               <div className="flex items-center gap-4">
                 <MdBook size={22} />
@@ -373,7 +373,7 @@ export default function Notes() {
             <h2 className="text-xl font-black text-stone-900 dark:text-white flex items-center gap-3">
               {activeSubj === "all" ? "Master Library" : subjects.find(s => s.id === activeSubj)?.name || "Collection"}
               <span className="w-1.5 h-1.5 rounded-full bg-slate-800" />
-              <span className="text-indigo-400 text-sm">{filtered.length} entries</span>
+              <span className="text-white text-sm">{filtered.length} entries</span>
             </h2>
             <p className="text-slate-500 text-xs font-medium mt-1">Manage and organize your personal thoughts</p>
           </div>
@@ -383,7 +383,7 @@ export default function Notes() {
               <MdGridOn size={22} />
             </button>
             <div className="w-px h-8 bg-black/10 dark:bg-white/10" />
-            <button onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: activeSubj !== "all" ? activeSubj : null, floatItems: [] })} className="bg-indigo-600 hover:bg-indigo-500 text-stone-900 dark:text-white px-8 py-3.5 rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 active:scale-95">
+            <button onClick={() => setEditing({ id: null, title: "", html: "", coverIdx: 0, subjectId: activeSubj !== "all" ? activeSubj : null, floatItems: [] })} className="bg-white hover:bg-gray-200 text-black px-8 py-3.5 rounded-2xl font-black transition-all shadow-xl shadow-white/10 active:scale-95">
               New Entry
             </button>
           </div>

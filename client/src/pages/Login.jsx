@@ -98,7 +98,7 @@ function IllustrationPanel({ mn }) {
         }}>
           {mn ? "Илүү төвлөрч," : "Master your focus,"}
           <br/>
-          <span style={{color: "#818cf8"}}>{mn ? "илүүг амжуул." : "achieve more."}</span>
+          <span style={{color: "#ffffff"}}>{mn ? "илүүг амжуул." : "achieve more."}</span>
         </h2>
         <p style={{
           fontSize:15, color:"#94a3b8",

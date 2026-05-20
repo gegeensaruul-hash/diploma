@@ -16,8 +16,8 @@ const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 const C = {
   bg: "#020617",
   card: "rgba(15, 23, 42, 0.4)",
-  accent: "#6366f1",
-  accentLight: "rgba(99, 102, 241, 0.15)",
+  accent: "#ffffff",
+  accentLight: "rgba(255, 255, 255, 0.1)",
   text: "#f8fafc",
   muted: "#94a3b8",
   border: "rgba(255, 255, 255, 0.08)",
@@ -99,7 +99,7 @@ export default function Finance() {
           background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
           border-radius: 12px; padding: 10px 14px; color: #fff; font-size: 14px; outline: none; transition: all 0.2s;
         }
-        .fin-input:focus { border-color: #6366f1; background: rgba(255,255,255,0.06); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        .fin-input:focus { border-color: #ffffff; background: rgba(255,255,255,0.06); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08); }
         .fin-btn { 
           padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s;
           display: flex; align-items: center; gap: 8px; font-size: 13px;

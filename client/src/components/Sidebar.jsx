@@ -74,7 +74,7 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
         }}
         className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-black/10 dark:border-white/10"
       >
-        <div className="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-400">
+        <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white">
           <MdDashboardCustomize size={22} />
         </div>
         <div>
@@ -113,7 +113,7 @@ function VBPopup({ anchorRef, vbBoards, setVbBoards, fcBoards, setFcBoards, setS
         onClick={()=>{ setShowFinance&&setShowFinance(true); setShowVBPopup(false); navigate("/finance"); }}
         className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-black/10 dark:border-white/10 mt-2"
       >
-        <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
+        <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white">
           <MdAccountBalanceWallet size={22} />
         </div>
         <div>

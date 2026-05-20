@@ -16,8 +16,8 @@ import { useSettings } from "../context/SettingsContext";
 
 const statusIcon = {
   todo:        <MdRadioButtonUnchecked className="text-slate-500" size={20} />,
-  in_progress: <MdPending className="text-indigo-400" size={20} />,
-  completed:   <MdCheckCircle className="text-emerald-400" size={20} />,
+  in_progress: <MdPending className="text-white" size={20} />,
+  completed:   <MdCheckCircle className="text-white" size={20} />,
 };
 
 const priorityTone = {
@@ -28,7 +28,7 @@ const priorityTone = {
 
 const statusTone = {
   todo:        { bg: "rgba(255, 255, 255, 0.03)", text: "#94a3b8", border: "rgba(255, 255, 255, 0.05)" },
-  in_progress: { bg: "rgba(99, 102, 241, 0.15)",  text: "#818cf8", border: "rgba(99, 102, 241, 0.2)" },
+  in_progress: { bg: "rgba(255, 255, 255, 0.1)",  text: "#ffffff", border: "rgba(255, 255, 255, 0.15)" },
   completed:   { bg: "rgba(16, 185, 129, 0.15)",  text: "#34d399", border: "rgba(16, 185, 129, 0.2)" },
 };
 
@@ -118,7 +118,7 @@ export default function Todos() {
            background: rgba(255,255,255,0.03); color: #94a3b8;
         }
         .pagination-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: #fff; }
-        .pagination-btn.active { background: #6366f1; color: #fff; border-color: #6366f1; box-shadow: 0 0 12px rgba(99, 102, 241, 0.3); }
+        .pagination-btn.active { background: #ffffff; color: #000; border-color: #ffffff; box-shadow: 0 0 12px rgba(255, 255, 255, 0.3); }
       `}</style>
 
       {/* Header */}
@@ -144,7 +144,7 @@ export default function Todos() {
       <div className="premium-card" style={{ background: "rgba(15, 23, 42, 0.4)", backdropFilter: "blur(20px)", overflow: "hidden" }}>
         {isLoading ? (
           <div style={{ padding: 60, textAlign: "center", color: "#64748b" }}>
-            <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
             {lang === "mn" ? "Уншиж байна..." : "Loading tasks..."}
           </div>
         ) : todos.length === 0 ? (
@@ -214,7 +214,7 @@ export default function Todos() {
                           defaultValue={todo.dueDate || ""}
                           autoFocus
                           style={{
-                            background: "rgba(255,255,255,0.05)", border: "1px solid #6366f1", borderRadius: 8,
+                            background: "rgba(255,255,255,0.05)", border: "1px solid #ffffff", borderRadius: 8,
                             padding: "4px 8px", fontSize: 12, color: "#fff", outline: "none"
                           }}
                           onBlur={(e) => handleQuickDate(todo, e.target.value)}
@@ -227,7 +227,7 @@ export default function Todos() {
                             background: "none", border: "none", cursor: "pointer", padding: "4px 0"
                           }}
                         >
-                          <MdCalendarToday size={14} color={todo.dueDate ? "#6366f1" : "#334155"} />
+                          <MdCalendarToday size={14} color={todo.dueDate ? "#ffffff" : "#334155"} />
                           {todo.dueDate || (lang === "mn" ? "Огноо" : "Set date")}
                         </button>
                       )}
@@ -243,7 +243,7 @@ export default function Todos() {
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
-                        <button onClick={() => openEdit(todo)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-indigo-400">
+                        <button onClick={() => openEdit(todo)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-white">
                           <MdEdit size={18} />
                         </button>
                         <button onClick={() => handleTrash(todo.id)} style={{ p: 2, background: "none", border: "none", cursor: "pointer", color: "#64748b" }} className="hover:text-red-400">

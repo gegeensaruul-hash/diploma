@@ -171,7 +171,7 @@ export default function GroupChat({ onClose }) {
               <MdArrowBack size={20} />
             </button>
           ) : (
-            <MdExplore size={20} className="text-indigo-400" />
+            <MdExplore size={20} className="text-white" />
           )}
           <span className="font-bold text-stone-900 dark:text-white text-sm tracking-tight">
             {activeRoom ? `# ${activeRoom.name}` : showInvites ? "Урилгууд" : "Private Communities"}
@@ -181,18 +181,18 @@ export default function GroupChat({ onClose }) {
           {activeRoom && (
             <>
               {(activeRoom.createdBy === user?.id || user?.role === "admin") && (
-                <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`} title="Invite Person">
+                <button onClick={() => setShowAddMember((v) => !v)} className={`p-2 rounded-xl transition-all ${showAddMember ? "bg-white/20 text-white" : "text-slate-500 hover:text-stone-900 dark:text-white"}`} title="Invite Person">
                   <MdPersonAdd size={20} />
                 </button>
               )}
-              <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-indigo-500/20 text-indigo-400" : "text-slate-500 hover:text-stone-900 dark:text-white"}`}>
+              <button onClick={() => setShowMembers((v) => !v)} className={`p-2 rounded-xl transition-all ${showMembers ? "bg-white/20 text-white" : "text-slate-500 hover:text-stone-900 dark:text-white"}`}>
                 <MdPeople size={20} />
               </button>
             </>
           )}
           {!activeRoom && !showInvites && (
             <>
-              <button onClick={() => setShowInvites(true)} className="p-2 rounded-xl text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all relative">
+              <button onClick={() => setShowInvites(true)} className="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-white/10 transition-all relative">
                 <MdMailOutline size={22} />
                 {invites.length > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
@@ -200,7 +200,7 @@ export default function GroupChat({ onClose }) {
                   </span>
                 )}
               </button>
-              <button onClick={() => setShowCreate(true)} className="p-2 rounded-xl text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all">
+              <button onClick={() => setShowCreate(true)} className="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-white/10 transition-all">
                 <MdAdd size={22} />
               </button>
             </>
@@ -214,18 +214,18 @@ export default function GroupChat({ onClose }) {
       {/* Content Area */}
       <div className="flex-1 overflow-hidden relative flex flex-col">
         {activeRoom && showAddMember && (
-          <div className="px-5 py-3 bg-indigo-500/5 border-b border-black/5 dark:border-white/5 flex gap-2 animate-in">
+          <div className="px-5 py-3 bg-white/5 border-b border-black/5 dark:border-white/5 flex gap-2 animate-in">
             <input
               type="email"
               placeholder="Friend's email..."
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddMember()}
-              className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs text-stone-900 dark:text-white outline-none focus:border-indigo-500"
+              className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs text-stone-900 dark:text-white outline-none focus:border-white"
             />
             <button
               onClick={handleAddMember}
-              className="px-3 py-1.5 bg-indigo-500 text-stone-900 dark:text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-indigo-500/20"
+              className="px-3 py-1.5 bg-white text-black text-[10px] font-black uppercase rounded-xl shadow-lg shadow-white/10"
             >
               INVITE
             </button>
@@ -256,7 +256,7 @@ export default function GroupChat({ onClose }) {
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleAcceptInvite(invite.id)}
-                      className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-white text-[11px] font-black uppercase rounded-xl transition-all"
+                      className="px-3 py-1.5 bg-white hover:bg-gray-200 text-black text-[11px] font-black uppercase rounded-xl transition-all"
                     >
                       Accept
                     </button>
@@ -319,13 +319,13 @@ export default function GroupChat({ onClose }) {
                 return (
                   <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"} gap-3`}>
                     {!isMe && (
-                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center text-xs font-black text-indigo-400 flex-shrink-0 mt-1 border border-indigo-500/20">
+                      <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-xs font-black text-white flex-shrink-0 mt-1 border border-white/20">
                         {msg.sender?.name?.[0]?.toUpperCase()}
                       </div>
                     )}
                     <div className={`max-w-[80%] ${isMe ? "items-end" : "items-start"} flex flex-col`}>
                       {!isMe && <p className="text-[11px] font-bold text-slate-500 mb-1 ml-1">{msg.sender?.name}</p>}
-                      <div className={`msg-bubble rounded-2xl ${isMe ? "bg-indigo-500 text-stone-900 dark:text-white rounded-tr-none" : "bg-black/5 dark:bg-white/5 text-slate-200 border border-black/5 dark:border-white/5 rounded-tl-none"}`}>
+                      <div className={`msg-bubble rounded-2xl ${isMe ? "bg-white text-black rounded-tr-none" : "bg-black/5 dark:bg-white/5 text-slate-200 border border-black/5 dark:border-white/5 rounded-tl-none"}`}>
                         {msg.message}
                       </div>
                       <p className="text-[10px] font-bold text-slate-600 mt-1 mx-1 uppercase">{fmt(msg.createdAt)}</p>
@@ -337,12 +337,12 @@ export default function GroupChat({ onClose }) {
             </div>
 
             <div className="p-4 border-t border-black/5 dark:border-white/5 bg-slate-900/20">
-              <div className="flex gap-2 bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 rounded-2xl p-1.5 focus-within:border-indigo-500/50 transition-all">
+              <div className="flex gap-2 bg-black/3 dark:bg-white/3 border border-black/5 dark:border-white/5 rounded-2xl p-1.5 focus-within:border-white/50 transition-all">
                 <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
                   className="flex-1 bg-transparent text-sm text-stone-900 dark:text-white px-3 py-2 outline-none" />
                 <button onClick={handleSend} disabled={!input.trim()}
-                  className="w-10 h-10 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-20 text-stone-900 dark:text-white flex items-center justify-center transition-all">
+                  className="w-10 h-10 rounded-xl bg-white hover:bg-gray-200 disabled:opacity-20 text-black flex items-center justify-center transition-all">
                   <MdSend size={18} />
                 </button>
               </div>
@@ -363,9 +363,9 @@ export default function GroupChat({ onClose }) {
             </div>
             <div className="space-y-4">
               <input type="text" placeholder="Room Name" value={newRoom.name} onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-stone-900 dark:text-white outline-none focus:border-indigo-500" autoFocus />
+                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-stone-900 dark:text-white outline-none focus:border-white" autoFocus />
               <button onClick={handleCreateRoom}
-                className="w-full bg-indigo-500 hover:bg-indigo-600 text-stone-900 dark:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                className="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-xl transition-all shadow-lg shadow-white/10">
                 Launch Room
               </button>
             </div>
