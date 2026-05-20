@@ -281,37 +281,25 @@ export default function GroupChat({ onClose }) {
                 <p className="text-sm font-medium text-center">No active communities found.<br/>Start a new conversation.</p>
               </div>
             )}
-            {rooms.map((room) => {
-              const isMember = room.isMember;
-              return (
-                <div key={room.id} onClick={() => isMember && setActiveRoom(room)}
-                  className={`chat-room-card rounded-2xl px-4 py-3 flex items-center justify-between gap-3 ${isMember ? "cursor-pointer" : "opacity-40"}`}>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-bold text-stone-900 dark:text-white truncate mb-0.5"># {room.name}</p>
-                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{room.members?.length || 0} Members</p>
-                  </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    {!isMember ? (
-                      <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2.5 py-1">
-                        <span className="text-[10px]">🔒</span>
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Invite Only</span>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2">
-                        {(room.createdBy === user?.id || user?.role === "admin") && (
-                          <button onClick={(e) => { e.stopPropagation(); handleDelete(room.id); }} className="text-slate-600 hover:text-red-400 p-2">
-                            <MdDelete size={16} />
-                          </button>
-                        )}
-                        <button onClick={(e) => { e.stopPropagation(); handleLeave(room.id); }} className="text-slate-600 hover:text-orange-400 p-2">
-                          <MdExitToApp size={16} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
+            {rooms.map((room) => (
+              <div key={room.id} onClick={() => setActiveRoom(room)}
+                className="chat-room-card rounded-2xl px-4 py-3 flex items-center justify-between gap-3 cursor-pointer">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[14px] font-bold text-stone-900 dark:text-white truncate mb-0.5"># {room.name}</p>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{room.members?.length || 0} Members</p>
                 </div>
-              );
-            })}
+                <div className="flex gap-2 flex-shrink-0">
+                  {(room.createdBy === user?.id || user?.role === "admin") && (
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(room.id); }} className="text-slate-600 hover:text-red-400 p-2">
+                      <MdDelete size={16} />
+                    </button>
+                  )}
+                  <button onClick={(e) => { e.stopPropagation(); handleLeave(room.id); }} className="text-slate-600 hover:text-orange-400 p-2">
+                    <MdExitToApp size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <>

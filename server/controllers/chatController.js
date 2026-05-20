@@ -2,26 +2,31 @@ import asyncHandler from "express-async-handler";
 import { ChatRoom, ChatMessage, RoomMember, User } from "../models/index.js";
 import { Op } from "sequelize";
 
-// GET /api/chat/rooms — өөрийн оролцдог room-уудыг авах
+// GET /api/chat/rooms — зөвхөн өөрийн member байгаа room-уудыг авах
 export const getRooms = asyncHandler(async (req, res) => {
+  // Миний accepted member байгаа room ID-нуудыг олох
+  const myMemberships = await RoomMember.findAll({
+    where: { userId: req.user.userId, status: { [Op.or]: ["accepted", null] } },
+    attributes: ["roomId"],
+  });
+  const myRoomIds = myMemberships.map((m) => m.roomId);
+
   const rooms = await ChatRoom.findAll({
+    where: { id: { [Op.in]: myRoomIds } },
     include: [
       {
         model: User,
         as: "members",
         attributes: ["id", "name", "email"],
-        through: { attributes: ["status"] },
+        through: { where: { status: { [Op.or]: ["accepted", null] } }, attributes: [] },
       },
     ],
     order: [["createdAt", "DESC"]],
   });
 
-  // Хэрэглэгч member эсэхийг тэмдэглэх
   const result = rooms.map((room) => {
     const r = room.toJSON();
-    const myMembership = r.members.find((m) => m.id === req.user.userId);
-    const memberStatus = myMembership?.RoomMember?.status;
-    r.isMember = memberStatus === "accepted" || (myMembership && !memberStatus);
+    r.isMember = true;
     return r;
   });
 
