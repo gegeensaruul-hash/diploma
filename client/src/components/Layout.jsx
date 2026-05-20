@@ -18,8 +18,8 @@ export default function Layout() {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-950 relative p-0 md:p-4 gap-0 md:gap-4 font-sans">
       {/* Dynamic Glowing Background */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen hidden md:block" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-fuchsia-500/20 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen hidden md:block" />
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen hidden md:block" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen hidden md:block" />
       
       {/* Sidebar Mobile Overlay */}
       {sidebarOpen && (

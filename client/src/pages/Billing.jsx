@@ -1,20 +1,23 @@
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
 import { useActivateProMutation } from "../redux/slices/api/paymentApiSlice";
-import { MdCheckCircle, MdDiamond } from "react-icons/md";
+import { MdCheckCircle, MdDiamond, MdQrCode2, MdArrowBack } from "react-icons/md";
 import { toast } from "sonner";
 
 export default function Billing() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [activatePro, { isLoading }] = useActivateProMutation();
+  const [showQR, setShowQR] = useState(false);
 
-  const handleUpgrade = async () => {
+  const handleActivate = async () => {
     try {
       const data = await activatePro().unwrap();
       if (data.isPro) {
         toast.success("Pro амжилттай идэвхжлээ!");
         dispatch(setCredentials({ ...user, isPro: true }));
+        setShowQR(false);
       }
     } catch (err) {
       toast.error(err?.data?.message || "Алдаа гарлаа");
@@ -40,7 +43,7 @@ export default function Billing() {
       <div className="bg-slate-900/60 backdrop-blur-2xl p-6 md:p-10 lg:p-14 rounded-[40px] border border-white/5 shadow-2xl max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* Info Side */}
         <div className="flex flex-col justify-center">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 px-4 py-2 rounded-full font-bold text-sm mb-6 w-max">
+          <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full font-bold text-sm mb-6 w-max">
             <MdDiamond /> Үүрд Pro (Lifetime)
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight mb-6">
@@ -50,11 +53,11 @@ export default function Billing() {
             {[
               "Хязгааргүй Vision Board элементүүд",
               "AI туслахтай хязгааргүй харилцах",
-              "Earthy Zen болон бусад тусгай Theme-үүд",
+              "Нэмэлт тусгай Theme-үүд",
               "Ирээдүйд нэмэгдэх бүх шинэ функцүүд"
             ].map((feature, idx) => (
               <li key={idx} className="flex items-center gap-4 text-slate-300 text-lg">
-                <MdCheckCircle className="text-lime-400 text-xl" />
+                <MdCheckCircle className="text-white text-xl" />
                 {feature}
               </li>
             ))}
@@ -63,20 +66,84 @@ export default function Billing() {
 
         {/* Payment Side */}
         <div className="bg-black/40 rounded-[32px] p-8 border border-white/5 flex flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px]" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px]" />
 
-          <h3 className="text-2xl font-black text-white mb-2 z-10">Нэг удаагийн төлбөр</h3>
-          <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400 mb-8 z-10">
-            15,000₮
-          </div>
+          {!showQR ? (
+            <>
+              <h3 className="text-2xl font-black text-white mb-2 z-10">Нэг удаагийн төлбөр</h3>
+              <div className="text-5xl font-black text-white mb-8 z-10">
+                15,000₮
+              </div>
+              <button
+                onClick={() => setShowQR(true)}
+                className="w-full py-4 rounded-2xl bg-white hover:bg-gray-100 text-black font-black text-lg transition-all shadow-xl flex items-center justify-center gap-2 z-10 active:scale-95"
+              >
+                Одоо идэвхжүүлэх
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-col items-center w-full z-10">
+              <button
+                onClick={() => setShowQR(false)}
+                className="self-start mb-4 text-slate-400 hover:text-white flex items-center gap-1 text-sm transition-colors"
+              >
+                <MdArrowBack size={18} /> Буцах
+              </button>
 
-          <button
-            onClick={handleUpgrade}
-            disabled={isLoading}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-400 hover:to-emerald-400 text-stone-900 font-black text-lg transition-all shadow-xl shadow-lime-600/30 flex items-center justify-center gap-2 z-10 active:scale-95 disabled:opacity-50"
-          >
-            {isLoading ? "Түр хүлээнэ үү..." : "Одоо идэвхжүүлэх"}
-          </button>
+              <div className="bg-white p-5 rounded-3xl shadow-2xl mb-5">
+                <svg viewBox="0 0 200 200" width="180" height="180">
+                  {/* QR-like pattern */}
+                  <rect width="200" height="200" fill="white"/>
+                  {/* Corner squares */}
+                  <rect x="10" y="10" width="50" height="50" fill="black" rx="4"/>
+                  <rect x="16" y="16" width="38" height="38" fill="white" rx="2"/>
+                  <rect x="22" y="22" width="26" height="26" fill="black" rx="2"/>
+
+                  <rect x="140" y="10" width="50" height="50" fill="black" rx="4"/>
+                  <rect x="146" y="16" width="38" height="38" fill="white" rx="2"/>
+                  <rect x="152" y="22" width="26" height="26" fill="black" rx="2"/>
+
+                  <rect x="10" y="140" width="50" height="50" fill="black" rx="4"/>
+                  <rect x="16" y="146" width="38" height="38" fill="white" rx="2"/>
+                  <rect x="22" y="152" width="26" height="26" fill="black" rx="2"/>
+
+                  {/* Data pattern */}
+                  {[70,80,90,100,110,120].map(x =>
+                    [10,20,30,40,50,70,80,90,100,110,120,140,150,160,170,180].map(y => (
+                      (x * y * 7 + x * 3 + y * 11) % 3 !== 0 ? <rect key={`${x}-${y}`} x={x} y={y} width="8" height="8" fill="black" rx="1"/> : null
+                    ))
+                  )}
+                  {[10,20,30,40,50,160,170,180].map(x =>
+                    [70,80,90,100,110,120].map(y => (
+                      (x * y * 13 + x * 7 + y * 3) % 3 !== 0 ? <rect key={`${x}-${y}`} x={x} y={y} width="8" height="8" fill="black" rx="1"/> : null
+                    ))
+                  )}
+                  {[140,150,160,170,180].map(x =>
+                    [140,150,160,170,180].map(y => (
+                      (x * y * 11 + x * 5) % 4 !== 0 ? <rect key={`${x}-${y}`} x={x} y={y} width="8" height="8" fill="black" rx="1"/> : null
+                    ))
+                  )}
+                  {/* Center logo area */}
+                  <rect x="75" y="75" width="50" height="50" fill="white" rx="8"/>
+                  <rect x="80" y="80" width="40" height="40" fill="black" rx="6"/>
+                  <text x="100" y="106" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold">Q</text>
+                </svg>
+              </div>
+
+              <p className="text-white font-bold text-sm mb-1">QPay-ээр төлбөрөө хийнэ үү</p>
+              <p className="text-slate-500 text-xs mb-6 text-center">
+                Банкны апп-аар QR кодыг уншуулна уу
+              </p>
+
+              <button
+                onClick={handleActivate}
+                disabled={isLoading}
+                className="w-full py-4 rounded-2xl bg-white hover:bg-gray-100 text-black font-black text-lg transition-all shadow-xl flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+              >
+                {isLoading ? "Шалгаж байна..." : "Төлбөр шалгах"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

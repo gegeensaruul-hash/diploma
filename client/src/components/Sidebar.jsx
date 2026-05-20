@@ -162,7 +162,7 @@ export default function Sidebar({ onClose, onMenuToggle }) {
   const linkClass = (isActive) =>
     `w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 ${
       isActive 
-        ? "bg-indigo-500 text-stone-900 dark:text-white shadow-lg shadow-indigo-500/30 scale-110" 
+        ? "bg-white text-black shadow-lg shadow-white/20 scale-110"
         : "text-slate-400 hover:text-stone-900 dark:text-white hover:bg-black/10 dark:bg-white/10 hover:scale-105"
     }`;
 

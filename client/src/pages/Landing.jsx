@@ -23,7 +23,7 @@ const BENTO_FEATURES = [
     icon: <MdOutlineTaskAlt />,
     size: "large",
     bg: "linear-gradient(135deg, #292524 0%, #3c3936 100%)",
-    accent: "#84cc16"
+    accent: "#ffffff"
   },
   {
     title: "AI Assistant",
@@ -33,7 +33,7 @@ const BENTO_FEATURES = [
     icon: <MdAutoAwesome />,
     size: "small",
     bg: "#1c1917",
-    accent: "#a3e635"
+    accent: "#cccccc"
   },
   {
     title: "Finance Tracker",
@@ -43,7 +43,7 @@ const BENTO_FEATURES = [
     icon: <MdOutlineAccountBalanceWallet />,
     size: "small",
     bg: "#1c1917",
-    accent: "#facc15"
+    accent: "#999999"
   },
   {
     title: "Bento Workflow",
@@ -53,7 +53,7 @@ const BENTO_FEATURES = [
     icon: <MdOutlineDashboardCustomize />,
     size: "medium",
     bg: "linear-gradient(135deg, #292524 0%, #44403c 100%)",
-    accent: "#84cc16"
+    accent: "#ffffff"
   },
   {
     title: "Secure Collaboration",
@@ -63,7 +63,7 @@ const BENTO_FEATURES = [
     icon: <MdOutlineLock />,
     size: "medium",
     bg: "#1c1917",
-    accent: "#fb923c"
+    accent: "#888888"
   }
 ];
 
@@ -95,9 +95,9 @@ export default function Landing() {
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
         
         :root {
-          --brand: #84cc16;
-          --brand-light: #a3e635;
-          --brand-dim: rgba(132, 204, 22, 0.15);
+          --brand: #ffffff;
+          --brand-light: #e5e5e5;
+          --brand-dim: rgba(255, 255, 255, 0.1);
           --bg: #1c1917;
           --bg-card: #292524;
           --bg-card2: #3c3936;
@@ -134,7 +134,7 @@ export default function Landing() {
         .logo-box {
           width: 32px; height: 32px; background: var(--brand); border-radius: 8px;
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 0 20px rgba(132, 204, 22, 0.4);
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
         }
 
         .nav-links { display: flex; gap: 40px; }
@@ -155,12 +155,12 @@ export default function Landing() {
         .hero-glow {
           position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
           width: 80vw; height: 60vh;
-          background: radial-gradient(circle, rgba(132, 204, 22, 0.12) 0%, rgba(28, 25, 23, 0) 70%);
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(28, 25, 23, 0) 70%);
           filter: blur(100px); z-index: 0; pointer-events: none;
         }
 
         .hero-badge {
-          background: rgba(132, 204, 22, 0.1); border: 1px solid rgba(132, 204, 22, 0.25);
+          background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25);
           color: var(--brand-light); padding: 6px 16px; border-radius: 100px;
           font-size: 13px; font-weight: 600; margin-bottom: 24px;
           display: flex; align-items: center; gap: 8px;
@@ -189,9 +189,9 @@ export default function Landing() {
           background: var(--brand); color: #1c1917; padding: 14px 32px; border-radius: 12px;
           font-size: 15px; font-weight: 700; border: none; cursor: pointer;
           display: flex; align-items: center; gap: 8px; transition: all 0.3s;
-          box-shadow: 0 10px 25px rgba(132, 204, 22, 0.3);
+          box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
         }
-        .btn-primary:hover { background: #a3e635; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(132, 204, 22, 0.4); }
+        .btn-primary:hover { background: #a3e635; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(255, 255, 255, 0.4); }
 
         .btn-secondary {
           background: rgba(255, 255, 255, 0.03); color: #fff; padding: 14px 32px; border-radius: 12px;
@@ -217,7 +217,7 @@ export default function Landing() {
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: default;
           background: var(--bg-card);
         }
-        .bento-card:hover { border-color: rgba(132, 204, 22, 0.3); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .bento-card:hover { border-color: rgba(255, 255, 255, 0.3); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .bento-card.large { grid-column: span 2; grid-row: span 2; }
         .bento-card.medium { grid-column: span 2; }
         .bento-card.small { grid-column: span 1; }
@@ -366,8 +366,8 @@ export default function Landing() {
       {/* ── CTA SECTION ── */}
       <section className="section" style={{textAlign:'center'}}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(132, 204, 22, 0.08) 0%, rgba(41, 37, 36, 0.6) 100%)',
-          padding: '80px 40px', borderRadius: '40px', border: '1px solid rgba(132, 204, 22, 0.15)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(41, 37, 36, 0.6) 100%)',
+          padding: '80px 40px', borderRadius: '40px', border: '1px solid rgba(255, 255, 255, 0.15)',
           maxWidth: '1000px', margin: '0 auto'
         }}>
           <h2 className="section-title" style={{fontSize: 'clamp(32px, 4vw, 52px)'}}>

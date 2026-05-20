@@ -29,14 +29,14 @@ function EyeIcon({ open }) {
 function IllustrationPanel({ mn }) {
   return (
     <div style={{
-      background: "#1c1917",
+      background: "#0a0a0a",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "60px 48px", position: "relative", overflow: "hidden",
       width: "100%", height: "100%",
     }}>
       {/* Decorative orbs */}
-      <div style={{position:"absolute",top:-100,right:-100,width:400,height:400,borderRadius:"50%",background:"rgba(132, 204, 22, 0.08)",filter:"blur(80px)"}}/>
-      <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background:"rgba(250, 204, 21, 0.05)",filter:"blur(60px)"}}/>
+      <div style={{position:"absolute",top:-100,right:-100,width:400,height:400,borderRadius:"50%",background:"rgba(255, 255, 255, 0.05)",filter:"blur(80px)"}}/>
+      <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background:"rgba(255, 255, 255, 0.03)",filter:"blur(60px)"}}/>
 
       {/* Grid pattern overlay */}
       <div style={{
@@ -64,8 +64,8 @@ function IllustrationPanel({ mn }) {
         {/* Mini dashboard */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
           {[
-            {label: mn?"Нийт":"Total", val:"24", color:"#818cf8"},
-            {label: mn?"Дууссан":"Done", val:"18", color:"#34d399"},
+            {label: mn?"Нийт":"Total", val:"24", color:"#ffffff"},
+            {label: mn?"Дууссан":"Done", val:"18", color:"#a0a0a0"},
           ].map((item,i) => (
             <div key={i} style={{
               background:"rgba(255,255,255,0.03)",borderRadius:16,padding:16,
@@ -81,10 +81,10 @@ function IllustrationPanel({ mn }) {
         <div style={{background:"rgba(255,255,255,0.03)",borderRadius:16,padding:16,border:"1px solid rgba(255,255,255,0.05)"}}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
             <span style={{fontSize:12,color:"#94a3b8",fontFamily:"'Inter',sans-serif"}}>{mn?"Ажлын явц":"Workflow"}</span>
-            <span style={{fontSize:12,color:"#818cf8",fontWeight:700}}>75%</span>
+            <span style={{fontSize:12,color:"#ffffff",fontWeight:700}}>75%</span>
           </div>
           <div style={{height:6,borderRadius:3,background:"rgba(255,255,255,0.05)"}}>
-            <div style={{width:"75%",height:"100%",borderRadius:3,background:"var(--brand)",boxShadow:"0 0 12px var(--brand)"}}/>
+            <div style={{width:"75%",height:"100%",borderRadius:3,background:"#ffffff",boxShadow:"0 0 12px rgba(255,255,255,0.3)"}}/>
           </div>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function Login() {
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
         <div style={{
           width:40,height:40,borderRadius:"50%",
-          border:"3px solid rgba(254,252,232,0.05)",borderTopColor:"#84cc16",
+          border:"3px solid rgba(254,252,232,0.05)",borderTopColor:"#ffffff",
           animation:"spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
         }}/>
       </div>
@@ -199,25 +199,25 @@ export default function Login() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         
-        :root { --brand: #84cc16; }
-        
-        html, body, #root { margin:0; padding:0; width:100%; height:100%; background: #1c1917; }
-        
+        :root { --brand: #ffffff; }
+
+        html, body, #root { margin:0; padding:0; width:100%; height:100%; background: #0a0a0a; }
+
         .li-inp:focus {
-          border-color: var(--brand) !important;
-          background: rgba(254, 252, 232, 0.04) !important;
-          box-shadow: 0 0 0 4px rgba(132, 204, 22, 0.12) !important;
+          border-color: #ffffff !important;
+          background: rgba(255, 255, 255, 0.04) !important;
+          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08) !important;
         }
-        
+
         .li-btn {
-          background: var(--brand); color: #1c1917; border: none; border-radius: 14px;
+          background: #ffffff; color: #000000; border: none; border-radius: 14px;
           padding: 16px 0; font-size: 15px; font-weight: 700; cursor: pointer;
           font-family: 'Inter', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 8px 24px rgba(132, 204, 22, 0.25);
+          box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
         }
         .li-btn:hover:not(:disabled) {
-          background: #a3e635; transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(132, 204, 22, 0.35);
+          background: #e5e5e5; transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(255, 255, 255, 0.15);
         }
         
         .tab-btn {
@@ -259,7 +259,7 @@ export default function Login() {
 
           {/* Logo */}
           <div style={{marginBottom:"4vh",display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:28,height:28,borderRadius:8,background:"var(--brand)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{width:28,height:28,borderRadius:8,background:"#ffffff",display:"flex",alignItems:"center",justifyContent:"center"}}>
               <MdOutlineTaskAlt color="#fff" size={18}/>
             </div>
             <span style={{fontFamily:"'Outfit',serif",fontSize:22,fontWeight:800,color:"#fff",letterSpacing:"-0.5px"}}>TodoApp</span>
@@ -331,7 +331,7 @@ export default function Login() {
 
           <p style={{textAlign:"center",fontSize:14,color:"#64748b",marginTop:"4vh"}}>
             {tab==="login" ? (mn?"Бүртгэл байхгүй юу? ":"No account? ") : (mn?"Бүртгэлтэй юу? ":"Already joined? ")}
-            <span style={{color: "var(--brand)", fontWeight: 700, cursor: "pointer"}} onClick={() => setTab(tab==="login"?"register":"login")}>
+            <span style={{color: "#ffffff", fontWeight: 700, cursor: "pointer"}} onClick={() => setTab(tab==="login"?"register":"login")}>
               {tab==="login" ? (mn?"Бүртгүүлэх":"Sign Up") : (mn?"Нэвтрэх":"Sign In")}
             </span>
           </p>
