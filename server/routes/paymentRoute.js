@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute } from "../middleware/authMiddleware.js";
-import { listPayments, createInvoice, checkInvoice, qpayCallback, mockPay } from "../controllers/paymentController.js";
+import { listPayments, createInvoice, checkInvoice, qpayCallback, mockPay, activatePro } from "../controllers/paymentController.js";
 
 const router = express.Router();
 
@@ -12,5 +12,6 @@ router.get("/", listPayments);
 router.post("/qpay/invoice", createInvoice);
 router.post("/qpay/check/:id", checkInvoice);
 router.post("/qpay/mock-pay/:id", mockPay);
+router.post("/activate-pro", activatePro);
 
 export default router;

@@ -96,6 +96,26 @@ export const mockPay = asyncHandler(async (req, res) => {
   res.json({ status: true, paid: true, payment });
 });
 
+export const activatePro = asyncHandler(async (req, res) => {
+  const user = await User.findByPk(req.user.userId);
+  if (!user) return res.status(404).json({ status: false, message: "User not found" });
+  if (user.isPro) return res.json({ status: true, message: "Already Pro", isPro: true });
+
+  await user.update({ isPro: true });
+
+  await Payment.create({
+    userId: req.user.userId,
+    senderInvoiceNo: `pro-${req.user.userId}-${Date.now()}`,
+    amount: 15000,
+    description: "Pro Subscription - Lifetime",
+    status: "paid",
+    paidAt: new Date(),
+    providerResponse: { directActivation: true },
+  });
+
+  res.json({ status: true, isPro: true, message: "Pro амжилттай идэвхжлээ!" });
+});
+
 export const qpayCallback = asyncHandler(async (req, res) => {
   const senderInvoiceNo = req.query.invoice || req.body?.invoice;
   if (senderInvoiceNo) {

@@ -1,32 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slices/authSlice";
-import { MdCheckCircle, MdDiamond, MdQrCode } from "react-icons/md";
+import { MdCheckCircle, MdDiamond } from "react-icons/md";
 import { toast } from "sonner";
 
 export default function Billing() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
   const [loading, setLoading] = useState(false);
-  const [invoice, setInvoice] = useState(null);
-  const [checking, setChecking] = useState(false);
 
   const handleUpgrade = async () => {
     try {
       setLoading(true);
       const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
-      const res = await fetch(`${API_BASE}/payments/qpay/invoice`, {
+      const token = localStorage.getItem("token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/payments/activate-pro`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 15000, description: "Pro Subscription - Lifetime" })
+        headers,
+        credentials: "include",
       });
       const data = await res.json();
-      if (data.status) {
-        setInvoice(data.payment);
-        toast.success("Нэхэмжлэл амжилттай үүслээ");
+      if (data.status && data.isPro) {
+        toast.success("Pro амжилттай идэвхжлээ!");
+        dispatch(setCredentials({ ...user, isPro: true }));
       } else {
-        toast.error(data.message || "Нэхэмжлэл үүсгэхэд алдаа гарлаа");
+        toast.error(data.message || "Алдаа гарлаа");
       }
     } catch (err) {
       toast.error("Сүлжээний алдаа");
@@ -34,50 +35,6 @@ export default function Billing() {
       setLoading(false);
     }
   };
-
-  const handleMockPay = async () => {
-    if (!invoice) return;
-    try {
-      setChecking(true);
-      const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
-      const res = await fetch(`${API_BASE}/payments/qpay/mock-pay/${invoice.id}`, { method: "POST" });
-      const data = await res.json();
-      if (data.status && data.paid) {
-        toast.success("Төлбөр амжилттай төлөгдлөө!");
-        // Update user in Redux
-        dispatch(setCredentials({ ...user, isPro: true }));
-        setInvoice(null);
-      } else {
-        toast.error("Төлбөр баталгаажсангүй");
-      }
-    } catch (err) {
-      toast.error("Сүлжээний алдаа");
-    } finally {
-      setChecking(false);
-    }
-  };
-
-  // Poll for payment status (optional, real QPay integration would need this)
-  useEffect(() => {
-    let interval;
-    if (invoice && !user.isPro) {
-      interval = setInterval(async () => {
-        try {
-          const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
-          const res = await fetch(`${API_BASE}/payments/qpay/check/${invoice.id}`, { method: "POST" });
-          const data = await res.json();
-          if (data.status && data.paid) {
-            toast.success("Төлбөр амжилттай төлөгдлөө!");
-            dispatch(setCredentials({ ...user, isPro: true }));
-            setInvoice(null);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }, 5000); // Check every 5 seconds
-    }
-    return () => clearInterval(interval);
-  }, [invoice, user.isPro, dispatch]);
 
   if (user?.isPro) {
     return (
@@ -122,46 +79,19 @@ export default function Billing() {
         {/* Payment Side */}
         <div className="bg-black/40 rounded-[32px] p-8 border border-white/5 flex flex-col items-center justify-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px]" />
-          
+
           <h3 className="text-2xl font-black text-white mb-2 z-10">Нэг удаагийн төлбөр</h3>
           <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400 mb-8 z-10">
             15,000₮
           </div>
 
-          {!invoice ? (
-            <button 
-              onClick={handleUpgrade}
-              disabled={loading}
-              className="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-lg transition-all shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 z-10 active:scale-95 disabled:opacity-50"
-            >
-              {loading ? "Түр хүлээнэ үү..." : "Одоо идэвхжүүлэх"}
-            </button>
-          ) : (
-            <div className="flex flex-col items-center w-full z-10 animate-in slide-in-from-bottom-4">
-              <div className="bg-white p-4 rounded-3xl shadow-2xl mb-6">
-                {invoice.qrImage ? (
-                  <img src={`data:image/png;base64,${invoice.qrImage}`} alt="QPay QR" className="w-48 h-48" />
-                ) : (
-                  <div className="w-48 h-48 flex items-center justify-center bg-slate-100 rounded-2xl text-slate-400 flex-col gap-2">
-                    <MdQrCode size={48} />
-                    <span>QR Code</span>
-                  </div>
-                )}
-              </div>
-              <p className="text-slate-300 text-sm mb-6 text-center">
-                Банкны апп эсвэл QPay-ээр уншуулж төлбөрөө хийнэ үү
-              </p>
-
-              {/* MOCK PAY BUTTON */}
-              <button 
-                onClick={handleMockPay}
-                disabled={checking}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-500 hover:to-pink-500 text-white font-black text-lg transition-all shadow-xl shadow-pink-600/30 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
-              >
-                {checking ? "Шалгаж байна..." : "Mock Pay (Төлсөн болгох)"}
-              </button>
-            </div>
-          )}
+          <button
+            onClick={handleUpgrade}
+            disabled={loading}
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-400 hover:to-emerald-400 text-stone-900 font-black text-lg transition-all shadow-xl shadow-lime-600/30 flex items-center justify-center gap-2 z-10 active:scale-95 disabled:opacity-50"
+          >
+            {loading ? "Түр хүлээнэ үү..." : "Одоо идэвхжүүлэх"}
+          </button>
         </div>
       </div>
     </div>
